@@ -14,10 +14,11 @@ class Video:
     def parse_id_from_url(self):
         parse_result = urlparse(self.url)
         
+        # Check if url is a youtube url
         if parse_result.netloc not in YOUTUBE_DOMAINS:
             raise ValueError("Input url isn't a valid youtube url")
         
-        print(parse_result)
+        # Extract video id from url
         try:
             if parse_result.path == '/watch':
                 video_id = parse_qs(parse_result.query)['v'][0]
@@ -30,8 +31,8 @@ class Video:
         except:
             raise ValueError("Input url doesn't contain a valid video id")
 
+        # Check if video id belongs to an actual youtube video
         url = f"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={video_id}&format=json"
-    
         try:
             response = requests.get(url)
             if response.status_code != 200:
