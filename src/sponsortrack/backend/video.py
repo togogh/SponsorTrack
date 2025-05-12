@@ -1,15 +1,20 @@
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 import requests
+from requests.adapters import HTTPAdapter, Retry
 import yt_dlp
+import json
+from pathlib import Path
 
-from sponsortrack.config import YOUTUBE_DOMAINS
+from sponsortrack.config import YOUTUBE_DOMAINS, SPONSORBLOCK_BASE_URL
 
 class Video:
     def __init__(self, url):
         self.url = url
         self.id = self.parse_id_from_url()
-        self.metadata = None
+        self.download_path = ""
+        self.metadata_path = ""
+        self.sponsorblock_path = ""
     
     def parse_id_from_url(self):
         parse_result = urlparse(self.url)
@@ -39,23 +44,53 @@ class Video:
                 raise ValueError("Input url doesn't contain a valid video id")
         except:
             raise ValueError("Input url doesn't contain a valid video id")
-            
-        # ydl_opts = {
-        #     'quiet': True,
-        #     'skip_download': True,
-        #     'no_warnings': True,
-        # }
-        # try:
-        #     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        #         info = ydl.extract_info(self.url, download=False)
-        #         self.metadata = json.dumps(ydl.sanitize_info(info))
-        # except yt_dlp.utils.DownloadError:
-        #     raise ValueError("Input url doesn't contain valid video id")
-        
-        # video_check_url = f"http://gdata.youtube.com/feeds/api/videos/{video_id}"
-        # response = requests.get(video_check_url)
-        # print(response.status_code)
-        # if response.status_code != 200:
-        #     raise ValueError("Input url doesn't contain valid video id")
         
         return video_id
+    
+    def update_download_path(self):
+        path = Path(f'./data/{self.id}')
+        path.mkdir(exist_ok=True)
+        self.download_path = path
+    
+    def download_metadata(self):
+        ydl_opts = {
+            'quiet': True,
+            'skip_download': True,
+            'no_warnings': True,
+        }
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(self.url, download=False)
+                metadata = ydl.sanitize_info(info)
+                print(metadata)
+        except yt_dlp.utils.DownloadError:
+            raise ConnectionError("Can't connect to yt_dlp")
+        
+        fp = Path(f'{self.download_path}/metadata.json')
+        with open(fp, 'w') as f:
+            json.dump(metadata, f, indent=4, sort_keys=True)
+
+        self.metadata_path = fp
+
+    def download_sponsorblock(self):
+        s = requests.Session()
+        retries = Retry(total=5,
+                backoff_factor=0.1,
+                status_forcelist=[ 500, 502, 503, 504 ])
+
+        s.mount('http://', HTTPAdapter(max_retries=retries))
+        url = f"{SPONSORBLOCK_BASE_URL}/api/skipSegments?videoID={self.id}"
+
+        response = s.get(url)
+        if response.status_code == 200:
+            data = response.json()
+        elif response.status_code == 404:
+            raise ConnectionError("No data from Sponsorblock")
+        else:
+            raise ConnectionError("Can't connect to Sponsorblock")
+        
+        fp = Path(f'{self.download_path}/sponsorblock.json')
+        with open(fp, 'w') as f:
+            json.dump(data, f, indent=4, sort_keys=True)
+
+        self.sponsorblock_path = fp
