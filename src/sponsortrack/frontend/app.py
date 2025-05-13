@@ -1,6 +1,5 @@
 import gradio as gr
-from sponsortrack.backend.download_video import download_video
-from sponsortrack.backend.parse_video_id import parse_video_id
+from sponsortrack.backend.video import Video
 
 
 # Get video_id input
@@ -16,15 +15,19 @@ from sponsortrack.backend.parse_video_id import parse_video_id
 # Display response
 
 
-def submit(video_url):
-    parse_video_id(video_url)
-    download_video(video_url)
-    download_metadata(video_url)
+def submit(url):
+    video = Video(url)
+    try:
+        video.fetch_info()
+        return "Fetched video"
+    except ValueError as err:
+        return f"Error: {str(err)}"
+
 
 with gr.Blocks() as demo:
-    video_url = gr.Textbox(label="Video URL")
+    url = gr.Textbox(label="Video URL")
     output = gr.Textbox(label="Output Box")
     submit_btn = gr.Button("Submit")
-    submit_btn.click(fn=submit, inputs=video_url, outputs=output, api_name="submit")
+    submit_btn.click(fn=submit, inputs=url, outputs=output, api_name="submit")
 
 demo.launch()
