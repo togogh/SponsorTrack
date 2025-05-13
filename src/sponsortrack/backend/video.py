@@ -5,6 +5,7 @@ from requests.adapters import HTTPAdapter, Retry
 import yt_dlp
 import json
 from pathlib import Path
+from sponsortrack.backend.sponsored_segment import SponsoredSegment
 
 from sponsortrack.config import YOUTUBE_DOMAINS, SPONSORBLOCK_BASE_URL
 
@@ -15,7 +16,9 @@ class Video:
         self.id = self.parse_id_from_url()
         self.download_path = ""
         self.sponsorblock_path = ""
+        self.sponsorblock_data = None
         self.metadata_path = ""
+        self.sponsored_segments = []
 
     def parse_id_from_url(self):
         parse_result = urlparse(self.url)
@@ -73,12 +76,17 @@ class Video:
             json.dump(data, f, indent=4, sort_keys=True)
 
         self.sponsorblock_path = fp
+        self.sponsorblock_data = data
 
     def download_metadata(self):
         ydl_opts = {
             "quiet": True,
             "skip_download": True,
             "no_warnings": True,
+            "format": "best",
+            "format_sort": ["+size", "+br", "+res", "+fps"],
+            "fragment_retries": 10,
+            "retries": 10,
         }
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -97,3 +105,13 @@ class Video:
         self.update_download_path()
         self.download_sponsorblock()
         self.download_metadata()
+
+    def extract_sponsored_segments(self):
+        segments = []
+        for i, block in enumerate(self.sponsorblock_data):
+            start_time = block["segment"][0]
+            end_time = block["segment"][1]
+            segment_id = i
+            parent_video = self
+            segments.append(SponsoredSegment(start_time, end_time, segment_id, parent_video))
+        self.sponsored_segments = segments

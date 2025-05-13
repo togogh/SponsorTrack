@@ -130,6 +130,10 @@ def test_download_sponsorblock(url, sponsorblock_path, len_sponsorblock, error, 
         # File should exist
         assert video.sponsorblock_path.exists()
 
+        # Sponsorblock data should exist
+        assert video.sponsorblock_data is not None
+        assert len(video.sponsorblock_data) == len_sponsorblock
+
         with open(video.sponsorblock_path, "r") as f:
             sponsorblock = json.load(f)
 
