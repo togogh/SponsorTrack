@@ -1,24 +1,32 @@
-from urllib.parse import urlparse
-from urllib.parse import parse_qs
+from urllib.parse import urlparse, parse_qs
 import requests
 from requests.adapters import HTTPAdapter, Retry
 import yt_dlp
 import json
 from pathlib import Path
-from sponsortrack.backend.sponsored_segment import SponsoredSegment
+from pydantic import HttpUrl
+from youtube_transcript_api import YouTubeTranscriptApi
 
+from sponsortrack.backend.sponsored_segment import SponsoredSegment
 from sponsortrack.config import YOUTUBE_DOMAINS, SPONSORBLOCK_BASE_URL
 
 
 class Video:
-    def __init__(self, url):
-        self.url = url
-        self.id = self.parse_id_from_url()
-        self.download_path = ""
-        self.sponsorblock_path = ""
-        self.sponsorblock_data = None
-        self.metadata_path = ""
-        self.sponsored_segments = []
+    def __init__(self, url: str):
+        self.url: HttpUrl = url
+        self.id: str = self.parse_id_from_url()
+        self.download_path: Path = None
+        self.sponsorblock_path: Path = None
+        self.sponsorblock_data: list[dict] = None
+        self.metadata_path: Path = None
+        self.language: str = ""
+        self.title: str = ""
+        self.channel_id: str = ""
+        self.uploader_id: str = ""
+        self.description: str = ""
+        self.duration: int = 0
+        self.subtitles_path: Path = None
+        self.sponsored_segments: list[SponsoredSegment] = []
 
     def parse_id_from_url(self):
         parse_result = urlparse(self.url)
@@ -101,10 +109,27 @@ class Video:
 
         self.metadata_path = fp
 
+        self.language = metadata["language"]
+        self.title = metadata["title"]
+        self.channel_id = metadata["channel_id"]
+        self.uploader_id = metadata["uploader_id"]
+        self.description = metadata["description"]
+        self.duration = metadata["duration"]
+
+    def download_subtitles(self, skip_if_exists: bool = True):
+        fp = Path(f"{self.download_path}/subtitles.json")
+        if not (fp.exists() & skip_if_exists):
+            ytt_api = YouTubeTranscriptApi()
+            subtitles = ytt_api.fetch(video_id=self.id, languages=[self.language])
+            with open(fp, "w") as f:
+                json.dump(subtitles, f, indent=4, sort_keys=True)
+        self.subtitles_path = fp
+
     def fetch_info(self):
         self.update_download_path()
         self.download_sponsorblock()
         self.download_metadata()
+        self.download_subtitles()
 
     def extract_sponsored_segments(self):
         segments = []
