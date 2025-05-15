@@ -15,18 +15,18 @@ class Video:
     def __init__(self, url: str):
         self.url: HttpUrl = url
         self.id: str = self.parse_id_from_url()
-        self.download_path: Path = None
-        self.sponsorblock_path: Path = None
-        self.sponsorblock_data: list[dict] = None
-        self.metadata_path: Path = None
-        self.language: str = ""
-        self.title: str = ""
-        self.channel_id: str = ""
-        self.uploader_id: str = ""
-        self.description: str = ""
-        self.duration: int = 0
-        self.subtitles_path: Path = None
-        self.sponsored_segments: list[SponsoredSegment] = []
+        self.download_path: Path
+        self.sponsorblock_path: Path
+        self.sponsorblock_data: list[dict]
+        self.metadata_path: Path
+        self.language: str
+        self.title: str
+        self.channel_id: str
+        self.uploader_id: str
+        self.description: str
+        self.duration: int
+        self.subtitles_path: Path
+        self.sponsored_segments: list[SponsoredSegment]
 
     def parse_id_from_url(self):
         parse_result = urlparse(self.url)
