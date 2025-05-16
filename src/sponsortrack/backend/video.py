@@ -6,9 +6,12 @@ import json
 from pathlib import Path
 from pydantic import HttpUrl
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api._errors import RequestBlocked, IpBlocked
+import time
 
 from sponsortrack.backend.sponsored_segment import SponsoredSegment
 from sponsortrack.config import YOUTUBE_DOMAINS, SPONSORBLOCK_BASE_URL
+from sponsortrack.backend.connectors.nordvpn import NordVPNConnector
 
 
 class Video:
@@ -116,11 +119,25 @@ class Video:
         self.description = metadata["description"]
         self.duration = metadata["duration"]
 
+    def fetch_subtitles(self, retries=5, backoff_factor=0.1):
+        for r in range(retries):
+            try:
+                ytt_api = YouTubeTranscriptApi()
+                subtitles = ytt_api.fetch(video_id=self.id, languages=[self.language])
+                return subtitles
+            except (RequestBlocked, IpBlocked):
+                connector = NordVPNConnector
+                connector.connect()
+                time.sleep(backoff_factor * (2 ** (r - 1)))
+            except Exception as e:
+                print("Encountered error:", e)
+                if r < retries:
+                    print("Retrying...")
+
     def download_subtitles(self, skip_if_exists: bool = True):
         fp = Path(f"{self.download_path}/subtitles.json")
         if not (fp.exists() & skip_if_exists):
-            ytt_api = YouTubeTranscriptApi()
-            subtitles = ytt_api.fetch(video_id=self.id, languages=[self.language])
+            subtitles = self.fetch_subtitles()
             with open(fp, "w") as f:
                 json.dump(subtitles, f, indent=4, sort_keys=True)
         self.subtitles_path = fp
