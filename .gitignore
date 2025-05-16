@@ -9,8 +9,11 @@ wheels/
 # Virtual environments
 .venv
 
-# Caches
+# Testing
 .pytest_cache
+.coverage
+
+# Ruff
 .ruff_cache
 
 # Data
