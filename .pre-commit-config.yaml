@@ -5,8 +5,10 @@ repos:
   hooks:
     # Run the linter.
     - id: ruff
+      stages: [push]
     # Run the formatter.
     - id: ruff-format
+      stages: [push]
 - repo: local
   hooks:
     - id: pytest
