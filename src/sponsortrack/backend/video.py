@@ -11,7 +11,7 @@ import time
 
 from sponsortrack.backend.sponsored_segment import SponsoredSegment
 from sponsortrack.config import YOUTUBE_DOMAINS, SPONSORBLOCK_BASE_URL
-from sponsortrack.backend.connectors.nordvpn import NordVPNConnector
+from sponsortrack.backend.connectors.nordvpn_connector import NordVPNConnector
 
 
 class Video:
