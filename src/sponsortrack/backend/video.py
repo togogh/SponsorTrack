@@ -31,6 +31,7 @@ class Video:
         self.duration: int
         self.subtitles_path: Path
         self.sponsored_segments: list[SponsoredSegment]
+        self.segments_path: Path
 
     def parse_id_from_url(self):
         parse_result = urlparse(self.url)
@@ -165,6 +166,19 @@ class Video:
             end_time = block["segment"][1]
             segment_id = block["UUID"]
             order = i
-            parent_video = self
-            segments.append(SponsoredSegment(start_time, end_time, segment_id, order, parent_video))
+            segments.append(
+                SponsoredSegment(
+                    start_time, end_time, segment_id, order, self.subtitles_path, self.id
+                )
+            )
+
+        segments_info = []
+        for segment in segments:
+            segments_info.append(segment.get_info())
+
+        fp = Path(f"{self.download_path}/segments.json")
+        with open(fp, "w") as f:
+            json.dump(segments_info, f, indent=4, sort_keys=True)
+
+        self.segments_path = fp
         self.sponsored_segments = segments

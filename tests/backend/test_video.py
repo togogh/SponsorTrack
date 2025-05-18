@@ -197,7 +197,7 @@ def test_download_subtitles(url, subtitles_path):
 
 
 @pytest.mark.parametrize(
-    "url,len_segments,start_time,end_time,segment_id,order,video_id",
+    "url,len_segments,start_time,end_time,segment_id,order,parent_video_id,subtitles,segments_path",
     [
         (
             "https://youtu.be/CPk8Bh4soSQ",
@@ -207,6 +207,8 @@ def test_download_subtitles(url, subtitles_path):
             "97565687886b1dd6d4399a092720ea347681d1bfa9dafc5fe6b12cda279384687",
             0,
             "CPk8Bh4soSQ",
+            "- And so it's not a slow thing. Today's \"Reddit Stories\" is\nbrought to you by HelloFresh. HelloFresh makes home cooking\nfun, easy, and affordable thanks to their farm fresh\npre-portioned ingredients delivered right to your door. It makes it so much easier. You get to cut out searching\nonline for the right recipe, going to the grocery store\nand picking out ingredients. Sometimes you have to buy a whole jar for just one tablespoon that\nyou need for the recipe. It just is all delivered\nright to your door at the right portions that\nyou need for that recipe. And it's so delicious. Plus they have tons of options. They've got fit and wholesome,\nvegetarian, family friendly, quick and easy, anything\nto suit your needs. And you can make veggie and protein swaps. So whatever you want, they got it. We got a box scent here once, and it was amazing how\nquick and easy it was. And it was so delicious. Made two perfect portions,\nand it was awesome. So for free breakfast for life, go to hellofresh.com/freepitreddit. One free breakfast item per box while subscription is active. That's free breakfast for life just by going to\nhellofresh.com/freepitreddit. HelloFresh. America's number one meal kit. Back to the show.",
+            Path("./tests/data/CPk8Bh4soSQ/segments.json"),
         ),
         (
             "https://www.youtube.com/watch?v=zJp824Oi_40&t=2082s",
@@ -216,11 +218,21 @@ def test_download_subtitles(url, subtitles_path):
             "7249034829e10fbec5338cb9f675c1065f271c451d51798bbcfb76b9404264727",
             1,
             "zJp824Oi_40",
+            "taste. Hold the phone, boys. Let me just come in here real quick and tell you about today's sponsor, Shopify. If you guys don't know, uh me, Joey Bizinger of Trash Taste, have a clothing brand. It's called nonsense. Even though I had all of these dope ass designs that I wanted to sell to people all over the world, I had no idea how to do it. I don't know how to run an e-commerce site. I don't know how to operate a storefront. I didn't know any of that. Luckily, there was Shopify. Shopify is the commerce platform behind millions of businesses around the world and 10% of all e-commerce in the US. From household names like Mattel and Gym Shark to brands just getting started. Get started with your own design studio with hundreds of readytouse templates. Shopify helps you build a beautiful online store to match your brand style. Shopify is packed with helpful AI tools that write product descriptions, page headlines, and even enhance your product photography. You can easily create email and social media campaigns wherever your customers are scrolling or scrolling. And best yet, Shopify is your commerce expert with world-class expertise in everything from managing inventory to international shipping to processing returns and beyond. As I mentioned, uh, Nonsense has been around for pretty much coming up to 3 years now, and we still use Shopify. We've used it from the beginning. We still use it now because it just works. So, if you're ready to sell, you're ready for Shopify. Turn your big business idea into cha-ching with Shopify on your side. Sign up for your $1 per month trial period and start selling today at shopify.com/trash. Go to shopify.com/trash. Shopify.com/trash. Back to the episode.",
+            Path("./tests/data/zJp824Oi_40/segments.json"),
         ),
     ],
 )
 def test_extract_sponsored_segments(
-    url, len_segments, start_time, end_time, segment_id, order, video_id
+    url,
+    len_segments,
+    start_time,
+    end_time,
+    segment_id,
+    order,
+    parent_video_id,
+    subtitles,
+    segments_path,
 ):
     video = Video(url)
     video.fetch_info("tests/data")
@@ -234,8 +246,22 @@ def test_extract_sponsored_segments(
 
     # Check that segment values are correct
     segment = video.sponsored_segments[order]
-    assert segment.start_time == start_time
-    assert segment.end_time == end_time
-    assert segment.segment_id == segment_id
-    assert segment.order == order
-    assert segment.parent_video.id == video_id
+    segment_info = segment.get_info()
+    assert start_time == segment_info["start_time"]
+    assert end_time == segment_info["end_time"]
+    assert segment_id == segment_info["segment_id"]
+    assert order == segment_info["order"]
+    assert subtitles == segment_info["subtitles"]
+    assert parent_video_id == segment_info["parent_video_id"]
+
+    # Path should match expected path
+    assert video.segments_path == segments_path
+
+    # File should exist
+    assert video.segments_path.exists()
+
+    with open(video.segments_path, "r") as f:
+        segments = json.load(f)
+
+        # File should have expected num of sponsors
+        assert len(segments) == len_segments
