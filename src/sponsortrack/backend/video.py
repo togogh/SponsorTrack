@@ -163,7 +163,8 @@ class Video:
         for i, block in enumerate(self.sponsorblock_data):
             start_time = block["segment"][0]
             end_time = block["segment"][1]
-            segment_id = i
+            segment_id = block["UUID"]
+            order = i
             parent_video = self
-            segments.append(SponsoredSegment(start_time, end_time, segment_id, parent_video))
+            segments.append(SponsoredSegment(start_time, end_time, segment_id, order, parent_video))
         self.sponsored_segments = segments

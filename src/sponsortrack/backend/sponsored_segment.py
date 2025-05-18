@@ -2,10 +2,11 @@
 
 
 class SponsoredSegment:
-    def __init__(self, start_time, end_time, segment_id, parent_video):
+    def __init__(self, start_time, end_time, segment_id, order, parent_video):
         self.start_time = start_time
         self.end_time = end_time
         self.segment_id = segment_id
+        self.order = order
         self.parent_video = parent_video
         self.transcript = ""
 

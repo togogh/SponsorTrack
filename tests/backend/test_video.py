@@ -194,3 +194,48 @@ def test_download_subtitles(url, subtitles_path):
     subtitles_last_modified = os.path.getmtime(subtitles_path)
     video.download_subtitles(skip_if_exists=False)
     assert subtitles_last_modified != os.path.getmtime(subtitles_path)
+
+
+@pytest.mark.parametrize(
+    "url,len_segments,start_time,end_time,segment_id,order,video_id",
+    [
+        (
+            "https://youtu.be/CPk8Bh4soSQ",
+            1,
+            1981,
+            2048.1,
+            "97565687886b1dd6d4399a092720ea347681d1bfa9dafc5fe6b12cda279384687",
+            0,
+            "CPk8Bh4soSQ",
+        ),
+        (
+            "https://www.youtube.com/watch?v=zJp824Oi_40&t=2082s",
+            2,
+            2365.947,
+            2456.54,
+            "7249034829e10fbec5338cb9f675c1065f271c451d51798bbcfb76b9404264727",
+            1,
+            "zJp824Oi_40",
+        ),
+    ],
+)
+def test_extract_sponsored_segments(
+    url, len_segments, start_time, end_time, segment_id, order, video_id
+):
+    video = Video(url)
+    video.fetch_info("tests/data")
+    video.extract_sponsored_segments()
+
+    # Segments should exist
+    assert video.sponsored_segments is not None
+
+    # Should have expected number of segments
+    assert len(video.sponsored_segments) == len_segments
+
+    # Check that segment values are correct
+    segment = video.sponsored_segments[order]
+    assert segment.start_time == start_time
+    assert segment.end_time == end_time
+    assert segment.segment_id == segment_id
+    assert segment.order == order
+    assert segment.parent_video.id == video_id
