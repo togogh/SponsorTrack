@@ -11,7 +11,7 @@ import time
 
 from sponsortrack.backend.sponsored_segment import SponsoredSegment
 from sponsortrack.config import YOUTUBE_DOMAINS, SPONSORBLOCK_BASE_URL
-from sponsortrack.backend.connectors.nordvpn_connector import NordVPNConnector
+from sponsortrack.backend.connectors.select_connector import select_connector
 
 
 class Video:
@@ -126,13 +126,15 @@ class Video:
                 subtitles = ytt_api.fetch(video_id=self.id, languages=[self.language])
                 return subtitles
             except (RequestBlocked, IpBlocked):
-                connector = NordVPNConnector
-                connector.connect()
-                time.sleep(backoff_factor * (2 ** (r - 1)))
+                connector = select_connector()
+                if connector is not None:
+                    connector.connect()
+                    time.sleep(backoff_factor * (2 ** (r - 1)))
             except Exception as e:
                 print("Encountered error:", e)
                 if r < retries:
                     print("Retrying...")
+                    time.sleep(backoff_factor * (2 ** (r - 1)))
 
     def download_subtitles(self, skip_if_exists: bool = True):
         fp = Path(f"{self.download_path}/subtitles.json")

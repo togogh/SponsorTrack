@@ -1,8 +1,13 @@
 from sponsortrack.backend.connectors.nordvpn_connector import NordVPNConnector
 from sponsortrack.backend.connectors.base_connector import BaseConnector
+from sponsortrack.config import NORD_VPN_DIRECTORY
 import os
+import pytest
 
 
+@pytest.mark.skipif(
+    NORD_VPN_DIRECTORY == "" or NORD_VPN_DIRECTORY is None, reason="System does not have NordVPN"
+)
 def test_nord_vpn_connector():
     cwd = os.getcwd()
     nord_vpn_connector = NordVPNConnector()
