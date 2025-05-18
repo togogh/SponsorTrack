@@ -1,4 +1,4 @@
-# import json
+import pandas as pd
 
 
 class SponsoredSegment:
@@ -8,7 +8,12 @@ class SponsoredSegment:
         self.segment_id = segment_id
         self.order = order
         self.parent_video = parent_video
-        self.transcript = ""
+        self.subtitles = ""
 
-    # def extract_transcript(self):
-    #     metadata = json.load(self.parent_video.metadata_path)
+    def extract_subtitles(self):
+        df = pd.read_json(self.parent_video.subtitles_path)
+        start_row = df[df["start"] <= self.start_time].iloc[-1]
+        end_row = df[df["start"] >= self.end_time].iloc[0]
+        df = df.iloc[start_row.name : end_row.name]
+        text = " ".join(df["text"].tolist())
+        return text
