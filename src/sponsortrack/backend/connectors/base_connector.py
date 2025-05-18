@@ -21,14 +21,14 @@ class BaseConnector:
 
         raise ConnectionError("Cannot get public ip")
 
-    def retry_check_ip(self, retries=5, connect=True):
+    def retry_check_ip(self, retries=10, connect=True):
         # buffer so that vpn has time to connect/disconnect
         cip = self.get_public_ip()
         desired_ip_same = False if connect else True
         ip_same = cip == self.get_public_ip()
         i = 0
         while i < retries and ip_same != desired_ip_same:
-            time.sleep(30)
+            time.sleep(10)
             ip_same = cip == self.get_public_ip()
             i += 1
 
