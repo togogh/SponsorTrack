@@ -16,4 +16,4 @@ class SponsoredSegment:
         end_row = df[df["start"] >= self.end_time].iloc[0]
         df = df.iloc[start_row.name : end_row.name]
         text = " ".join(df["text"].tolist())
-        return text
+        self.subtitles = text
