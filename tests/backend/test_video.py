@@ -2,6 +2,7 @@ import pytest
 from sponsortrack.backend.video import Video
 from pathlib import Path
 import json
+import os
 
 
 @pytest.mark.parametrize(
@@ -154,5 +155,42 @@ def test_download_sponsorblock(url, sponsorblock_path, len_sponsorblock, error, 
         with open(video.sponsorblock_path, "r") as f:
             sponsorblock = json.load(f)
 
-            # File should not be empty
+            # File should have expected num of sponsors
             assert len(sponsorblock) == len_sponsorblock
+
+
+@pytest.mark.parametrize(
+    "url,subtitles_path",
+    [
+        (
+            "https://youtu.be/YDsXNM_KmpY",
+            Path("./tests/data/YDsXNM_KmpY/subtitles.json"),
+        ),
+        (
+            "https://youtu.be/ofKe4b169ts",
+            Path("./tests/data/ofKe4b169ts/subtitles.json"),
+        ),
+    ],
+)
+def test_download_subtitles(url, subtitles_path):
+    video = Video(url)
+    video.download_path = "tests/data"
+    video.download_metadata()
+    video.download_subtitles()
+
+    # Subtitles path should match expected path
+    assert video.subtitles_path == subtitles_path
+
+    # File should exist
+    assert video.subtitles_path.exists()
+
+    with open(video.subtitles_path, "r") as f:
+        subtitles = json.load(f)
+
+        # File should not be empty
+        assert len(subtitles) > 0
+
+    # Make sure subtitles are overwritten if not skip_if_exists
+    subtitles_last_modified = os.path.getmtime(subtitles_path)
+    video.download_subtitles(skip_if_exists=False)
+    assert subtitles_last_modified != os.path.getmtime(subtitles_path)

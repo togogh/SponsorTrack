@@ -7,6 +7,7 @@ from pathlib import Path
 from pydantic import HttpUrl
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api._errors import RequestBlocked, IpBlocked
+from youtube_transcript_api.formatters import JSONFormatter
 import time
 
 from sponsortrack.backend.sponsored_segment import SponsoredSegment
@@ -129,6 +130,8 @@ class Video:
             try:
                 ytt_api = YouTubeTranscriptApi()
                 subtitles = ytt_api.fetch(video_id=self.id, languages=[self.language])
+                formatter = JSONFormatter()
+                subtitles = formatter.format_transcript(subtitles, indent=4)
                 return subtitles
             except (RequestBlocked, IpBlocked):
                 connector = select_connector()
@@ -146,7 +149,7 @@ class Video:
         if not (fp.exists() & skip_if_exists):
             subtitles = self.fetch_subtitles()
             with open(fp, "w") as f:
-                json.dump(subtitles, f, indent=4, sort_keys=True)
+                f.write(subtitles)
         self.subtitles_path = fp
 
     def fetch_info(self, data_dir="data"):
