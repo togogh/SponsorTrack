@@ -43,12 +43,12 @@ def test_parse_id_from_url(input, output, error_msg):
 @pytest.mark.parametrize(
     "input,output",
     [
-        ("https://youtu.be/2oZzUeNGr78", Path("./data/2oZzUeNGr78")),
+        ("https://youtu.be/2oZzUeNGr78", Path("./tests/data/2oZzUeNGr78")),
     ],
 )
 def test_update_download_path(input, output):
     video = Video(input)
-    video.update_download_path()
+    video.download_path = "tests/data"
     assert video.download_path == output
     assert video.download_path.exists()
 
@@ -58,7 +58,7 @@ def test_update_download_path(input, output):
     [
         (
             "https://youtu.be/YDsXNM_KmpY",
-            Path("./data/YDsXNM_KmpY/metadata.json"),
+            Path("./tests/data/YDsXNM_KmpY/metadata.json"),
             "fil",
             "House Trends 2025 That You Can Make Gaya Para Estetik Your House",
             "UCHHYB05slIGQR5NT92EPr5g",
@@ -68,7 +68,7 @@ def test_update_download_path(input, output):
         ),
         (
             "https://www.youtube.com/watch?v=ofKe4b169ts",
-            Path("./data/ofKe4b169ts/metadata.json"),
+            Path("./tests/data/ofKe4b169ts/metadata.json"),
             "en",
             "The REAL Kitchen Nightmares | Reading Reddit Stories",
             "UCYJPby9DRCteedh5tfxVbrw",
@@ -82,7 +82,7 @@ def test_download_metadata(
     url, metadata_path, language, title, channel_id, uploader_id, description, duration
 ):
     video = Video(url)
-    video.update_download_path()
+    video.download_path = "tests/data"
     video.download_metadata()
 
     # Metadata path should match expected path
@@ -111,21 +111,21 @@ def test_download_metadata(
     [
         (
             "https://youtu.be/CPk8Bh4soSQ",
-            Path("./data/CPk8Bh4soSQ/sponsorblock.json"),
+            Path("./tests/data/CPk8Bh4soSQ/sponsorblock.json"),
             1,
             None,
             None,
         ),
         (
             "https://www.youtube.com/watch?v=NBbWEl76qX4",
-            Path("./data/NBbWEl76qX4/metadata.json"),
+            Path("./tests/data/NBbWEl76qX4/metadata.json"),
             0,
             ValueError,
             "No data from Sponsorblock",
         ),
         (
             "https://www.youtube.com/watch?v=zJp824Oi_40&t=2082s",
-            Path("./data/zJp824Oi_40/sponsorblock.json"),
+            Path("./tests/data/zJp824Oi_40/sponsorblock.json"),
             2,
             None,
             None,
@@ -134,7 +134,7 @@ def test_download_metadata(
 )
 def test_download_sponsorblock(url, sponsorblock_path, len_sponsorblock, error, error_msg):
     video = Video(url)
-    video.update_download_path()
+    video.download_path = "tests/data"
     if error is not None:
         with pytest.raises(error, match=error_msg):
             video.download_sponsorblock()

@@ -62,10 +62,15 @@ class Video:
 
         return video_id
 
-    def update_download_path(self):
-        path = Path(f"./data/{self.id}")
-        path.mkdir(exist_ok=True)
-        self.download_path = path
+    @property
+    def download_path(self):
+        return self._download_path
+
+    @download_path.setter
+    def download_path(self, data_dir):
+        path = Path(f"./{data_dir}/{self.id}")
+        path.mkdir(exist_ok=True, parents=True)
+        self._download_path = path
 
     def download_sponsorblock(self):
         s = requests.Session()
@@ -144,8 +149,8 @@ class Video:
                 json.dump(subtitles, f, indent=4, sort_keys=True)
         self.subtitles_path = fp
 
-    def fetch_info(self):
-        self.update_download_path()
+    def fetch_info(self, data_dir="data"):
+        self.download_path = data_dir
         self.download_sponsorblock()
         self.download_metadata()
         self.download_subtitles()
