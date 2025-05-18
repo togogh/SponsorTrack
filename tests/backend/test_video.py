@@ -54,21 +54,33 @@ def test_update_download_path(input, output):
 
 
 @pytest.mark.parametrize(
-    "url,metadata_path,channel_id",
+    "url,metadata_path,language,title,channel_id,uploader_id,description,duration",
     [
         (
-            "https://youtu.be/2oZzUeNGr78",
-            Path("./data/2oZzUeNGr78/metadata.json"),
-            "@comfortlevelpodcast",
+            "https://youtu.be/YDsXNM_KmpY",
+            Path("./data/YDsXNM_KmpY/metadata.json"),
+            "fil",
+            "House Trends 2025 That You Can Make Gaya Para Estetik Your House",
+            "UCHHYB05slIGQR5NT92EPr5g",
+            "@OliverAustria",
+            "Gawin nating maganda ang bahay nyo mah dudes!!\n\nFor business inquiries E-mail: austriallyan@gmail.com\n\nAt dahil madaming nagtatanong, eto pala Camera gear ko:\nCameras: \nhttps://bit.ly/32KHWBt\nLens:\nhttps://bit.ly/326xNMY\nRed Mic:\nhttps://bit.ly/2HlvRe5\nOn-Camera Mic\nhttps://bit.ly/2pa8J9h\nAudio Recorder:\nhttps://bit.ly/2oyYYkU\nTripod:\nhttps://bit.ly/2M6bL7o\nStanding Desk\nhttps://bit.ly/3hOMifp\n\nDisclaimer:\nThis video is for entertainment purposes only. All the information and tips mentioned in the video is based on my personal experience, your results may vary. For your Plans and Designs get an Architect.",
+            658,
         ),
         (
-            "https://www.youtube.com/watch?v=NBbWEl76qX4",
-            Path("./data/NBbWEl76qX4/metadata.json"),
-            "@YNABofficial",
+            "https://www.youtube.com/watch?v=ofKe4b169ts",
+            Path("./data/ofKe4b169ts/metadata.json"),
+            "en",
+            "The REAL Kitchen Nightmares | Reading Reddit Stories",
+            "UCYJPby9DRCteedh5tfxVbrw",
+            "@smoshpit",
+            "These tales from servers will blow your mind. Start listening and discover what\u2019s beyond the edge of your seat. New members can try Audible now free for 30 days and dive into a world of new thrills. Visit https://Audible.com/SRRS or text (SRRS) to 500-500.\n\nPODCAST:\nhttps://smo.sh/PitRedditSpotify\nhttps://smo.sh/PitRedditiHeart\nhttps://smo.sh/PitRedditApple\n\n0:00 Intro\n1:16 A lady called to warn us about her husband https://www.reddit.com/r/TalesFromYourServer/comments/1iarl4n/a_lady_called_to_warn_us_about_her_husband/\n11:24 Sponsor\n12:41 She wrote a mean note on the tip https://www.reddit.com/r/TalesFromYourServer/comments/1jzxky4/woman_wrote_dont_be_such_a_c_on_tip_line_after_i/\n18:43 My best friend is broke but won't take the job I'm offering https://www.reddit.com/r/BestofRedditorUpdates/comments/1itqo6r/my_m31_best_friend_m33_is_broke_ive_been_offering/\n36:08 Snitched on my coworker who spit in food https://www.reddit.com/r/AmItheAsshole/comments/mnh20i/aita_for_snitching_on_a_coworker_for_spitting_on/\n46:45 My mom's rude customer turned out to be my gf https://www.reddit.com/r/relationship_advice/comments/hoznlr/my_moms_rude_customer_turned_out_to_be_my/\n1:08:37 I still remember his Hawaiian shirt https://www.reddit.com/r/TalesFromYourServer/comments/1fnsfob/i_still_remember_his_hawaiian_shirt/\n\nSUBSCRIBE: https://smo.sh/Sub2SmoshPit\n\nWEAR OUR JOKES: https://smosh.com\n\nWHO YOU SEE\nShayne Topp // https://www.instagram.com/shaynetopp/\nTommy Bowe // https://www.instagram.com/tomeybones/\nChanse McCrary // https://www.instagram.com/phatchanse/\n\nWHO YOU DON\u2019T SEE (usually)\nDirector: Emily Rose Jacobson\nEditor: Vida Robbins\nDirector of Programming, Smosh Pit: Emily Rose Jacobson\nAssociate Producer, Smosh Pit: Bailey Petracek\nProduction Designer: Cassie Vance\nArt Director: Erin Kuschner\nAssistant Art Director: Josie Bellerby\nStage Manager: Alex Aguilar\nProp Master: Courtney Chapman\nArt Coordinator: Abby Schmidt\nWardrobe Assistant: Elizabeth Park\nProp Assistant: Bridgette Baron\nAudio Mixer: Scott Neff\nAudio Utility: Dina Ramli\nDirector of Photography: James Hull\nCamera Operator: Ryan Blewett\nCamera Operator: Macy Armstrong\nAssistant Director: Jonathan Hyon\nExecutive Vice President of Production: Amanda Barnes\nSenior Production Manager: Alexcina Figueroa\nProduction Manager: Jonathan Hyon\nProduction Coordinator: Zianne Hoover\nOperations & Production Coordinator: Oliver Wehlander\nProduction Assistant: Caroline Smith\nPost Production Manager: Luke Baker\nDIT/Lead AE: Matt Duran\nIT: Tim Baker\nIT & Equipment Coordinator: Lopati Ho Chee\nSound Editor: Gareth Hird\nDirector of Design: Brittany Hobbs\nSenior Motion & Branding Designer: Christie Hauck\nGraphic Designers: Ness Cardano, Monica Ravitch\nSenior Manager, Channel & Strategy: Lizzy Jones\nChannel Operations Coordinator: Audrey Carganilla\nDirector of Social Media: Erica Noboa\nSocial Creative Producer: Peter Ditzler, Tommy Bowe\nMerchandising Manager: Mallory Myers\nSocial Media Coordinator: Kim Wilborn\nBrand Partnership Manager: Chloe Mays\nOperations Manager: Selina Garcia\nPeople Operations Specialist: Katie Fink\nFront Office Assistant: Sara Faltersack\nCEO: Alessandra Catanese\nExecutive Producers: Anthony Padilla, Ian Hecox\nEVP of Programming: Kiana Parker\nCoordinating Producer of Programming: Marcus Munguia\nAssociate Producer, Special Projects: Rachel Collis\nExecutive Assistant: Katelyn Hempstead\n\n\nOTHER SMOSHES:\nSmosh: https://smo.sh/Sub2Smosh\nSmosh Games: https://smo.sh/Sub2SmoshGames\nSmoshCast: https://smo.sh/Sub2SmoshCast\n\nFOLLOW US:\nTikTok: https://smo.sh/TikTok\nInstagram: https://instagram.com/smosh\nFacebook: https://facebook.com/smosh\"",
+            4399,
         ),
     ],
 )
-def test_download_metadata(url, metadata_path, channel_id):
+def test_download_metadata(
+    url, metadata_path, language, title, channel_id, uploader_id, description, duration
+):
     video = Video(url)
     video.update_download_path()
     video.download_metadata()
@@ -86,7 +98,12 @@ def test_download_metadata(url, metadata_path, channel_id):
         assert len(metadata) > 0
 
         # Channel id should be correct
-        assert metadata["uploader_id"] == channel_id
+        assert metadata["language"] == language
+        assert metadata["title"] == title
+        assert metadata["channel_id"] == channel_id
+        assert metadata["uploader_id"] == uploader_id
+        assert metadata["description"] == description
+        assert metadata["duration"] == duration
 
 
 @pytest.mark.parametrize(
