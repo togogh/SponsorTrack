@@ -19,8 +19,7 @@ wheels/
 # Data
 data/*
 !data/.gitkeep 
-tests/data/*
-!tests/data/.gitkeep 
+tests/data/
 
 # Env files
 .env
