@@ -1059,6 +1059,7 @@ source = { editable = "." }
 dependencies = [
     { name = "coverage" },
     { name = "gradio" },
+    { name = "huggingface-hub" },
     { name = "pre-commit" },
     { name = "pydantic" },
     { name = "pytest" },
@@ -1070,12 +1071,16 @@ dependencies = [
 requires-dist = [
     { name = "coverage", specifier = ">=7.8.0" },
     { name = "gradio", specifier = ">=5.29.0" },
+    { name = "huggingface-hub", specifier = ">=0.31.1" },
     { name = "pre-commit", specifier = ">=4.2.0" },
     { name = "pydantic", specifier = ">=2.11.4" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "youtube-transcript-api", specifier = ">=1.0.3" },
     { name = "yt-dlp", specifier = ">=2025.4.30" },
 ]
+
+[package.metadata.requires-dev]
+dev = []
 
 [[package]]
 name = "starlette"

@@ -5,30 +5,32 @@ import os
 import pytest
 
 
-@pytest.mark.skipif(
-    NORD_VPN_DIRECTORY == "" or NORD_VPN_DIRECTORY is None, reason="System does not have NordVPN"
-)
-def test_nord_vpn_connector():
-    cwd = os.getcwd()
-    nord_vpn_connector = NordVPNConnector()
+class TestConnectors:
+    @pytest.mark.skipif(
+        NORD_VPN_DIRECTORY == "" or NORD_VPN_DIRECTORY is None,
+        reason="System does not have NordVPN",
+    )
+    def test_nord_vpn_connector(self):
+        cwd = os.getcwd()
+        nord_vpn_connector = NordVPNConnector()
 
-    # Make sure vpn is disconnected just in case it's connected
-    nord_vpn_connector.disconnect()
+        # Make sure vpn is disconnected just in case it's connected
+        nord_vpn_connector.disconnect()
 
-    # Get original IP address
-    base_connector = BaseConnector()
-    true_cip = base_connector.get_public_ip()
+        # Get original IP address
+        base_connector = BaseConnector()
+        true_cip = base_connector.get_public_ip()
 
-    nord_vpn_connector.connect()
-    # Make sure working directory is back to project directory after connecting
-    assert os.getcwd() == cwd
+        nord_vpn_connector.connect()
+        # Make sure working directory is back to project directory after connecting
+        assert os.getcwd() == cwd
 
-    # IP address should have changed after connecting
-    assert true_cip != base_connector.get_public_ip()
+        # IP address should have changed after connecting
+        assert true_cip != base_connector.get_public_ip()
 
-    nord_vpn_connector.disconnect()
-    # Make sure working directory is back to project directory after disconnecting
-    assert os.getcwd() == cwd
+        nord_vpn_connector.disconnect()
+        # Make sure working directory is back to project directory after disconnecting
+        assert os.getcwd() == cwd
 
-    # IP address should be back to original after disconnecting
-    assert true_cip == base_connector.get_public_ip()
+        # IP address should be back to original after disconnecting
+        assert true_cip == base_connector.get_public_ip()

@@ -9,6 +9,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api._errors import RequestBlocked, IpBlocked
 from youtube_transcript_api.formatters import JSONFormatter
 import time
+from datetime import date
 
 from sponsortrack.backend.sponsored_segment import SponsoredSegment
 from sponsortrack.config import YOUTUBE_DOMAINS, SPONSORBLOCK_BASE_URL
@@ -25,8 +26,10 @@ class Video:
         self.metadata_path: Path
         self.language: str
         self.title: str
+        self.channel: str
         self.channel_id: str
         self.uploader_id: str
+        self.upload_date: date
         self.description: str
         self.duration: int
         self.subtitles_path: Path
@@ -101,13 +104,14 @@ class Video:
             "quiet": True,
             "skip_download": True,
             "no_warnings": True,
-            "format": "best",
             "format_sort": ["+size", "+br", "+res", "+fps"],
             "fragment_retries": 10,
             "retries": 10,
+            "no_cache_dir": True,
         }
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                ydl.cache.remove()
                 info = ydl.extract_info(self.url, download=False)
                 metadata = ydl.sanitize_info(info)
         except yt_dlp.utils.DownloadError:
@@ -121,8 +125,10 @@ class Video:
 
         self.language = metadata["language"]
         self.title = metadata["title"]
+        self.channel = metadata["channel"]
         self.channel_id = metadata["channel_id"]
         self.uploader_id = metadata["uploader_id"]
+        self.upload_date = metadata["upload_date"]
         self.description = metadata["description"]
         self.duration = metadata["duration"]
 
@@ -153,12 +159,6 @@ class Video:
                 f.write(subtitles)
         self.subtitles_path = fp
 
-    def fetch_info(self, data_dir="data"):
-        self.download_path = data_dir
-        self.download_sponsorblock()
-        self.download_metadata()
-        self.download_subtitles()
-
     def extract_sponsored_segments(self):
         segments = []
         for i, block in enumerate(self.sponsorblock_data):
@@ -166,19 +166,41 @@ class Video:
             end_time = block["segment"][1]
             segment_id = block["UUID"]
             order = i
-            segments.append(
-                SponsoredSegment(
-                    start_time, end_time, segment_id, order, self.subtitles_path, self.id
-                )
-            )
 
+            segment = SponsoredSegment(start_time, end_time, segment_id, order, self)
+            segments.append(segment)
+        self.sponsored_segments = segments
+
+    def enrich_sponsored_segments(self):
+        for segment in self.sponsored_segments:
+            segment.extract_subtitles()
+            segment.extract_sponsor_info()
+
+    def save_sponsored_segments(self):
         segments_info = []
-        for segment in segments:
-            segments_info.append(segment.get_info())
+        for segment in self.sponsored_segments:
+            print(segment.to_dict())
+            segments_info.append(segment.to_dict())
 
         fp = Path(f"{self.download_path}/segments.json")
         with open(fp, "w") as f:
             json.dump(segments_info, f, indent=4, sort_keys=True)
 
         self.segments_path = fp
-        self.sponsored_segments = segments
+
+    def fetch_segments_info(self, data_dir="data"):
+        self.download_path = data_dir
+
+        fp = Path(f"{self.download_path}/segments.json")
+        if not fp.exists():
+            self.download_sponsorblock()
+            self.download_metadata()
+            self.download_subtitles()
+            self.extract_sponsored_segments()
+            self.enrich_sponsored_segments()
+            self.save_sponsored_segments()
+
+        with open(fp, "r") as f:
+            sponsor_info = json.load(f)
+
+        return sponsor_info
