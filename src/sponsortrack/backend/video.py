@@ -201,6 +201,6 @@ class Video:
             self.save_sponsored_segments()
 
         with open(fp, "r") as f:
-            sponsor_info = json.load(f)
+            segments_info = json.load(f)
 
-        return sponsor_info
+        return segments_info

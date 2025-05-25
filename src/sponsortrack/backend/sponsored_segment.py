@@ -45,8 +45,8 @@ class SponsoredSegment:
 
             sponsor_name: Name of the sponsor
             sponsor_description: What the sponsor does or provides
-            sponsor_website: Website of the sponsor, if given
             sponsor_offer: Any discounts or coupons provided by the sponsor
+            sponsor_links: List of websites related to the sponsor, such as affiliate links, homepages, or links to the offer
 
             Please respond with just the json.
         """
@@ -69,4 +69,6 @@ class SponsoredSegment:
     def to_dict(self, skip=["parent_video"]):
         if skip is None:
             skip = []
-        return {k: v for k, v in self.__dict__.items() if k not in skip}
+        data = {k: v for k, v in self.__dict__.items() if k not in skip}
+        data["parent_video_id"] = self.parent_video.id
+        return data

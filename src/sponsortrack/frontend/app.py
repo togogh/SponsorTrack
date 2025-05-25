@@ -2,20 +2,43 @@ import gradio as gr
 from sponsortrack.backend.video import Video
 
 
-def submit(url):
+def submit(url, segments):
+    segments_copy = segments.copy()
     video = Video(url)
-    try:
-        segments_info = video.fetch_segments_info()
-        sponsors_info = [s["sponsor_info"] for s in segments_info]
-        return sponsors_info
-    except ValueError as err:
-        return f"Error: {str(err)}"
+    segments_info = video.fetch_segments_info()
+    segments_copy.extend(segments_info)
+    return "", segments_copy
 
 
 with gr.Blocks() as demo:
     url = gr.Textbox(label="Video URL")
-    output = gr.Textbox(label="Output Box")
-    submit_btn = gr.Button("Submit")
-    submit_btn.click(fn=submit, inputs=url, outputs=output, api_name="submit")
+    submit_btn = gr.Button("Get Sponsor Info")
+    segments = gr.State([])
+    submit_btn.click(fn=submit, inputs=[url, segments], outputs=[url, segments], api_name="submit")
 
-demo.launch()
+    @gr.render(inputs=segments)
+    def render_count(arr):
+        if len(arr) != 0:
+            gr.Markdown(f"Found {len(arr)} sponsored segment{'' if len(arr) == 1 else 's'}")
+            for i, segment in enumerate(arr):
+                with gr.Accordion(label=f"{segment['sponsor_info']['sponsor_name']}", open=False):
+                    gr.HTML(f"""
+                        <iframe
+                            width="560"
+                            height="315"
+                            src="https://www.youtube.com/embed/{segment["parent_video_id"]}?start={int(segment["start_time"])}"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allowfullscreen>
+                        </iframe>""")
+                    gr.TextArea(
+                        label="Description", value=segment["sponsor_info"]["sponsor_description"]
+                    )
+                    gr.Textbox(label="Offer", value=segment["sponsor_info"]["sponsor_offer"])
+                    gr.Textbox(
+                        label="Links", value=", ".join(segment["sponsor_info"]["sponsor_links"])
+                    )
+
+
+demo.queue().launch(show_error=True)
