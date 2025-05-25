@@ -11,7 +11,7 @@ def submit(url, segments):
 
 
 with gr.Blocks() as demo:
-    url = gr.Textbox(label="Video URL")
+    url = gr.Textbox(label="Youtube URL")
     submit_btn = gr.Button("Get Sponsor Info")
     segments = gr.State([])
     submit_btn.click(fn=submit, inputs=[url, segments], outputs=[url, segments], api_name="submit")
