@@ -19,7 +19,9 @@ with gr.Blocks() as demo:
     @gr.render(inputs=segments)
     def render_count(arr):
         if len(arr) != 0:
-            gr.Markdown(f"Found {len(arr)} sponsored segment{'' if len(arr) == 1 else 's'}")
+            gr.Markdown(
+                f"Found {len(arr)} sponsored segment{'' if len(arr) == 1 else 's'} for https://www.youtube.com/watch?v={arr[0]['parent_video_id']}"
+            )
             for i, segment in enumerate(arr):
                 with gr.Accordion(label=f"{segment['sponsor_info']['sponsor_name']}", open=False):
                     gr.HTML(f"""
