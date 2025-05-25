@@ -88,10 +88,9 @@ class Video:
         if response.status_code == 200:
             data = response.json()
         elif response.status_code == 404:
-            raise ValueError("""
-                This video has no sponsored segments marked with Sponsorblock.
-                If this is a mistake, add them with https://sponsor.ajay.app/
-            """)
+            raise ValueError(
+                "This video has no sponsored segments marked with Sponsorblock. If this is a mistake, add them with https://sponsor.ajay.app/"
+            )
         else:
             raise ConnectionError("Can't connect to Sponsorblock")
 

@@ -136,7 +136,7 @@ class TestVideo:
                 Path("./tests/data/NBbWEl76qX4/metadata.json"),
                 0,
                 ValueError,
-                "No data from Sponsorblock",
+                "This video has no sponsored segments marked with Sponsorblock. If this is a mistake, add them with https://sponsor.ajay.app/",
             ),
             (
                 "https://www.youtube.com/watch?v=zJp824Oi_40&t=2082s",
