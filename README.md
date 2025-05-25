@@ -62,7 +62,9 @@ Don't forget to give the project a star! Thanks again!
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+    - Every commit is checked and formatted with ruff. If your commit fails, that means it needs further cleaning. Simple formatting changes are automatically fixed by ruff, you just need to stage them to your commit. But more complex fixes may be needed, ruff will specify where.
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
+    - Every push runs pytest to make sure new changes don't break the project. This can sometimes take time, so I would recommend commiting often but pushing infrequently
 5. Open a Pull Request
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
