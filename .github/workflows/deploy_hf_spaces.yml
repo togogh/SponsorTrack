@@ -42,5 +42,18 @@ jobs:
           git add .
           git commit -m "Update Spaces deploy branch"
           git push --force https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} spaces-deploy
-          git remote add hf https://huggingface.co/spaces/togogh/SponsorTrack
-          git push hf spaces-deploy:main --force
+          
+      - name: Push to Hugging Face Space repo
+        run: |
+          # Clone Hugging Face repo using token
+          git clone https://huggingface_hub_token:${{ secrets.HF_TOKEN }}@huggingface.co/spaces/togogh/SponsorTrack
+          
+          # Copy deployable files
+          cp -r . hf-repo/
+          
+          cd hf-repo
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Auto-update from GitHub main branch" || echo "No changes to commit"
+          git push origin main
