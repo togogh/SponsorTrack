@@ -45,12 +45,12 @@ jobs:
           
       - name: Push to Hugging Face Space repo
         run: |
-          # Clone Hugging Face repo using token
           git clone https://huggingface_hub_token:${{ secrets.HF_TOKEN }}@huggingface.co/spaces/togogh/SponsorTrack
           
-          # Copy deployable files
-          cp -r . hf-repo/
-          
+          rm -rf hf-repo/* hf-repo/.[!.]* hf-repo/.??*
+
+          rsync -av --exclude=hf-repo/ ./ hf-repo/
+
           cd hf-repo
           git config user.name github-actions
           git config user.email github-actions@github.com
