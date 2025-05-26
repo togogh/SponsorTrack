@@ -20,7 +20,7 @@ jobs:
       - name: Install uv and export dependencies
         run: |
           pip install uv
-          uv pip compile --output-file=requirements.txt
+          uv pip compile pyproject.toml -o requirements.txt
 
       - name: Prepare deploy branch structure
         run: |
