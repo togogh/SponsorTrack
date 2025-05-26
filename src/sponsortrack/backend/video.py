@@ -110,6 +110,7 @@ class Video:
             "fragment_retries": 10,
             "retries": 10,
             "no_cache_dir": True,
+            "cookies_from_browser": "chrome",
         }
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
