@@ -1,0 +1,42 @@
+name: Update Hugging Face Spaces Deploy Branch
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-to-spaces:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install uv and export dependencies
+        run: |
+          pip install uv
+          uv pip compile --output-file=requirements.txt
+
+      - name: Prepare deploy branch structure
+        run: |
+          mkdir deploy
+          cp -r src deploy/src
+          cp requirements.txt deploy/
+          cp src/sponsortrack/frontend/app.py deploy/app.py
+          echo "sdk: gradio\napp_file: app.py" > deploy/huggingface.yaml
+
+      - name: Push to `spaces-deploy` branch
+        run: |
+          cd deploy
+          git init
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git checkout -b spaces-deploy
+          git add .
+          git commit -m "Update Spaces deploy branch"
+          git push --force https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} spaces-deploy

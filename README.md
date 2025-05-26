@@ -29,7 +29,7 @@ This project is currently set up to run locally.
     ```sh
     git clone https://github.com/togogh/SponsorTrack.git
     ```
-3. Create a .env file in the root directory and set HF_ACCESS_TOKEN to your new HuggingFace token 
+3. Create a .env file in the root directory and set HF_TOKEN to your new HuggingFace token 
 4. (Optional) Add path to NordVPN in [config](src\sponsortrack\config.py) file
 4. Start the app server
     ```sh
