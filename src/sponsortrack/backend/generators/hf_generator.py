@@ -7,7 +7,7 @@ class HuggingFaceGenerator(BaseGenerator):
     def connect_client(self, provider="novita"):
         client = InferenceClient(
             provider=provider,
-            api_key=os.getenv("HF_ACCESS_TOKEN"),
+            api_key=os.getenv("HF_TOKEN"),
         )
         self.client = client
 
