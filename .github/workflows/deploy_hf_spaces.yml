@@ -47,4 +47,4 @@ jobs:
       - name: Push to Hugging Face Space repo
         run: |
           git remote add hf https://huggingface_hub_token:${{ secrets.HF_TOKEN }}@https://huggingface.co/spaces/togogh/SponsorTrack
-          git push hf spaces-deploy:main --force
+          git push hf origin/spaces-deploy:main --force
