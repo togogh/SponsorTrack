@@ -28,7 +28,7 @@ jobs:
           cp -r src deploy/src
           cp requirements.txt deploy/
           cp src/sponsortrack/frontend/app.py deploy/app.py
-          cp HF_README.md README.md
+          cp HF_README.md deploy/README.md
           echo "sdk: gradio\napp_file: app.py" > deploy/huggingface.yaml
 
       - name: Push to `spaces-deploy` branch
