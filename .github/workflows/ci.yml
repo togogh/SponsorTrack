@@ -16,4 +16,4 @@ jobs:
           uv add ruff
       # Update output format to enable automatic inline annotations.
       - name: Run Ruff
-        run: ruff check --output-format=github .
+        run: uv run ruff check --output-format=github .
