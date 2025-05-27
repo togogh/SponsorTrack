@@ -16,4 +16,4 @@ repos:
       entry: uv run pytest
       language: system
       pass_filenames: false
-      stages: [pre-push]
+      stages: [pre-merge-commit]
