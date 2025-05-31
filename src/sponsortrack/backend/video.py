@@ -6,14 +6,14 @@ import json
 from pathlib import Path
 from pydantic import HttpUrl
 from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api._errors import RequestBlocked, IpBlocked
+from youtube_transcript_api.proxies import WebshareProxyConfig
 from youtube_transcript_api.formatters import JSONFormatter
 import time
 from datetime import date
+import os
 
 from sponsortrack.backend.sponsored_segment import SponsoredSegment
 from sponsortrack.config import YOUTUBE_DOMAINS, SPONSORBLOCK_BASE_URL
-from sponsortrack.backend.connectors.select_connector import select_connector
 
 
 class Video:
@@ -110,7 +110,7 @@ class Video:
             "fragment_retries": 10,
             "retries": 10,
             "no_cache_dir": True,
-            "cookies_from_browser": "chrome",
+            "proxy": f"http://{os.getenv('WS_PROXY_UN')}:{os.getenv('WS_PROXY_PW')}@p.webshare.io:80/",
         }
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -138,16 +138,15 @@ class Video:
     def fetch_subtitles(self, retries=5, backoff_factor=0.1):
         for r in range(retries):
             try:
-                ytt_api = YouTubeTranscriptApi()
+                proxy_config = WebshareProxyConfig(
+                    proxy_username=os.getenv("WS_PROXY_UN"),
+                    proxy_password=os.getenv("WS_PROXY_PW"),
+                )
+                ytt_api = YouTubeTranscriptApi(proxy_config=proxy_config)
                 subtitles = ytt_api.fetch(video_id=self.id, languages=[self.language])
                 formatter = JSONFormatter()
                 subtitles = formatter.format_transcript(subtitles, indent=4)
                 return subtitles
-            except (RequestBlocked, IpBlocked):
-                connector = select_connector()
-                if connector is not None:
-                    connector.connect()
-                    time.sleep(backoff_factor * (2 ** (r - 1)))
             except Exception as e:
                 print("Encountered error:", e)
                 if r < retries:
@@ -182,7 +181,6 @@ class Video:
     def save_sponsored_segments(self):
         segments_info = []
         for segment in self.sponsored_segments:
-            print(segment.to_dict())
             segments_info.append(segment.to_dict())
 
         fp = Path(f"{self.download_path}/segments.json")
