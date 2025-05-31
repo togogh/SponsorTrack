@@ -48,7 +48,7 @@ class SponsoredSegment:
             sponsor_offer: Any discounts or coupons provided by the sponsor
             sponsor_links: List of websites related to the sponsor, such as affiliate links, homepages, or links to the offer
 
-            Please respond with just the json.
+            Please respond with the json enclosed in a json markdown code block.
         """
         return prompt
 
@@ -58,6 +58,7 @@ class SponsoredSegment:
         generator.queue_message("user", self.craft_prompt())
         generator.generate_response()
         response = generator.messages[-1]["content"]
+        print(response)
         match = re.search(r"json\s*(\{.*?\})\s*", response, re.DOTALL)
         if match:
             json_str = match.group(1)
