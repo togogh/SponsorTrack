@@ -12,7 +12,7 @@ with gr.Blocks() as demo:
     with gr.Row():
         gr.Markdown("""
 # SponsorTrack
-Plug in a Youtube video and get who sponsored it and what they're offering
+Extract sponsorship information from Youtube videos
         """)
 
     with gr.Row():
