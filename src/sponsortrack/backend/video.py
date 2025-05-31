@@ -110,8 +110,9 @@ class Video:
             "fragment_retries": 10,
             "retries": 10,
             "no_cache_dir": True,
-            "cookies_from_browser": "firefox",
+            "proxy": f"http://{os.getenv('WS_PROXY_UN')}:{os.getenv('WS_PROXY_PW')}@p.webshare.io:80/",
         }
+        print(ydl_opts)
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.cache.remove()
