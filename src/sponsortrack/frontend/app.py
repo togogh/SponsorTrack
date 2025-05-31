@@ -68,4 +68,4 @@ Plug in a Youtube video and get who sponsored it and what they're offering
                             )
 
 
-demo.queue().launch(show_error=True)
+demo.queue().launch(show_error=True, share=True)
