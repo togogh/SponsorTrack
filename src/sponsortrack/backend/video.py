@@ -112,7 +112,6 @@ class Video:
             "no_cache_dir": True,
             "proxy": f"http://{os.getenv('WS_PROXY_UN')}:{os.getenv('WS_PROXY_PW')}@p.webshare.io:80/",
         }
-        print(ydl_opts)
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.cache.remove()
