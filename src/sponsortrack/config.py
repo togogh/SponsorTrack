@@ -1,4 +1,4 @@
-from sponsortrack.types import Connector, Generator
+from sponsortrack.types import Generator
 
 YOUTUBE_DOMAINS = [
     "youtube.com",
