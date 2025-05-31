@@ -5,7 +5,7 @@
 
 ![SponsorTrack Screen Shot][product-screenshot]
 
-[View Demo]("https://huggingface.co/spaces/togogh/SponsorTrack")
+[View Demo](https://huggingface.co/spaces/togogh/SponsorTrack)
 
 SponsorTrack is an open-source Python project that extracts and compiles Youtube sponsorship information.
 
@@ -18,7 +18,7 @@ SponsorTrack is an open-source Python project that extracts and compiles Youtube
 ### Hosted
 Do this if you just want to get sponsorship information
 
-1. Go to the [HF Space]("https://huggingface.co/spaces/togogh/SponsorTrack") where the app is hosted.
+1. Go to the [HF Space](https://huggingface.co/spaces/togogh/SponsorTrack) where the app is hosted.
 2. Plug in a Youtube URL, and hit submit. Sponsorship information (Who sponsored this video? What offers did they have? What links did they share?) will populate the page shortly.
 
 ### Local
