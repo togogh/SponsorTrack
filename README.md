@@ -38,9 +38,6 @@ Do this if you want to edit the code
     (Optional) Sign up for the Rotating Residential proxies plan in Webshare (the Free tier or Static Residential plan won't work). Then change your connection method to Rotating Proxy Endpoint and take note of your proxy username and password.
 
 2. Clone the repo
-    ```sh
-    git clone https://github.com/togogh/SponsorTrack.git
-    ```
 3. Create a .env file in the project root directory and set the following variables:
     - HF_TOKEN = HuggingFace token
     - WS_PROXY_UN = Webshare proxy username
