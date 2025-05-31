@@ -22,7 +22,6 @@ Plug in a Youtube video and get who sponsored it and what they're offering
             )
             examples = gr.Examples(
                 examples=[
-                    "https://www.youtube.com/watch?v=fZbXLmKqkM4",
                     "https://youtu.be/ofKe4b169ts",
                     "https://youtu.be/NxCfacrnbFU",
                     "https://www.youtube.com/watch?v=AienZMjqAg4&t=424s",
