@@ -60,6 +60,7 @@ Do this if you want to edit the code
 - [ ] Hosted database for storing sponsorship info
 - [ ] API service to download data in bulk
 - [ ] Web app with charts and stats (similar to [Graphtreon](https://graphtreon.com/))
+- [ ] Sponsored segment predictor
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
