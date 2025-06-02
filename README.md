@@ -58,6 +58,7 @@ Do this if you want to edit the code
 - [x] Local Gradio app to get YT sponsorship info
 - [x] Hosted Gradio app - Currently in [HuggingFace Spaces](https://huggingface.co/spaces/togogh/SponsorTrack)
 - [ ] Hosted database for storing sponsorship info
+- [ ] API service to download data in bulk
 - [ ] Web app with charts and stats (similar to [Graphtreon](https://graphtreon.com/))
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
