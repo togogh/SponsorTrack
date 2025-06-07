@@ -57,8 +57,8 @@ Do this if you want to edit the code
 
 - [x] Local Gradio app to get YT sponsorship info
 - [x] Hosted Gradio app - Currently in [HuggingFace Spaces](https://huggingface.co/spaces/togogh/SponsorTrack)
-- [ ] Hosted database for storing sponsorship info
-- [ ] API service to download data in bulk
+- [x] Hosted database for storing sponsorship info - Currently hosted in Droplet
+- [ ] API service
 - [ ] Web app with charts and stats (similar to [Graphtreon](https://graphtreon.com/))
 - [ ] Sponsored segment predictor
 
