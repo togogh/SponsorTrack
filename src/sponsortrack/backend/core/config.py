@@ -18,6 +18,7 @@ class Settings:
     POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER")
     POSTGRES_PORT: int = os.getenv("POSTGRES_PORT")
     POSTGRES_DB: str = os.getenv("POSTGRES_DB")
+    POSTGRES_SCHEMA: str = os.getenv("POSTGRES_SCHEMA")
     DATABASE_URL: PostgresDsn = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
     SERVER_IP_ADDRESS: IPv4Address = os.getenv("SERVER_IP_ADDRESS")
