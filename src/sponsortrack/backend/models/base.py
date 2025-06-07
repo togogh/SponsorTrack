@@ -5,7 +5,7 @@ from sqlalchemy import Column, DateTime, MetaData
 from sqlalchemy.orm import as_declarative
 from sponsortrack.backend.core.config import settings
 
-metadata = MetaData(schema="dev")
+metadata = MetaData(schema=settings.POSTGRES_SCHEMA)
 
 
 @as_declarative(metadata=metadata)
