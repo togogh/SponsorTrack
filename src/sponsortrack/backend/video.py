@@ -102,6 +102,13 @@ class Video:
         self.sponsorblock_data = data
 
     def download_metadata(self):
+        if "WS_PROXY_UN" in os.environ and "WS_PROXY_PW" in os.environ:
+            proxy_str = (
+                f"http://{os.getenv('WS_PROXY_UN')}:{os.getenv('WS_PROXY_PW')}@p.webshare.io:80/"
+            )
+        else:
+            proxy_str = ""
+
         ydl_opts = {
             "quiet": True,
             "skip_download": True,
@@ -110,7 +117,7 @@ class Video:
             "fragment_retries": 10,
             "retries": 10,
             "no_cache_dir": True,
-            "proxy": f"http://{os.getenv('WS_PROXY_UN')}:{os.getenv('WS_PROXY_PW')}@p.webshare.io:80/",
+            "proxy": proxy_str,
         }
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -136,13 +143,16 @@ class Video:
         self.duration = metadata["duration"]
 
     def fetch_subtitles(self, retries=5, backoff_factor=0.1):
+        if "WS_PROXY_UN" in os.environ and "WS_PROXY_PW" in os.environ:
+            proxy_config = WebshareProxyConfig(
+                proxy_username=os.getenv("WS_PROXY_UN"),
+                proxy_password=os.getenv("WS_PROXY_PW"),
+            )
+            ytt_api = YouTubeTranscriptApi(proxy_config=proxy_config)
+        else:
+            ytt_api = YouTubeTranscriptApi()
         for r in range(retries):
             try:
-                proxy_config = WebshareProxyConfig(
-                    proxy_username=os.getenv("WS_PROXY_UN"),
-                    proxy_password=os.getenv("WS_PROXY_PW"),
-                )
-                ytt_api = YouTubeTranscriptApi(proxy_config=proxy_config)
                 subtitles = ytt_api.fetch(video_id=self.id, languages=[self.language])
                 formatter = JSONFormatter()
                 subtitles = formatter.format_transcript(subtitles, indent=4)
