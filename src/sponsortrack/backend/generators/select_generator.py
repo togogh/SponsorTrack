@@ -1,4 +1,4 @@
-from sponsortrack.config import GENERATOR
+from sponsortrack.backend.core.config import GENERATOR
 from sponsortrack.backend.generators.hf_generator import HuggingFaceGenerator
 
 

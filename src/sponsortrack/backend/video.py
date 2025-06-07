@@ -13,7 +13,7 @@ from datetime import date
 import os
 
 from sponsortrack.backend.sponsored_segment import SponsoredSegment
-from sponsortrack.config import YOUTUBE_DOMAINS, SPONSORBLOCK_BASE_URL
+from sponsortrack.backend.core.config import YOUTUBE_DOMAINS, SPONSORBLOCK_BASE_URL
 
 
 class Video:
