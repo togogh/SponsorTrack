@@ -13,7 +13,7 @@ from datetime import date
 import os
 
 from sponsortrack.backend.sponsored_segment import SponsoredSegment
-from sponsortrack.backend.core.config import YOUTUBE_DOMAINS, SPONSORBLOCK_BASE_URL
+from sponsortrack.backend.core.constants import constants
 
 
 class Video:
@@ -40,7 +40,7 @@ class Video:
         parse_result = urlparse(self.url)
 
         # Check if url is a youtube url
-        if parse_result.netloc not in YOUTUBE_DOMAINS:
+        if parse_result.netloc not in constants.YOUTUBE_DOMAINS:
             raise ValueError("Input url isn't a valid youtube url")
 
         # Extract video id from url
@@ -82,7 +82,7 @@ class Video:
         retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
 
         s.mount("http://", HTTPAdapter(max_retries=retries))
-        url = f"{SPONSORBLOCK_BASE_URL}/api/skipSegments?videoID={self.id}"
+        url = f"{constants.SPONSORBLOCK_BASE_URL}/api/skipSegments?videoID={self.id}"
 
         response = s.get(url)
         if response.status_code == 200:
