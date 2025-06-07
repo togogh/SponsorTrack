@@ -10,6 +10,6 @@ class Segment(Base):
     end_time = Column(Float, nullable=False)
     subtitles = Column(String, nullable=False)
     duration = Column(Float, nullable=False)
-    parent_video_id = Column(String, ForeignKey("video.id"), nullable=False)
+    parent_video_id = Column(String, ForeignKey("video.id"), nullable=False, index=True)
     parent_video = relationship("Video", back_populates="segments")
     sponsorship = relationship("Sponsorship", back_populates="segment")

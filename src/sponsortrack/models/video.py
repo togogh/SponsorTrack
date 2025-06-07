@@ -6,11 +6,10 @@ from sqlalchemy import ForeignKey
 
 class Video(Base):
     youtube_id = Column(String, unique=True, nullable=False)
-    language = Column(String, nullable=False)
+    language = Column(String, nullable=False, index=True)
     title = Column(String, nullable=False)
-    channel_id = Column(String, ForeignKey("channel.id"), nullable=False)
+    channel_id = Column(String, ForeignKey("channel.id"), nullable=False, index=True)
     channel = relationship("Channel", back_populates="videos")
-    channel_id = Column(String, nullable=False)
     uploader_id = Column(String, nullable=False)
     upload_date = Column(Date, nullable=False)
     description = Column(String, nullable=False)
