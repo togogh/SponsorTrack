@@ -27,4 +27,5 @@ class Settings:
 
     GENERATOR: Generator = "hf"
 
+
 settings = Settings()
