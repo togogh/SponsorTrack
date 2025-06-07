@@ -14,7 +14,7 @@ class Base:
     def __tablename__(cls):
         return cls.__name__.lower()
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, index=True)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
 
