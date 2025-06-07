@@ -13,8 +13,10 @@ dependencies = [
     "gradio>=5.29.0",
     "huggingface-hub>=0.31.1",
     "pre-commit>=4.2.0",
+    "psycopg2>=2.9.10",
     "pydantic>=2.11.4",
     "pytest>=8.3.5",
+    "sshtunnel>=0.4.0",
     "youtube-transcript-api>=1.0.3",
     "yt-dlp>=2025.4.30",
 ]

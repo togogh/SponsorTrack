@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String
-from sponsortrack.models.base import Base
+from sponsortrack.backend.models.base import Base
 from sqlalchemy.orm import relationship
 
 

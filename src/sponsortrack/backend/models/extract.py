@@ -1,5 +1,5 @@
-from sqlalchemy import Column, String, Boolean
-from sponsortrack.models.base import Base
+from sqlalchemy import Column, String, Boolean, UUID
+from sponsortrack.backend.models.base import Base, fk
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.types import ARRAY
@@ -11,9 +11,11 @@ class Extract(Base):
     sponsor_offer = Column(String)
     sponsor_code = Column(String)
     sponsor_links = Column(ARRAY(String))
-    segment_id = Column(String, ForeignKey("segment.id"), nullable=False, index=True)
+    segment_id = Column(
+        UUID(as_uuid=True), ForeignKey(fk("segment.id")), nullable=False, index=True
+    )
     segment = relationship("Segment", back_populates="sponsorship")
-    sponsor_id = Column(String, ForeignKey("sponsor.id"), index=True)
+    sponsor_id = Column(UUID(as_uuid=True), ForeignKey(fk("sponsor.id")), index=True)
     sponsor = relationship("Sponsor", back_populates="matched_sponsor")
     checked_extract = Column(Boolean, nullable=False)
     confirmed_extract = Column(Boolean, nullable=False)
