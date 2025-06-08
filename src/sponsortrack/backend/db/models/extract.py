@@ -14,9 +14,9 @@ class Extract(Base):
     segment_id = Column(
         UUID(as_uuid=True), ForeignKey(fk("segment.id")), nullable=False, index=True
     )
-    segment = relationship("Segment", back_populates="sponsorship")
+    segment = relationship("Segment", back_populates="sponsorship_extracts")
     sponsor_id = Column(UUID(as_uuid=True), ForeignKey(fk("sponsor.id")), index=True)
-    sponsor = relationship("Sponsor", back_populates="matched_sponsor")
+    sponsor = relationship("Sponsor", back_populates="matched_extracts")
     checked_extract = Column(Boolean, nullable=False)
     confirmed_extract = Column(Boolean, nullable=False)
     checked_match = Column(Boolean, nullable=False)

@@ -4,6 +4,8 @@ import uuid
 from sqlalchemy import Column, DateTime, MetaData
 from sqlalchemy.orm import as_declarative
 from sponsortrack.backend.core.config import settings
+from sqlalchemy.sql import func
+
 
 metadata = MetaData(schema=settings.POSTGRES_SCHEMA)
 
@@ -15,8 +17,8 @@ class Base:
         return cls.__name__.lower()
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, index=True)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    created_at = Column(DateTime, default=func.now(), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
 
 
 def fk(ref: str) -> str:

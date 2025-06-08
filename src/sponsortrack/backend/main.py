@@ -1,15 +1,20 @@
 from fastapi import FastAPI
 from sponsortrack.backend.core.config import settings
-from sponsortrack.backend.db.session import get_remote_engine
+from sponsortrack.backend.api.v1.base import api_router
+from sponsortrack.backend.db.models.all import Base  # noqa: F401
 
 
-def start_application(engine):
+def include_router(app):
+    app.include_router(api_router)
+
+
+def start_application():
     app = FastAPI(title=settings.PROJECT_NAME, version=settings.PROJECT_VERSION)
+    include_router(app)
     return app
 
 
-with get_remote_engine() as engine:
-    app = start_application(engine)
+app = start_application()
 
 
 @app.get("/")

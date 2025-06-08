@@ -45,6 +45,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        compare_server_default=True,
     )
 
     with context.begin_transaction():
@@ -72,6 +73,7 @@ def run_migrations_online() -> None:
                 compare_type=True,
                 include_schemas=True,
                 version_table_schema=settings.POSTGRES_SCHEMA,
+                compare_server_default=True,
             )
 
             with context.begin_transaction():

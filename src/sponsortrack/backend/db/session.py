@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sponsortrack.backend.core.config import settings
 from pydantic import PostgresDsn
 from contextlib import contextmanager
+from sqlalchemy.orm import sessionmaker
 
 
 def get_engine(port=None):
@@ -27,3 +28,13 @@ def get_remote_engine():
             yield engine
         finally:
             tunnel.stop()
+
+
+def get_session():
+    with get_remote_engine() as engine:
+        try:
+            Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+            session = Session()
+            yield session
+        finally:
+            session.close()
