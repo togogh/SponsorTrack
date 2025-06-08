@@ -4,7 +4,7 @@ from alembic import context
 
 from sponsortrack.backend.db.session import get_remote_engine
 from sponsortrack.backend.core.config import settings
-from sponsortrack.backend.models.all import Base
+from sponsortrack.backend.db.models.all import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

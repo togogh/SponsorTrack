@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Float, UUID
-from sponsortrack.backend.models.base import Base, fk
+from sponsortrack.backend.db.models.base import Base, fk
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
