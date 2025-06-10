@@ -4,8 +4,7 @@ from sqlalchemy.orm import relationship
 
 
 class User(Base):
-    email = Column(String, nullable=False, index=True)
-    username = Column(String, unique=True, nullable=False)
+    email = Column(String, nullable=False, unique=True, index=True)
     password = Column(String, nullable=False)
     access_tokens = relationship("AccessToken", back_populates="user")
     is_superuser = Column(Boolean, nullable=False, default=False)
