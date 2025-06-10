@@ -27,5 +27,8 @@ class Settings:
 
     GENERATOR: Generator = "hf"
 
+    RESEND_API_KEY: str = os.getenv("RESEND_API_KEY")
+    EMAIL_DOMAIN: str = os.getenv("EMAIL_DOMAIN")
+
 
 settings = Settings()
