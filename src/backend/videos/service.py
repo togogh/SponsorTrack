@@ -40,9 +40,7 @@ class VideoService:
         return video_id
 
     def get_sponsorship_info(self, params: VideoSponsorshipRequest) -> VideoSponsorshipResponse:
-        id = params.id
-        url = params.url
-        youtube_id = id or self.extract_id_from_url(url)
+        youtube_id = params.id or self.extract_id_from_url(params.url)
 
         data = self.repo.get_video_sponsorship(youtube_id)
 
