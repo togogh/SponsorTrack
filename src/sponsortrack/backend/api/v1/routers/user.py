@@ -11,7 +11,7 @@ from sponsortrack.backend.core.limiting import limiter
 router = APIRouter()
 
 
-@router.post("/users/", response_model=UserShow, status_code=status.HTTP_201_CREATED)
+@router.post("/user/", response_model=UserShow, status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/minute")
 async def create_user(request: Request, user: UserCreate, session: Session = Depends(get_session)):
     user = UserRepository.create_user(user=user, session=session)
