@@ -1,4 +1,4 @@
-from sponsortrack.backend.generators.base_generator import BaseGenerator
+from sponsortrack.old_backend.generators.base_generator import BaseGenerator
 from huggingface_hub import InferenceClient
 import os
 

@@ -12,7 +12,7 @@ import time
 from datetime import date
 import os
 
-from sponsortrack.backend.sponsored_segment import SponsoredSegment
+from sponsortrack.old_backend.sponsored_segment import SponsoredSegment
 from sponsortrack.config import YOUTUBE_DOMAINS, SPONSORBLOCK_BASE_URL
 
 

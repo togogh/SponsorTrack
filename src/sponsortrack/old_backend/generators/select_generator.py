@@ -1,5 +1,5 @@
 from sponsortrack.config import GENERATOR
-from sponsortrack.backend.generators.hf_generator import HuggingFaceGenerator
+from sponsortrack.old_backend.generators.hf_generator import HuggingFaceGenerator
 
 
 def select_generator():

@@ -1,12 +1,12 @@
 import pandas as pd
 from typing import TYPE_CHECKING
-from sponsortrack.backend.generators.select_generator import select_generator
+from sponsortrack.old_backend.generators.select_generator import select_generator
 import re
 import json
 
 
 if TYPE_CHECKING:
-    from sponsortrack.backend.video import Video
+    from sponsortrack.old_backend.video import Video
 
 
 class SponsoredSegment:
