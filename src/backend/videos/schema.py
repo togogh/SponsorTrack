@@ -23,3 +23,8 @@ class VideoSponsorshipRequest(BaseModel):
         if not self.id and not self.url:
             raise ValueError("At least one of `id` or `url` must be provided.")
         return self
+
+
+class VideoSponsorshipResponse(BaseModel):
+    youtube_id: str
+    sponsorship_info: str
