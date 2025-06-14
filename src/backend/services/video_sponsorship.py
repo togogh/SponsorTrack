@@ -59,11 +59,12 @@ class VideoSponsorshipService:
         if response.status_code == 200:
             data = response.json()
         elif response.status_code == 404:
-            raise ValueError(
-                "This video has no sponsored segments marked with Sponsorblock. If this is a mistake, add them with https://sponsor.ajay.app/"
+            raise HTTPException(
+                status_code=404,
+                detail="This video has no sponsored segments marked with Sponsorblock. If this is a mistake, add them with https://sponsor.ajay.app/",
             )
         else:
-            raise ConnectionError("Can't connect to Sponsorblock")
+            raise HTTPException(status_code=503, detail="Can't connect to Sponsorblock")
 
         return data
 
@@ -86,6 +87,8 @@ class VideoSponsorshipService:
                 block = await map_sponsorblock_to_sponsored_segment(block, video.id)
                 sponsored_segment = await self.sponsored_segment_repo.add(block, session)
                 sponsored_segments.append(sponsored_segment)
+
+        # Get video metadata
 
         return sponsored_segments
 
