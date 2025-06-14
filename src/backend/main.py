@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from backend.videos.router import router as videos_router
+from backend.routers.video_sponsorship import router as video_sponsorship_router
+from backend.models.all import Base  # noqa: F401
 
 app = FastAPI()
 
-app.include_router(videos_router, tags=["videos"])
+app.include_router(video_sponsorship_router, tags=["video_sponsorships"])

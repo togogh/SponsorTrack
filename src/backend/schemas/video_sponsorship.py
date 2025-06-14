@@ -1,6 +1,6 @@
 from pydantic import BaseModel, HttpUrl, field_validator, model_validator
 from typing import Optional
-from .constants import constants
+from backend.core.constants import constants
 from urllib.parse import urlparse
 
 
@@ -21,7 +21,9 @@ class VideoSponsorshipRequest(BaseModel):
     @model_validator(mode="after")
     def ensure_url_or_id(self) -> "VideoSponsorshipRequest":
         if not self.id and not self.url:
-            raise ValueError("At least one of `id` or `url` must be provided.")
+            raise ValueError("One of `id` or `url` must be provided.")
+        if self.id and self.url:
+            raise ValueError("Only one of `id` or `url` should be provided.")
         return self
 
 
