@@ -70,14 +70,14 @@ class VideoSponsorshipService:
     async def get_sponsorship_info(self, params: VideoSponsorshipRequest, session: AsyncSession):
         youtube_id = params.id or await self.extract_id_from_url(params.url)
 
-        # Get video from db
+        # Get video from db, create if not there
         video = await self.video_repo.get_by_youtube_id(youtube_id, session)
         if not video:
             youtube_id = await self.ensure_video_exists_on_youtube(youtube_id)
             video_data = await map_youtube_id_to_video(youtube_id)
             video = await self.video_repo.add(video_data, session)
 
-        # Get sponsored segments from db
+        # Get sponsored segments from db, create if not there
         sponsored_segments = await self.sponsored_segment_repo.get_by_video_id(youtube_id, session)
         if not sponsored_segments:
             blocks = await self.download_sponsorblock(youtube_id)
