@@ -6,7 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from backend.services.video_sponsorship import VideoSponsorshipService
 from backend.repositories.video import VideoRepository
 from backend.repositories.sponsored_segment import SponsoredSegmentRepository
-from backend.core.session import get_session
+from backend.core.session import session_dependency
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -15,11 +15,6 @@ router = APIRouter()
 
 def get_video_service() -> VideoSponsorshipService:
     return VideoSponsorshipService(VideoRepository, SponsoredSegmentRepository)
-
-
-async def session_dependency():
-    async with get_session() as session:
-        yield session
 
 
 def parse_video_sponsorship_request(

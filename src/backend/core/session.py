@@ -49,3 +49,8 @@ async def get_session():
         async with async_session() as session:
             yield session
         await engine.dispose()
+
+
+async def session_dependency():
+    async with get_session() as session:
+        yield session
