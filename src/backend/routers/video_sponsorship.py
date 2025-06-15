@@ -8,13 +8,16 @@ from backend.repositories.video import VideoRepository
 from backend.repositories.sponsored_segment import SponsoredSegmentRepository
 from backend.core.session import session_dependency
 from sqlalchemy.ext.asyncio import AsyncSession
+from backend.repositories.video_metadata import VideoMetadataRepository
 
 
 router = APIRouter()
 
 
 def get_video_service() -> VideoSponsorshipService:
-    return VideoSponsorshipService(VideoRepository, SponsoredSegmentRepository)
+    return VideoSponsorshipService(
+        VideoRepository, SponsoredSegmentRepository, VideoMetadataRepository
+    )
 
 
 def parse_video_sponsorship_request(

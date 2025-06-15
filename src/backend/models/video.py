@@ -16,3 +16,4 @@ class Video(Base):
     description = Column(String)
     duration = Column(Float)
     sponsored_segments = relationship("SponsoredSegment", back_populates="parent_video")
+    video_metadata = relationship("VideoMetadata", back_populates="video")

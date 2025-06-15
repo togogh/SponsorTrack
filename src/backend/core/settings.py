@@ -4,7 +4,7 @@ from pydantic import FilePath
 from ipaddress import IPv4Address
 from dotenv import load_dotenv, find_dotenv
 
-load_dotenv(find_dotenv())
+load_dotenv(find_dotenv(), override=True)
 
 
 @dataclass
@@ -33,6 +33,13 @@ class EmailSettings:
     EMAIL_DOMAIN: str = os.getenv("EMAIL_DOMAIN")
 
 
+@dataclass
+class WSSettings:
+    WS_PROXY_UN: str = os.getenv("WS_PROXY_UN")
+    WS_PROXY_PW: str = os.getenv("WS_PROXY_PW")
+
+
 project_settings = ProjectSettings()
 db_settings = DBSettings()
 email_settings = EmailSettings()
+ws_settings = WSSettings()

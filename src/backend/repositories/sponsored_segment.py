@@ -7,7 +7,7 @@ from sqlalchemy import select
 
 class SponsoredSegmentRepository:
     async def get_by_video_id(self, video_id: str, session: AsyncSession):
-        stmt = select(SponsoredSegment).join(Video).where(Video.youtube_id == video_id)
+        stmt = select(SponsoredSegment).join(Video).where(Video.id == video_id)
         result = await session.execute(stmt)
         segments = result.scalars().all()
         return segments
