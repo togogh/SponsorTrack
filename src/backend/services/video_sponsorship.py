@@ -14,6 +14,7 @@ from backend.core.settings import ws_settings
 import yt_dlp
 from backend.mappers.metadata_json import map_metadata_json
 from backend.repositories.video_metadata import VideoMetadataRepository
+from backend.mappers.key_metadata import map_key_metadata
 
 
 class VideoSponsorshipService:
@@ -136,6 +137,15 @@ class VideoSponsorshipService:
             mapped_metadata = await map_metadata_json(video.id, metadata_json)
             video_metadata = await self.video_metadata_repo.add(mapped_metadata, session)
 
-        return video_metadata
+        # Get key metadata fields
+        key_fields = ["language", "title", "upload_date", "description", "duration"]
+        key_metadata = {field: getattr(video, field) for field in key_fields}
+        if None in key_metadata.values():
+            print(video_metadata.raw_json["language"])
+            key_metadata = {field: video_metadata.raw_json.get(field) for field in key_fields}
+            mapped_key_metadata = await map_key_metadata(key_metadata)
+            await self.video_repo.update_key_metadata(video.id, mapped_key_metadata, session)
+
+        return key_metadata
 
         # return VideoSponsorshipResponse(**video)

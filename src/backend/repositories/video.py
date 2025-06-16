@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.models.video import Video
-from backend.schemas.video import VideoCreate
-from sqlalchemy import select
+from backend.schemas.video import VideoCreate, VideoUpdateMetadata
+from sqlalchemy import select, update
 
 
 class VideoRepository:
@@ -16,3 +16,11 @@ class VideoRepository:
         await session.commit()
         await session.refresh(video)
         return video
+
+    async def update_key_metadata(
+        self, video_id: str, metadata: VideoUpdateMetadata, session: AsyncSession
+    ):
+        await session.execute(
+            update(Video).where(Video.id == video_id).values(**metadata.model_dump())
+        )
+        await session.commit()
