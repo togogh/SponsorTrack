@@ -140,9 +140,10 @@ class VideoSponsorshipService:
                 metadata_json = await self.download_metadata(youtube_id)
                 mapped_metadata = await map_metadata_json(video.id, metadata_json)
                 video_metadata = await self.video_metadata_repo.add(mapped_metadata, session)
-                key_metadata = {field: video_metadata.raw_json.get(field) for field in key_fields}
-                mapped_key_metadata = await map_key_metadata(key_metadata)
-                await self.video_repo.update_key_metadata(video.id, mapped_key_metadata, session)
+
+            key_metadata = {field: video_metadata.raw_json.get(field) for field in key_fields}
+            mapped_key_metadata = await map_key_metadata(key_metadata)
+            await self.video_repo.update_key_metadata(video.id, mapped_key_metadata, session)
 
         return key_metadata
 
