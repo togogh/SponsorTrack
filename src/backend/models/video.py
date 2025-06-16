@@ -11,7 +11,6 @@ class Video(Base):
     #     UUID(as_uuid=True), ForeignKey(fk("channel.id")), nullable=False, index=True
     # )
     # channel = relationship("Channel", back_populates="videos")
-    uploader_id = Column(String)
     upload_date = Column(Date)
     description = Column(String)
     duration = Column(Float)
