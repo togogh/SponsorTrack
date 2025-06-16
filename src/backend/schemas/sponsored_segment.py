@@ -15,3 +15,7 @@ class SponsoredSegmentCreate(BaseModel):
         if self.duration != self.end_time - self.start_time:
             raise ValueError("Duration doesn't match start and end times")
         return self
+
+
+class SponsoredSegmentUpdateSubtitles(BaseModel):
+    subtitles: str

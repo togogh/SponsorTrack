@@ -15,6 +15,14 @@ import yt_dlp
 from backend.mappers.metadata_json import map_metadata_json
 from backend.repositories.video_metadata import VideoMetadataRepository
 from backend.mappers.key_metadata import map_key_metadata
+import pandas as pd
+from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.proxies import WebshareProxyConfig
+from youtube_transcript_api.formatters import JSONFormatter
+import time
+from backend.mappers.metadata_transcript import map_metadata_transcript
+import json
+from backend.mappers.segment_subtitles import map_segment_subtitles
 
 
 class VideoSponsorshipService:
@@ -42,9 +50,16 @@ class VideoSponsorshipService:
             elif parse_result.path.startswith("/shorts/"):
                 video_id = parse_result.path.split("/shorts/")[1]
         except Exception:
-            raise ValueError("Input url doesn't contain a valid video id")
+            raise HTTPException(
+                status_code=400, detail="Input url doesn't contain a valid video id"
+            )
 
-        return video_id
+        try:
+            return video_id
+        except UnboundLocalError:
+            raise HTTPException(
+                status_code=400, detail="Input url doesn't contain a valid video id"
+            )
 
     async def ensure_video_exists_on_youtube(self, video_id: str) -> str:
         # Check if video id belongs to an actual youtube video
@@ -110,6 +125,41 @@ class VideoSponsorshipService:
 
         return metadata
 
+    async def fetch_transcript(self, youtube_id, language, retries=5, backoff_factor=0.1):
+        if ws_settings.WS_PROXY_UN and ws_settings.WS_PROXY_PW:
+            proxy_config = WebshareProxyConfig(
+                proxy_username=ws_settings.WS_PROXY_UN,
+                proxy_password=ws_settings.WS_PROXY_PW,
+            )
+            ytt_api = YouTubeTranscriptApi(proxy_config=proxy_config)
+        else:
+            ytt_api = YouTubeTranscriptApi()
+        for r in range(retries):
+            try:
+                transcript = ytt_api.fetch(video_id=youtube_id, languages=[language])
+                formatter = JSONFormatter()
+                transcript = formatter.format_transcript(transcript, indent=4)
+                transcript = json.loads(transcript)
+                return transcript
+            except Exception as e:
+                print("Encountered error:", e)
+                if r < retries:
+                    print("Retrying...")
+                    time.sleep(backoff_factor * (2 ** (r - 1)))
+
+    async def extract_segment_subtitles(self, transcript, segment):
+        df = pd.DataFrame(transcript)
+        start_row = df[df["start"] <= segment.start_time].iloc[-1]
+        max_start_time = df["start"].max()
+        if segment.end_time <= max_start_time:
+            end_row = df[df["start"] >= segment.end_time].iloc[0]
+        else:
+            end_row = df.iloc[-1]
+        df = df.iloc[start_row.name : end_row.name]
+        text = " ".join(df["text"].tolist())
+        segment.subtitles = text
+        return segment
+
     async def get_sponsorship_info(self, params: VideoSponsorshipRequest, session: AsyncSession):
         youtube_id = params.id or await self.extract_id_from_url(params.url)
 
@@ -143,8 +193,34 @@ class VideoSponsorshipService:
 
             key_metadata = {field: video_metadata.raw_json.get(field) for field in key_fields}
             mapped_key_metadata = await map_key_metadata(key_metadata)
-            await self.video_repo.update_key_metadata(video.id, mapped_key_metadata, session)
+            await self.video_repo.update_metadata(video.id, mapped_key_metadata, session)
 
-        return key_metadata
+        # Check segment subtitles, fetch if null
+        empty_subtitles_segments = [
+            segment.id for segment in sponsored_segments if segment.subtitles is None
+        ]
+        if len(empty_subtitles_segments) > 0:
+            try:
+                transcript = video_metadata.raw_transcript
+            except UnboundLocalError:
+                video_metadata = await self.video_metadata_repo.get_by_video_id(video.id, session)
+                transcript = video_metadata.raw_transcript
+            if transcript is None:
+                transcript = await self.fetch_transcript(youtube_id, video.language)
+                mapped_transcript = await map_metadata_transcript(transcript)
+                await self.video_metadata_repo.update_transcript(
+                    video_metadata.id, mapped_transcript, session
+                )
+            updated_segments = []
+            for segment in sponsored_segments:
+                segment = await self.extract_segment_subtitles(transcript, segment)
+                mapped_segment = await map_segment_subtitles(segment.subtitles)
+                await self.sponsored_segment_repo.update_subtitles(
+                    segment.id, mapped_segment, session
+                )
+                updated_segments.append(segment)
+            sponsored_segments = updated_segments.copy()
+
+        return sponsored_segments
 
         # return VideoSponsorshipResponse(**video)

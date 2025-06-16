@@ -17,7 +17,7 @@ class VideoRepository:
         await session.refresh(video)
         return video
 
-    async def update_key_metadata(
+    async def update_metadata(
         self, video_id: str, metadata: VideoUpdateMetadata, session: AsyncSession
     ):
         await session.execute(
