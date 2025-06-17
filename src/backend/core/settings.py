@@ -2,6 +2,7 @@ import os
 from dataclasses import dataclass
 from pydantic import FilePath
 from ipaddress import IPv4Address
+from backend.core.types import Generator
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv(), override=True)
@@ -39,7 +40,14 @@ class WSSettings:
     WS_PROXY_PW: str = os.getenv("WS_PROXY_PW")
 
 
+@dataclass
+class GeneratorSettings:
+    GENERATOR: Generator = "HF"
+    HF_TOKEN: str = os.getenv("HF_TOKEN")
+
+
 project_settings = ProjectSettings()
 db_settings = DBSettings()
 email_settings = EmailSettings()
 ws_settings = WSSettings()
+generator_settings = GeneratorSettings()
