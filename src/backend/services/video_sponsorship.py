@@ -193,7 +193,7 @@ class VideoSponsorshipService:
 
             key_metadata = {field: video_metadata.raw_json.get(field) for field in key_fields}
             mapped_key_metadata = await map_key_metadata(key_metadata)
-            await self.video_repo.update_metadata(video.id, mapped_key_metadata, session)
+            await self.video_repo.update(video.id, mapped_key_metadata, session)
 
         # Check segment subtitles, fetch if null
         empty_subtitles_segments = [
@@ -208,16 +208,12 @@ class VideoSponsorshipService:
             if transcript is None:
                 transcript = await self.fetch_transcript(youtube_id, video.language)
                 mapped_transcript = await map_metadata_transcript(transcript)
-                await self.video_metadata_repo.update_transcript(
-                    video_metadata.id, mapped_transcript, session
-                )
+                await self.video_metadata_repo.update(video_metadata.id, mapped_transcript, session)
             updated_segments = []
             for segment in sponsored_segments:
                 segment = await self.extract_segment_subtitles(transcript, segment)
                 mapped_segment = await map_segment_subtitles(segment.subtitles)
-                await self.sponsored_segment_repo.update_subtitles(
-                    segment.id, mapped_segment, session
-                )
+                await self.sponsored_segment_repo.update(segment.id, mapped_segment, session)
                 updated_segments.append(segment)
             sponsored_segments = updated_segments.copy()
 

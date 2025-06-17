@@ -1,10 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.models.video import Video
 from backend.models.sponsored_segment import SponsoredSegment
-from backend.schemas.sponsored_segment import (
-    SponsoredSegmentCreate,
-    SponsoredSegmentUpdateSubtitles,
-)
+from backend.schemas.sponsored_segment import SponsoredSegmentCreate, SponsoredSegmentUpdate
 from sqlalchemy import select, update
 from pydantic import UUID4
 
@@ -21,19 +18,21 @@ class SponsoredSegmentRepository:
         segments = result.scalars().all()
         return segments
 
-    async def add(self, sponsored_segment_data: SponsoredSegmentCreate, session: AsyncSession):
-        sponsored_segment = SponsoredSegment(**sponsored_segment_data.model_dump())
+    async def add(self, data: SponsoredSegmentCreate, session: AsyncSession):
+        sponsored_segment = SponsoredSegment(**data.model_dump())
         session.add(sponsored_segment)
         await session.commit()
         await session.refresh(sponsored_segment)
         return sponsored_segment
 
-    async def update_subtitles(
-        self, segment_id: UUID4, subtitles: SponsoredSegmentUpdateSubtitles, session: AsyncSession
-    ):
+    async def update(self, id: UUID4, data: SponsoredSegmentUpdate, session: AsyncSession):
+        values = data.model_dump(exclude_unset=True)
+        if not values:
+            return
         await session.execute(
             update(SponsoredSegment)
-            .where(SponsoredSegment.id == segment_id)
-            .values(**subtitles.model_dump())
+            .where(SponsoredSegment.id == id)
+            .values(**values)
+            .execution_options(synchronize_session="fetch")
         )
         await session.commit()

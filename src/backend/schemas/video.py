@@ -3,11 +3,16 @@ from pydantic import BaseModel, PastDate
 
 class VideoCreate(BaseModel):
     youtube_id: str
+    language: str | None = None
+    title: str | None = None
+    upload_date: PastDate | None = None
+    description: str | None = None
+    duration: float | None = None
 
 
-class VideoUpdateMetadata(BaseModel):
-    language: str
-    title: str
-    upload_date: PastDate
-    description: str
-    duration: float
+class VideoUpdate(BaseModel):
+    language: str | None = None
+    title: str | None = None
+    upload_date: PastDate | None = None
+    description: str | None = None
+    duration: float | None = None

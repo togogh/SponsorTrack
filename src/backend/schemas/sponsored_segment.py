@@ -7,6 +7,7 @@ class SponsoredSegmentCreate(BaseModel):
     end_time: PositiveFloat
     duration: PositiveFloat
     parent_video_id: UUID4
+    subtitles: str | None = None
 
     @model_validator(mode="after")
     def validate_times(self) -> "SponsoredSegmentCreate":
@@ -17,5 +18,9 @@ class SponsoredSegmentCreate(BaseModel):
         return self
 
 
-class SponsoredSegmentUpdateSubtitles(BaseModel):
-    subtitles: str
+class SponsoredSegmentUpdate(BaseModel):
+    sponsorblock_id: str | None = None
+    start_time: PositiveFloat | None = None
+    end_time: PositiveFloat | None = None
+    duration: PositiveFloat | None = None
+    subtitles: str | None = None

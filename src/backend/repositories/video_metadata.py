@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from backend.models.video_metadata import VideoMetadata
 from backend.models.video import Video
-from backend.schemas.video_metadata import VideoMetadataCreate, VideoMetadataUpdateTranscript
+from backend.schemas.video_metadata import VideoMetadataCreate, VideoMetadataUpdate
 from pydantic import UUID4
 
 
@@ -19,10 +19,14 @@ class VideoMetadataRepository:
         await session.refresh(video_metadata)
         return video_metadata
 
-    async def update_transcript(
-        self, id: UUID4, transcript: VideoMetadataUpdateTranscript, session: AsyncSession
-    ):
+    async def update(self, id: UUID4, data: VideoMetadataUpdate, session: AsyncSession):
+        values = data.model_dump(exclude_unset=True)
+        if not values:
+            return
         await session.execute(
-            update(VideoMetadata).where(VideoMetadata.id == id).values(**transcript.model_dump())
+            update(VideoMetadata)
+            .where(VideoMetadata.id == id)
+            .values(**values)
+            .execution_options(synchronize_session="fetch")
         )
         await session.commit()
