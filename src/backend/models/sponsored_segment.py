@@ -14,4 +14,4 @@ class SponsoredSegment(Base):
         UUID(as_uuid=True), ForeignKey(fk("video.id")), nullable=False, index=True
     )
     parent_video = relationship("Video", back_populates="sponsored_segments")
-    # sponsorships = relationship("Sponsorship", back_populates="segment")
+    sponsorships = relationship("Sponsorship", back_populates="sponsored_segment")
