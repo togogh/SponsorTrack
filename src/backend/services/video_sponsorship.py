@@ -7,22 +7,17 @@ from fastapi import HTTPException
 from requests.adapters import HTTPAdapter, Retry
 from backend.core.constants import constants
 from backend.repositories.sponsored_segment import SponsoredSegmentRepository
-from backend.mappers.sponsorblock_to_sponsored_segment import map_sponsorblock_to_sponsored_segment
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.mappers.youtube_id_to_video import map_youtube_id_to_video
 from backend.core.settings import ws_settings
 import yt_dlp
-from backend.mappers.metadata_json import map_metadata_json
 from backend.repositories.video_metadata import VideoMetadataRepository
-from backend.mappers.key_metadata import map_key_metadata
 import pandas as pd
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.proxies import WebshareProxyConfig
 from youtube_transcript_api.formatters import JSONFormatter
 import time
-from backend.mappers.metadata_transcript import map_metadata_transcript
 import json
-from backend.mappers.segment_subtitles import map_segment_subtitles
+from backend.mappers.video_sponsorship import VideoSponsorshipMapper
 
 
 class VideoSponsorshipService:
@@ -35,6 +30,7 @@ class VideoSponsorshipService:
         self.video_repo: VideoRepository = video_repo()
         self.sponsored_segment_repo: SponsoredSegmentRepository = sponsored_segment_repo()
         self.video_metadata_repo: VideoMetadataRepository = video_metadata_repo()
+        self.mapper = VideoSponsorshipMapper()
 
     async def extract_id_from_url(self, url: HttpUrl) -> str:
         parse_result = urlparse(str(url))
@@ -167,7 +163,7 @@ class VideoSponsorshipService:
         video = await self.video_repo.get_by_youtube_id(youtube_id, session)
         if not video:
             youtube_id = await self.ensure_video_exists_on_youtube(youtube_id)
-            mapped_video = await map_youtube_id_to_video(youtube_id)
+            mapped_video = await self.mapper.map_youtube_id_to_video(youtube_id)
             video = await self.video_repo.add(mapped_video, session)
 
         # Get sponsored segments from db, create if not there
@@ -176,7 +172,9 @@ class VideoSponsorshipService:
             blocks = await self.download_sponsorblock(youtube_id)
             sponsored_segments = []
             for block in blocks:
-                mapped_block = await map_sponsorblock_to_sponsored_segment(block, video.id)
+                mapped_block = await self.mapper.map_sponsorblock_to_sponsored_segment(
+                    block, video.id
+                )
                 sponsored_segment = await self.sponsored_segment_repo.add(mapped_block, session)
                 sponsored_segments.append(sponsored_segment)
 
@@ -188,11 +186,13 @@ class VideoSponsorshipService:
             video_metadata = await self.video_metadata_repo.get_by_video_id(video.id, session)
             if not video_metadata:
                 metadata_json = await self.download_metadata(youtube_id)
-                mapped_metadata = await map_metadata_json(video.id, metadata_json)
+                mapped_metadata = await self.mapper.map_metadata_json_to_videometadata(
+                    video.id, metadata_json
+                )
                 video_metadata = await self.video_metadata_repo.add(mapped_metadata, session)
 
             key_metadata = {field: video_metadata.raw_json.get(field) for field in key_fields}
-            mapped_key_metadata = await map_key_metadata(key_metadata)
+            mapped_key_metadata = await self.mapper.map_key_metadata_to_video(key_metadata)
             await self.video_repo.update(video.id, mapped_key_metadata, session)
 
         # Check segment subtitles, fetch if null
@@ -207,12 +207,16 @@ class VideoSponsorshipService:
                 transcript = video_metadata.raw_transcript
             if transcript is None:
                 transcript = await self.fetch_transcript(youtube_id, video.language)
-                mapped_transcript = await map_metadata_transcript(transcript)
+                mapped_transcript = await self.mapper.map_metadata_transcript_to_videometadata(
+                    transcript
+                )
                 await self.video_metadata_repo.update(video_metadata.id, mapped_transcript, session)
             updated_segments = []
             for segment in sponsored_segments:
                 segment = await self.extract_segment_subtitles(transcript, segment)
-                mapped_segment = await map_segment_subtitles(segment.subtitles)
+                mapped_segment = await self.mapper.map_subtitles_to_sponsoredsegment(
+                    segment.subtitles
+                )
                 await self.sponsored_segment_repo.update(segment.id, mapped_segment, session)
                 updated_segments.append(segment)
             sponsored_segments = updated_segments.copy()
