@@ -14,5 +14,6 @@ class Video(Base):
     upload_date = Column(Date)
     description = Column(String)
     duration = Column(Float)
+    channel = Column(String)
     sponsored_segments = relationship("SponsoredSegment", back_populates="parent_video")
     video_metadata = relationship("VideoMetadata", back_populates="video")

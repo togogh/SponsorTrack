@@ -44,6 +44,8 @@ class WSSettings:
 class GeneratorSettings:
     GENERATOR: Generator = "HF"
     HF_TOKEN: str = os.getenv("HF_TOKEN")
+    PROVIDER: str = "novita"
+    MODEL: str = "deepseek-ai/DeepSeek-V3-0324"
 
 
 project_settings = ProjectSettings()

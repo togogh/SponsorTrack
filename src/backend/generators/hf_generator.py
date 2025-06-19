@@ -4,9 +4,9 @@ from backend.core.settings import generator_settings
 
 
 class HuggingFaceGenerator(BaseGenerator):
-    def connect_client(self, provider="novita"):
+    def connect_client(self):
         client = InferenceClient(
-            provider=provider,
+            provider=self.provider,
             api_key=generator_settings.HF_TOKEN,
         )
         self.client = client
@@ -19,9 +19,9 @@ class HuggingFaceGenerator(BaseGenerator):
             }
         )
 
-    def generate_response(self, model="deepseek-ai/DeepSeek-V3-0324"):
+    def generate_response(self):
         completion = self.client.chat.completions.create(
-            model=model,
+            model=self.model,
             messages=self.messages,
         )
         response = completion.choices[0].message

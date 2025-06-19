@@ -1,7 +1,9 @@
 class BaseGenerator:
-    def __init__(self):
+    def __init__(self, provider, model):
         self.client = None
         self.messages = []
+        self.provider = provider
+        self.model = model
 
     def connect_client(self):
         pass

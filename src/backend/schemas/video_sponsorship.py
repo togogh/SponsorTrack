@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl, field_validator, model_validator
+from pydantic import BaseModel, HttpUrl, field_validator, model_validator, UUID4
 from typing import Optional
 from backend.core.constants import constants
 from urllib.parse import urlparse
@@ -28,5 +28,9 @@ class VideoSponsorshipRequest(BaseModel):
 
 
 class VideoSponsorshipResponse(BaseModel):
-    youtube_id: str
-    sponsorship_info: str
+    id: UUID4
+    sponsor_name: str
+    sponsor_description: str
+    sponsor_links: list[str] | None = None
+    sponsor_coupon_code: str | None = None
+    sponsor_offer: str | None = None

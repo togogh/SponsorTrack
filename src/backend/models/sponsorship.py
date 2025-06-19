@@ -15,3 +15,6 @@ class Sponsorship(Base):
         UUID(as_uuid=True), ForeignKey(fk("sponsoredsegment.id")), nullable=False, index=True
     )
     sponsored_segment = relationship("SponsoredSegment", back_populates="sponsorships")
+    generator = Column(String)
+    provider = Column(String)
+    model = Column(String)

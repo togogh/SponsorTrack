@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query
 from typing import Optional
-from backend.schemas.video_sponsorship import VideoSponsorshipRequest
+from backend.schemas.video_sponsorship import VideoSponsorshipRequest, VideoSponsorshipResponse
 from pydantic import HttpUrl, ValidationError
 from fastapi.exceptions import RequestValidationError
 from backend.services.video_sponsorship import VideoSponsorshipService
@@ -9,6 +9,7 @@ from backend.repositories.sponsored_segment import SponsoredSegmentRepository
 from backend.core.session import session_dependency
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.repositories.video_metadata import VideoMetadataRepository
+from backend.repositories.sponsorship import SponsorshipRepository
 
 
 router = APIRouter()
@@ -16,7 +17,7 @@ router = APIRouter()
 
 def get_video_service() -> VideoSponsorshipService:
     return VideoSponsorshipService(
-        VideoRepository, SponsoredSegmentRepository, VideoMetadataRepository
+        VideoRepository, SponsoredSegmentRepository, VideoMetadataRepository, SponsorshipRepository
     )
 
 
@@ -30,7 +31,7 @@ def parse_video_sponsorship_request(
         raise RequestValidationError(e.errors())
 
 
-@router.get("/videos/sponsorships/")
+@router.get("/videos/sponsorships/", response_model=list[VideoSponsorshipResponse])
 async def get_video_sponsorships(
     params: Optional[VideoSponsorshipRequest] = Depends(parse_video_sponsorship_request),
     service: VideoSponsorshipService = Depends(get_video_service),

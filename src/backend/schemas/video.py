@@ -8,6 +8,7 @@ class VideoCreate(BaseModel):
     upload_date: PastDate | None = None
     description: str | None = None
     duration: float | None = None
+    channel: str | None = None
 
 
 class VideoUpdate(BaseModel):
@@ -16,3 +17,4 @@ class VideoUpdate(BaseModel):
     upload_date: PastDate | None = None
     description: str | None = None
     duration: float | None = None
+    channel: str | None = None
