@@ -67,7 +67,7 @@ class VideoSponsorshipMapper:
             sponsor_name: Sponsor's name
             sponsor_description: Sponsor's products and services
             sponsor_offer: The specific discount or promo provided by the sponsor, if any
-            sponsor_links: List of websites related to the sponsor, such as affiliate links, homepages, or links to the offer, if any
+            sponsor_links: List of hyperlinks related to the sponsor, such as affiliate links, homepages, or links to the offer, if any.
             sponsor_coupon_code: Coupon code, if any
 
             Please respond with the json enclosed in a ```json ``` markdown code block.
