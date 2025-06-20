@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.models.video import Video
 from backend.models.sponsored_segment import SponsoredSegment
+from backend.models.sponsorship import Sponsorship
 from backend.schemas.sponsored_segment import SponsoredSegmentCreate, SponsoredSegmentUpdate
 from sqlalchemy import select, update
 from pydantic import UUID4
@@ -17,6 +18,11 @@ class SponsoredSegmentRepository:
         result = await session.execute(stmt)
         segments = result.scalars().all()
         return segments
+
+    async def get_by_sponsorship_id(self, sponsorship_id: UUID4, session: AsyncSession):
+        stmt = select(SponsoredSegment).join(Sponsorship).where(Sponsorship.id == sponsorship_id)
+        result = await session.execute(stmt)
+        return result.scalar_one_or_none()
 
     async def add(self, data: SponsoredSegmentCreate, session: AsyncSession):
         sponsored_segment = SponsoredSegment(**data.model_dump())

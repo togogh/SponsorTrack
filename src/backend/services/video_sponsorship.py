@@ -126,7 +126,7 @@ class VideoSponsorshipService:
 
         return metadata
 
-    async def fetch_transcript(self, youtube_id, language, retries=5, backoff_factor=0.1):
+    async def fetch_transcript(self, youtube_id, language, retries=1, backoff_factor=0.1):
         if ws_settings.WS_PROXY_UN and ws_settings.WS_PROXY_PW:
             proxy_config = WebshareProxyConfig(
                 proxy_username=ws_settings.WS_PROXY_UN,
@@ -135,13 +135,16 @@ class VideoSponsorshipService:
             ytt_api = YouTubeTranscriptApi(proxy_config=proxy_config)
         else:
             ytt_api = YouTubeTranscriptApi()
+        if language is None:
+            transcript_list = ytt_api.list(youtube_id)
+            language = list(transcript_list)[0].language_code
         for r in range(retries):
             try:
                 transcript = ytt_api.fetch(video_id=youtube_id, languages=[language])
                 formatter = JSONFormatter()
                 transcript = formatter.format_transcript(transcript, indent=4)
                 transcript = json.loads(transcript)
-                return transcript
+                return transcript, language
             except Exception as e:
                 print("Encountered error:", e)
                 if r < retries:
@@ -166,82 +169,99 @@ class VideoSponsorshipService:
 
         # Get video from db, create if not there
         video = await self.video_repo.get_by_youtube_id(youtube_id, session)
-        if not video:
+        if video:
+            # Get sponsorships for video from db, create if not there
+            sponsorships = await self.sponsorship_repo.get_by_video_id(video.id, session)
+            if sponsorships:
+                response = []
+                for sponsorship in sponsorships:
+                    sponsored_segment = await self.sponsored_segment_repo.get_by_sponsorship_id(
+                        sponsorship.id, session
+                    )
+                    mapped_response = (
+                        await self.mapper.map_sponsorship_sponsored_segment_to_response(
+                            sponsorship, sponsored_segment
+                        )
+                    )
+                    response.append(mapped_response)
+                return response
+        else:
             youtube_id = await self.ensure_video_exists_on_youtube(youtube_id)
             mapped_video = await self.mapper.map_youtube_id_to_video(youtube_id)
             video = await self.video_repo.add(mapped_video, session)
 
-        # Get sponsorships for video from db, create if not there
-        sponsorships = await self.sponsorship_repo.get_by_video_id(video.id, session)
-        if not sponsorships:
-            # Get sponsored segments from db, create if not there
-            sponsored_segments = await self.sponsored_segment_repo.get_by_video_id(
-                video.id, session
-            )
-            if not sponsored_segments:
-                blocks = await self.download_sponsorblock(youtube_id)
-                sponsored_segments = []
-                for block in blocks:
-                    mapped_block = await self.mapper.map_sponsorblock_to_sponsored_segment(
-                        block, video.id
-                    )
-                    sponsored_segment = await self.sponsored_segment_repo.add(mapped_block, session)
-                    sponsored_segments.append(sponsored_segment)
-
-            # Get key metadata fields
-            key_fields = ["language", "title", "upload_date", "description", "duration", "channel"]
-            key_metadata = {field: getattr(video, field) for field in key_fields}
-            if None in key_metadata.values():
-                # Get video metadata, create if not there
-                video_metadata = await self.video_metadata_repo.get_by_video_id(video.id, session)
-                if not video_metadata:
-                    metadata_json = await self.download_metadata(youtube_id)
-                    mapped_metadata = await self.mapper.map_metadata_json_to_videometadata(
-                        video.id, metadata_json
-                    )
-                    video_metadata = await self.video_metadata_repo.add(mapped_metadata, session)
-
-                key_metadata = {field: video_metadata.raw_json.get(field) for field in key_fields}
-                mapped_key_metadata = await self.mapper.map_key_metadata_to_video(key_metadata)
-                await self.video_repo.update(video.id, mapped_key_metadata, session)
-
-            # Check segment subtitles, fetch if null
-            empty_subtitles_segments = [
-                segment.id for segment in sponsored_segments if segment.subtitles is None
-            ]
-            if len(empty_subtitles_segments) > 0:
-                try:
-                    transcript = video_metadata.raw_transcript
-                except UnboundLocalError:
-                    video_metadata = await self.video_metadata_repo.get_by_video_id(
-                        video.id, session
-                    )
-                    transcript = video_metadata.raw_transcript
-                if transcript is None:
-                    transcript = await self.fetch_transcript(youtube_id, video.language)
-                    mapped_transcript = await self.mapper.map_metadata_transcript_to_videometadata(
-                        transcript
-                    )
-                    await self.video_metadata_repo.update(
-                        video_metadata.id, mapped_transcript, session
-                    )
-                for segment in sponsored_segments:
-                    segment.subtitles = await self.mapper.map_transcript_to_segment_subtitles(
-                        transcript, segment
-                    )
-                    mapped_segment = await self.mapper.map_subtitles_to_sponsoredsegment(
-                        segment.subtitles
-                    )
-                    await self.sponsored_segment_repo.update(segment.id, mapped_segment, session)
-
-            sponsorships = []
-            for segment in sponsored_segments:
-                prompt = await self.mapper.map_metadata_to_prompt(video, segment)
-                sponsorship = await self.extract_sponsor_info(prompt)
-                mapped_sponsorship = await self.mapper.map_sponsorship_data_to_sponsorship(
-                    sponsorship, segment.id
+        # Get sponsored segments from db, create if not there
+        sponsored_segments = await self.sponsored_segment_repo.get_by_video_id(video.id, session)
+        if not sponsored_segments:
+            blocks = await self.download_sponsorblock(youtube_id)
+            sponsored_segments = []
+            for block in blocks:
+                mapped_block = await self.mapper.map_sponsorblock_to_sponsored_segment(
+                    block, video.id
                 )
-                sponsorship = await self.sponsorship_repo.add(mapped_sponsorship, session)
-                sponsorships.append(sponsorship)
+                sponsored_segment = await self.sponsored_segment_repo.add(mapped_block, session)
+                sponsored_segments.append(sponsored_segment)
 
-        return sponsorships
+        # Get key metadata fields
+        key_fields = ["language", "title", "upload_date", "description", "duration", "channel"]
+        key_metadata = {field: getattr(video, field) for field in key_fields}
+        if None in key_metadata.values():
+            # Get video metadata, create if not there
+            video_metadata = await self.video_metadata_repo.get_by_video_id(video.id, session)
+            if not video_metadata:
+                metadata_json = await self.download_metadata(youtube_id)
+                mapped_metadata = await self.mapper.map_metadata_json_to_videometadata(
+                    video.id, metadata_json
+                )
+                video_metadata = await self.video_metadata_repo.add(mapped_metadata, session)
+
+            key_metadata = {field: video_metadata.raw_json.get(field) for field in key_fields}
+            mapped_key_metadata = await self.mapper.map_key_metadata_to_video(key_metadata)
+            await self.video_repo.update(video.id, mapped_key_metadata, session)
+
+        # Check segment subtitles, fetch if null
+        empty_subtitles_segments = [
+            segment.id for segment in sponsored_segments if segment.subtitles is None
+        ]
+        if len(empty_subtitles_segments) > 0:
+            try:
+                transcript = video_metadata.raw_transcript
+            except UnboundLocalError:
+                video_metadata = await self.video_metadata_repo.get_by_video_id(video.id, session)
+                transcript = video_metadata.raw_transcript
+            if transcript is None:
+                transcript, transcript_language = await self.fetch_transcript(
+                    youtube_id, video.language
+                )
+                if video.language is None:
+                    mapped_language_metadata = await self.mapper.map_language_metadata_to_video(
+                        transcript_language
+                    )
+                    await self.video_repo.update(video.id, mapped_language_metadata, session)
+                mapped_transcript = await self.mapper.map_metadata_transcript_to_videometadata(
+                    transcript
+                )
+                await self.video_metadata_repo.update(video_metadata.id, mapped_transcript, session)
+            for segment in sponsored_segments:
+                segment.subtitles = await self.mapper.map_transcript_to_segment_subtitles(
+                    transcript, segment
+                )
+                mapped_segment = await self.mapper.map_subtitles_to_sponsoredsegment(
+                    segment.subtitles
+                )
+                await self.sponsored_segment_repo.update(segment.id, mapped_segment, session)
+
+        response = []
+        for segment in sponsored_segments:
+            prompt = await self.mapper.map_metadata_to_prompt(video, segment)
+            sponsorship = await self.extract_sponsor_info(prompt)
+            mapped_sponsorship = await self.mapper.map_sponsorship_data_to_sponsorship(
+                sponsorship, segment.id
+            )
+            sponsorship = await self.sponsorship_repo.add(mapped_sponsorship, session)
+            mapped_response = await self.mapper.map_sponsorship_sponsored_segment_to_response(
+                sponsorship, segment
+            )
+            response.append(mapped_response)
+
+        return response

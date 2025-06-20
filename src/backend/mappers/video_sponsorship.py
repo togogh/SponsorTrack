@@ -5,6 +5,7 @@ from backend.schemas.sponsored_segment import SponsoredSegmentUpdate, SponsoredS
 import pandas as pd
 from backend.schemas.sponsorship import SponsorshipCreate
 from backend.core.settings import generator_settings
+from backend.schemas.video_sponsorship import VideoSponsorshipResponse
 
 
 class VideoSponsorshipMapper:
@@ -16,6 +17,11 @@ class VideoSponsorshipMapper:
             description=metadata["description"],
             duration=metadata["duration"],
             channel=metadata["channel"],
+        )
+
+    async def map_language_metadata_to_video(self, language: str) -> VideoUpdate:
+        return VideoUpdate(
+            language=language,
         )
 
     async def map_metadata_json_to_videometadata(
@@ -97,4 +103,16 @@ class VideoSponsorshipMapper:
             generator=generator_settings.GENERATOR,
             provider=generator_settings.PROVIDER,
             model=generator_settings.MODEL,
+        )
+
+    async def map_sponsorship_sponsored_segment_to_response(self, sponsorship, segment):
+        return VideoSponsorshipResponse(
+            id=sponsorship.id,
+            start_time=segment.start_time,
+            end_time=segment.end_time,
+            sponsor_name=sponsorship.sponsor_name,
+            sponsor_description=sponsorship.sponsor_description,
+            sponsor_links=sponsorship.sponsor_links,
+            sponsor_coupon_code=sponsorship.sponsor_coupon_code,
+            sponsor_offer=sponsorship.sponsor_offer,
         )

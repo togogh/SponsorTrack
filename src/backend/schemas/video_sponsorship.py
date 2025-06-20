@@ -29,6 +29,8 @@ class VideoSponsorshipRequest(BaseModel):
 
 class VideoSponsorshipResponse(BaseModel):
     id: UUID4
+    start_time: float
+    end_time: float
     sponsor_name: str
     sponsor_description: str
     sponsor_links: list[str] | None = None
