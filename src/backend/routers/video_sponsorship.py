@@ -10,7 +10,7 @@ from backend.core.session import session_dependency
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.repositories.video_metadata import VideoMetadataRepository
 from backend.repositories.sponsorship import SponsorshipRepository
-from backend.core.logging_config import get_logger
+from backend.logs.config import get_logger
 
 
 router = APIRouter()
