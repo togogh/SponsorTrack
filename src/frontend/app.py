@@ -31,6 +31,8 @@ def submit(youtube_id, youtube_url):
     return "", "", segments_info
 
 
+callback = gr.CSVLogger(dataset_file_name="flagged_sponsorships.csv")
+
 with gr.Blocks() as demo:
     with gr.Row():
         gr.Markdown("""
@@ -65,12 +67,15 @@ Extract sponsorship information from Youtube videos
             @gr.render(inputs=segments)
             def render_count(arr):
                 if len(arr) != 0:
-                    gr.Markdown(
-                        f"Found {len(arr)} sponsored segment{'' if len(arr) == 1 else 's'} for https://www.youtube.com/watch?v={arr[0]['youtube_id']}"
+                    found = gr.Markdown(
+                        value=f"Found {len(arr)} sponsored segment{'' if len(arr) == 1 else 's'} for https://www.youtube.com/watch?v={arr[0]['youtube_id']}",
+                        label="Results",
                     )
                     for i, segment in enumerate(arr):
                         with gr.Accordion(label=f"{segment['sponsor_name']}", open=False):
-                            gr.HTML(f"""
+                            video_preview = gr.HTML(
+                                label="Video Preview",
+                                value=f"""
                                 <iframe
                                     width="560"
                                     height="315"
@@ -79,17 +84,31 @@ Extract sponsorship information from Youtube videos
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     referrerpolicy="strict-origin-when-cross-origin"
                                     allowfullscreen>
-                                </iframe>""")
-                            gr.TextArea(
+                                </iframe>""",
+                            )
+                            description = gr.TextArea(
                                 label="Description",
                                 value=segment["sponsor_description"],
                             )
-                            gr.Textbox(label="Offer", value=segment["sponsor_offer"])
-                            gr.Textbox(
+                            offer = gr.Textbox(label="Offer", value=segment["sponsor_offer"])
+                            links = gr.Textbox(
                                 label="Links",
                                 value=", ".join(segment["sponsor_links"]),
                             )
-                            gr.Textbox(label="Coupon Code", value=segment["sponsor_coupon_code"])
+                            coupon_code = gr.Textbox(
+                                label="Coupon Code", value=segment["sponsor_coupon_code"]
+                            )
+                            callback.setup(
+                                [found, video_preview, description, offer, links, coupon_code],
+                                "data",
+                            )
+                            btn = gr.Button("Flag")
+                            btn.click(
+                                lambda *args: (callback.flag(list(args)), None)[1],
+                                [found, video_preview, description, offer, links, coupon_code],
+                                [],
+                                preprocess=False,
+                            )
 
 
 demo.queue().launch(show_error=True)
