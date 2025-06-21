@@ -29,6 +29,7 @@ class VideoSponsorshipRequest(BaseModel):
 
 class VideoSponsorshipResponse(BaseModel):
     id: UUID4
+    youtube_id: str
     start_time: float
     end_time: float
     sponsor_name: str

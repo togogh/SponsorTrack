@@ -178,10 +178,8 @@ class VideoSponsorshipService:
                     sponsored_segment = await self.sponsored_segment_repo.get_by_sponsorship_id(
                         sponsorship.id, session
                     )
-                    mapped_response = (
-                        await self.mapper.map_sponsorship_sponsored_segment_to_response(
-                            sponsorship, sponsored_segment
-                        )
+                    mapped_response = await self.mapper.map_entities_to_response(
+                        sponsorship, sponsored_segment, video
                     )
                     response.append(mapped_response)
                 return response
@@ -252,15 +250,15 @@ class VideoSponsorshipService:
                 await self.sponsored_segment_repo.update(segment.id, mapped_segment, session)
 
         response = []
-        for segment in sponsored_segments:
-            prompt = await self.mapper.map_metadata_to_prompt(video, segment)
+        for sponsored_segment in sponsored_segments:
+            prompt = await self.mapper.map_metadata_to_prompt(video, sponsored_segment)
             sponsorship = await self.extract_sponsor_info(prompt)
             mapped_sponsorship = await self.mapper.map_sponsorship_data_to_sponsorship(
-                sponsorship, segment.id
+                sponsorship, sponsored_segment.id
             )
             sponsorship = await self.sponsorship_repo.add(mapped_sponsorship, session)
-            mapped_response = await self.mapper.map_sponsorship_sponsored_segment_to_response(
-                sponsorship, segment
+            mapped_response = await self.mapper.map_entities_to_response(
+                sponsorship, sponsored_segment, video
             )
             response.append(mapped_response)
 

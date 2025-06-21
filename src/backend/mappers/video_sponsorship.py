@@ -105,9 +105,10 @@ class VideoSponsorshipMapper:
             model=generator_settings.MODEL,
         )
 
-    async def map_sponsorship_sponsored_segment_to_response(self, sponsorship, segment):
+    async def map_entities_to_response(self, sponsorship, segment, video):
         return VideoSponsorshipResponse(
             id=sponsorship.id,
+            youtube_id=video.youtube_id,
             start_time=segment.start_time,
             end_time=segment.end_time,
             sponsor_name=sponsorship.sponsor_name,
