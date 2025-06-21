@@ -10,9 +10,11 @@ from backend.core.session import session_dependency
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.repositories.video_metadata import VideoMetadataRepository
 from backend.repositories.sponsorship import SponsorshipRepository
+from backend.core.logging_config import get_logger
 
 
 router = APIRouter()
+logger = get_logger(__name__)
 
 
 def get_video_service() -> VideoSponsorshipService:
@@ -28,6 +30,7 @@ def parse_video_sponsorship_request(
     try:
         return VideoSponsorshipRequest(id=id, url=url)
     except ValidationError as e:
+        logger.error(e)
         raise RequestValidationError(e.errors())
 
 
@@ -37,4 +40,8 @@ async def get_video_sponsorships(
     service: VideoSponsorshipService = Depends(get_video_service),
     session: AsyncSession = Depends(session_dependency),
 ):
-    return await service.get_sponsorship_info(params, session)
+    try:
+        return await service.get_sponsorship_info(params, session)
+    except Exception as e:
+        logger.error(e)
+        raise e

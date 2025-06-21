@@ -6,6 +6,10 @@ from backend.models.all import Base
 
 from alembic import context
 import asyncio
+from backend.core.logging_config import get_logger
+
+logger = get_logger(__name__)
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -74,7 +78,11 @@ async def run_migrations_online() -> None:
         await engine.dispose()
 
 
-if context.is_offline_mode():
-    run_migrations_offline()
-else:
-    asyncio.run(run_migrations_online())
+try:
+    if context.is_offline_mode():
+        run_migrations_offline()
+    else:
+        asyncio.run(run_migrations_online())
+except Exception as e:
+    logger.error(e)
+    raise e
