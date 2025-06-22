@@ -27,9 +27,8 @@ class VideoSponsorshipRequest(BaseModel):
         return self
 
 
-class VideoSponsorshipResponse(BaseModel):
+class VideoSponsorshipData(BaseModel):
     id: UUID4
-    youtube_id: str
     start_time: float
     end_time: float
     sponsor_name: str
@@ -37,3 +36,8 @@ class VideoSponsorshipResponse(BaseModel):
     sponsor_links: list[str] | None = None
     sponsor_coupon_code: str | None = None
     sponsor_offer: str | None = None
+
+
+class VideoSponsorshipResponse(BaseModel):
+    youtube_id: str
+    sponsorships: list

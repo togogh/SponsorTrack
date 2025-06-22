@@ -39,7 +39,7 @@ def parse_video_sponsorship_request(
         raise RequestValidationError(e.errors())
 
 
-@router.get("/videos/sponsorships/", response_model=list[VideoSponsorshipResponse])
+@router.get("/videos/sponsorships/", response_model=VideoSponsorshipResponse)
 async def get_video_sponsorships(
     params: Optional[VideoSponsorshipRequest] = Depends(parse_video_sponsorship_request),
     service: GetVideoSponsorshipService = Depends(get_video_service),

@@ -178,15 +178,18 @@ class GetVideoSponsorshipService:
             # Get sponsorships for video from db, create if not there
             sponsorships = await self.sponsorship_repo.get_by_video_id(video.id, session)
             if sponsorships:
-                response = []
+                sponsorships_data = []
                 for sponsorship in sponsorships:
                     sponsored_segment = await self.sponsored_segment_repo.get_by_sponsorship_id(
                         sponsorship.id, session
                     )
-                    mapped_response = await self.mapper.map_entities_to_response(
-                        sponsorship, sponsored_segment, video
+                    mapped_sponsorships_data = (
+                        await self.mapper.map_segment_sponsorship_to_video_sponsorship_data(
+                            sponsorship, sponsored_segment
+                        )
                     )
-                    response.append(mapped_response)
+                    sponsorships_data.append(mapped_sponsorships_data)
+                response = await self.mapper.map_entities_to_response(sponsorships_data, video)
                 return response
         else:
             youtube_id = await self.ensure_video_exists_on_youtube(youtube_id)
@@ -196,7 +199,14 @@ class GetVideoSponsorshipService:
         # Get sponsored segments from db, create if not there
         sponsored_segments = await self.sponsored_segment_repo.get_by_video_id(video.id, session)
         if not sponsored_segments:
-            blocks = await self.download_sponsorblock(youtube_id)
+            try:
+                blocks = await self.download_sponsorblock(youtube_id)
+            except HTTPException as e:
+                if e.status_code == 404:
+                    response = await self.mapper.map_entities_to_response([], video)
+                    return response
+                else:
+                    raise e
             sponsored_segments = []
             for block in blocks:
                 mapped_block = await self.mapper.map_sponsorblock_to_sponsored_segment(
@@ -254,7 +264,7 @@ class GetVideoSponsorshipService:
                 )
                 await self.sponsored_segment_repo.update(segment.id, mapped_segment, session)
 
-        response = []
+        sponsorships_data = []
         for sponsored_segment in sponsored_segments:
             prompt = await self.mapper.map_metadata_to_prompt(video, sponsored_segment)
             sponsorship = await self.extract_sponsor_info(prompt)
@@ -266,9 +276,13 @@ class GetVideoSponsorshipService:
                 await self.mapper.map_sponsorship_to_generated_sponsorship(sponsorship)
             )
             await self.generated_sponsorship_repo.add(mapped_generated_sponsorship, session)
-            mapped_response = await self.mapper.map_entities_to_response(
-                sponsorship, sponsored_segment, video
+            mapped_sponsorships_data = (
+                await self.mapper.map_segment_sponsorship_to_video_sponsorship_data(
+                    sponsorship, sponsored_segment
+                )
             )
-            response.append(mapped_response)
+            sponsorships_data.append(mapped_sponsorships_data)
+
+        response = await self.mapper.map_entities_to_response(sponsorships_data, video)
 
         return response

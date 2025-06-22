@@ -6,7 +6,7 @@ import pandas as pd
 from backend.schemas.sponsorship import SponsorshipCreate
 from backend.schemas.generated_sponsorship import GeneratedSponsorshipCreate
 from backend.core.settings import generator_settings
-from backend.schemas.video_sponsorship import VideoSponsorshipResponse
+from backend.schemas.video_sponsorship import VideoSponsorshipResponse, VideoSponsorshipData
 
 
 class VideoSponsorshipMapper:
@@ -116,10 +116,9 @@ class VideoSponsorshipMapper:
             model=generator_settings.MODEL,
         )
 
-    async def map_entities_to_response(self, sponsorship, segment, video):
-        return VideoSponsorshipResponse(
+    async def map_segment_sponsorship_to_video_sponsorship_data(self, sponsorship, segment):
+        return VideoSponsorshipData(
             id=sponsorship.id,
-            youtube_id=video.youtube_id,
             start_time=segment.start_time,
             end_time=segment.end_time,
             sponsor_name=sponsorship.sponsor_name,
@@ -128,3 +127,6 @@ class VideoSponsorshipMapper:
             sponsor_coupon_code=sponsorship.sponsor_coupon_code,
             sponsor_offer=sponsorship.sponsor_offer,
         )
+
+    async def map_entities_to_response(self, sponsorships: list[VideoSponsorshipData], video):
+        return VideoSponsorshipResponse(youtube_id=video.youtube_id, sponsorships=sponsorships)

@@ -27,8 +27,8 @@ def submit(youtube_id, youtube_url):
     url = f"http://127.0.0.1:8000/videos/sponsorships/?{encoded_params}"
 
     response = s.get(url)
-    segments_info = response.json()
-    return "", "", segments_info
+    sponsorship_info = response.json()
+    return "", "", sponsorship_info
 
 
 callback = gr.CSVLogger(dataset_file_name="flagged_sponsorships.csv")
@@ -57,29 +57,30 @@ Extract sponsorship information from Youtube videos
                 inputs=[id, url],
             )
             submit_btn = gr.Button("Get Sponsor Info", variant="primary")
-            segments = gr.State([])
+            sponsorship_info = gr.State([])
             submit_btn.click(
-                fn=submit, inputs=[id, url], outputs=[id, url, segments], api_name="submit"
+                fn=submit, inputs=[id, url], outputs=[id, url, sponsorship_info], api_name="submit"
             )
 
         with gr.Column(scale=2):
 
-            @gr.render(inputs=segments)
-            def render_count(arr):
-                if len(arr) != 0:
+            @gr.render(inputs=[sponsorship_info])
+            def render_count(sponsorship_info):
+                try:
+                    arr = sponsorship_info["sponsorships"]
                     found = gr.Markdown(
-                        value=f"Found {len(arr)} sponsored segment{'' if len(arr) == 1 else 's'} for https://www.youtube.com/watch?v={arr[0]['youtube_id']}",
+                        value=f"Found {len(arr)} sponsored segment{'' if len(arr) == 1 else 's'} for https://www.youtube.com/watch?v={sponsorship_info['youtube_id']}",
                         label="Results",
                     )
-                    for i, segment in enumerate(arr):
-                        with gr.Accordion(label=f"{segment['sponsor_name']}", open=False):
+                    for i, sponsorship in enumerate(arr):
+                        with gr.Accordion(label=f"{sponsorship['sponsor_name']}", open=False):
                             video_preview = gr.HTML(
                                 label="Video Preview",
                                 value=f"""
                                 <iframe
                                     width="560"
                                     height="315"
-                                    src="https://www.youtube.com/embed/{segment["youtube_id"]}?start={int(segment["start_time"])}"
+                                    src="https://www.youtube.com/embed/{sponsorship["youtube_id"]}?start={int(sponsorship["start_time"])}"
                                     frameborder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     referrerpolicy="strict-origin-when-cross-origin"
@@ -88,15 +89,15 @@ Extract sponsorship information from Youtube videos
                             )
                             description = gr.TextArea(
                                 label="Description",
-                                value=segment["sponsor_description"],
+                                value=sponsorship["sponsor_description"],
                             )
-                            offer = gr.Textbox(label="Offer", value=segment["sponsor_offer"])
+                            offer = gr.Textbox(label="Offer", value=sponsorship["sponsor_offer"])
                             links = gr.Textbox(
                                 label="Links",
-                                value=segment["sponsor_links"],
+                                value=sponsorship["sponsor_links"],
                             )
                             coupon_code = gr.Textbox(
-                                label="Coupon Code", value=segment["sponsor_coupon_code"]
+                                label="Coupon Code", value=sponsorship["sponsor_coupon_code"]
                             )
                             callback.setup(
                                 [found, video_preview, description, offer, links, coupon_code],
@@ -109,6 +110,8 @@ Extract sponsorship information from Youtube videos
                                 [],
                                 preprocess=False,
                             )
+                except Exception:
+                    pass
 
 
 demo.queue().launch(show_error=True)
