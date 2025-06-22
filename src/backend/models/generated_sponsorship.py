@@ -14,8 +14,5 @@ class GeneratedSponsorship(Base):
     generator = Column(String)
     provider = Column(String)
     model = Column(String)
-    flags = sponsored_segment = relationship(
-        "SponsorshipFlags", back_populates="generated_sponsorship"
-    )
-    sponsorship_id = Column(UUID(as_uuid=True), ForeignKey(fk("sponsoredsegment.id")), index=True)
-    sponsorship = relationship("Sponsorship", back_populates="sponsorship")
+    sponsorship_id = Column(UUID(as_uuid=True), ForeignKey(fk("sponsorship.id")), index=True)
+    sponsorship = relationship("Sponsorship", back_populates="generated_sponsorships")

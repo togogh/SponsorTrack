@@ -20,20 +20,25 @@ from backend.mappers.video_sponsorship import VideoSponsorshipMapper
 from backend.generators.get_generator import get_generator
 import re
 from backend.repositories.sponsorship import SponsorshipRepository
+from backend.repositories.generated_sponsorship import GeneratedSponsorshipRepository
 
 
-class VideoSponsorshipService:
+class GetVideoSponsorshipService:
     def __init__(
         self,
         video_repo: VideoRepository,
         sponsored_segment_repo: SponsoredSegmentRepository,
         video_metadata_repo: VideoMetadataRepository,
         sponsorship_repo: SponsorshipRepository,
+        generated_sponsorship_repo: GeneratedSponsorshipRepository,
     ):
         self.video_repo: VideoRepository = video_repo()
         self.sponsored_segment_repo: SponsoredSegmentRepository = sponsored_segment_repo()
         self.video_metadata_repo: VideoMetadataRepository = video_metadata_repo()
         self.sponsorship_repo: SponsorshipRepository = sponsorship_repo()
+        self.generated_sponsorship_repo: GeneratedSponsorshipRepository = (
+            generated_sponsorship_repo()
+        )
         self.mapper = VideoSponsorshipMapper()
         self.generator = get_generator()
 
@@ -257,6 +262,10 @@ class VideoSponsorshipService:
                 sponsorship, sponsored_segment.id
             )
             sponsorship = await self.sponsorship_repo.add(mapped_sponsorship, session)
+            mapped_generated_sponsorship = (
+                await self.mapper.map_sponsorship_to_generated_sponsorship(sponsorship)
+            )
+            await self.generated_sponsorship_repo.add(mapped_generated_sponsorship, session)
             mapped_response = await self.mapper.map_entities_to_response(
                 sponsorship, sponsored_segment, video
             )

@@ -15,7 +15,7 @@ def get_logger(name):
     formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
 
     file_handler = TimedRotatingFileHandler(
-        log_path, when="midnight", interval=1, backupCount=7, encoding="utf-8"
+        log_path, when="midnight", interval=1, backupCount=7, encoding="utf-8", delay=True
     )
     file_handler.setFormatter(formatter)
 

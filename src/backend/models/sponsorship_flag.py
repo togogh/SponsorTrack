@@ -6,8 +6,10 @@ from sqlalchemy.orm import relationship
 
 class SponsorshipFlag(Base):
     flagged_field = Column(String, nullable=False)
-    correction = Column(String)
-    generated_sponsorship_id = Column(
-        UUID(as_uuid=True), ForeignKey(fk("generatedsponsorship.id")), nullable=False, index=True
+    current_value = Column(String)
+    corrected_value = Column(String)
+    status = Column(String)
+    sponsorship_id = Column(
+        UUID(as_uuid=True), ForeignKey(fk("sponsorship.id")), nullable=False, index=True
     )
-    generated_sponsorship = relationship("GeneratedSponsorship", back_populates="flags")
+    sponsorship = relationship("Sponsorship", back_populates="flags")

@@ -4,6 +4,7 @@ from backend.schemas.video_metadata import VideoMetadataCreate, VideoMetadataUpd
 from backend.schemas.sponsored_segment import SponsoredSegmentUpdate, SponsoredSegmentCreate
 import pandas as pd
 from backend.schemas.sponsorship import SponsorshipCreate
+from backend.schemas.generated_sponsorship import GeneratedSponsorshipCreate
 from backend.core.settings import generator_settings
 from backend.schemas.video_sponsorship import VideoSponsorshipResponse
 
@@ -100,6 +101,16 @@ class VideoSponsorshipMapper:
             sponsor_coupon_code=sponsorship["sponsor_coupon_code"],
             sponsor_offer=sponsorship["sponsor_offer"],
             sponsored_segment_id=segment_id,
+        )
+
+    async def map_sponsorship_to_generated_sponsorship(self, sponsorship):
+        return GeneratedSponsorshipCreate(
+            sponsor_name=sponsorship.sponsor_name,
+            sponsor_description=sponsorship.sponsor_description,
+            sponsor_links=sponsorship.sponsor_links,
+            sponsor_coupon_code=sponsorship.sponsor_coupon_code,
+            sponsor_offer=sponsorship.sponsor_offer,
+            sponsorship_id=sponsorship.id,
             generator=generator_settings.GENERATOR,
             provider=generator_settings.PROVIDER,
             model=generator_settings.MODEL,

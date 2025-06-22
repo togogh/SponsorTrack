@@ -93,7 +93,7 @@ Extract sponsorship information from Youtube videos
                             offer = gr.Textbox(label="Offer", value=segment["sponsor_offer"])
                             links = gr.Textbox(
                                 label="Links",
-                                value=", ".join(segment["sponsor_links"]),
+                                value=segment["sponsor_links"],
                             )
                             coupon_code = gr.Textbox(
                                 label="Coupon Code", value=segment["sponsor_coupon_code"]
