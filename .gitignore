@@ -29,3 +29,4 @@ tests/data/
 
 # Logs
 *.log
+*.log.*
