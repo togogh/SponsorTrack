@@ -4,18 +4,20 @@ from backend.schemas.video_sponsorship import VideoSponsorshipRequest, VideoSpon
 from pydantic import HttpUrl, ValidationError
 from fastapi.exceptions import RequestValidationError
 from backend.services.get_video_sponsorship import GetVideoSponsorshipService
-from backend.repositories.video import VideoRepository
-from backend.repositories.sponsored_segment import SponsoredSegmentRepository
 from backend.core.session import session_dependency
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.repositories.video_metadata import VideoMetadataRepository
-from backend.repositories.sponsorship import SponsorshipRepository
 from backend.logs.config import get_logger
-from backend.repositories.generated_sponsorship import GeneratedSponsorshipRepository
 from backend.schemas.sponsorship_flag import SponsorshipFlagPost, SponsorshipFlagPostResponse
 from backend.services.flag_video_sponsorship import FlagVideoSponsorshipService
-from backend.repositories.sponsorship_flag import SponsorshipFlagRepository
 from pydantic import UUID4
+from backend.repositories.all import (
+    SponsoredSegmentRepository,
+    VideoRepository,
+    VideoMetadataRepository,
+    GeneratedSponsorshipRepository,
+    SponsorshipRepository,
+    SponsorshipFlagRepository,
+)
 
 router = APIRouter()
 logger = get_logger(__name__)

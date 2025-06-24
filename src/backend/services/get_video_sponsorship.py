@@ -8,11 +8,13 @@ from .youtube import (
 )
 from .sponsorblock import download_sponsorblock
 from backend.mappers.video_sponsorship import VideoSponsorshipMapper
-from backend.repositories.generated_sponsorship import GeneratedSponsorshipRepository
-from backend.repositories.sponsored_segment import SponsoredSegmentRepository
-from backend.repositories.sponsorship import SponsorshipRepository
-from backend.repositories.video import VideoRepository
-from backend.repositories.video_metadata import VideoMetadataRepository
+from backend.repositories.all import (
+    SponsoredSegmentRepository,
+    VideoRepository,
+    VideoMetadataRepository,
+    GeneratedSponsorshipRepository,
+    SponsorshipRepository,
+)
 from backend.schemas.video_sponsorship import VideoSponsorshipRequest
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
