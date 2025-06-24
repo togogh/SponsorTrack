@@ -1,5 +1,5 @@
 from backend.core.settings import generator_settings
-from backend.generators.hf_generator import HuggingFaceGenerator
+from .hf_generator import HuggingFaceGenerator
 
 
 def get_generator():

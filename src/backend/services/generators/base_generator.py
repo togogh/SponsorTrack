@@ -5,11 +5,14 @@ class BaseGenerator:
         self.provider = provider
         self.model = model
 
-    def connect_client(self):
+    async def connect_client(self):
         pass
 
-    def queue_message(self):
+    async def queue_message(self):
         pass
 
-    def generate_response(self):
+    async def generate_response(self):
+        pass
+
+    async def extract_sponsor_info(self, prompt):
         pass
