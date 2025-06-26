@@ -10,3 +10,12 @@ class VideoMetadataCreate(BaseModel):
 class VideoMetadataUpdate(BaseModel):
     raw_json: dict | None = None
     raw_transcript: list | None = None
+
+
+class KeyMetadata(BaseModel):
+    language: str | None
+    title: str
+    upload_date: str
+    description: str
+    duration: float
+    channel: str

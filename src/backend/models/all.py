@@ -1,17 +1,7 @@
-from backend.models.base import Base
-from backend.models.sponsored_segment import SponsoredSegment
-from backend.models.video import Video
-from backend.models.video_metadata import VideoMetadata
-from backend.models.generated_sponsorship import GeneratedSponsorship
-from backend.models.sponsorship import Sponsorship
-from backend.models.sponsorship_flag import SponsorshipFlag
-
-__all__ = [
-    "Base",
-    "Video",
-    "SponsoredSegment",
-    "VideoMetadata",
-    "GeneratedSponsorship",
-    "Sponsorship",
-    "SponsorshipFlag",
-]
+from backend.models.base import Base  # noqa: F401
+from backend.models.sponsored_segment import SponsoredSegment  # noqa: F401
+from backend.models.video import Video  # noqa: F401
+from backend.models.video_metadata import VideoMetadata  # noqa: F401
+from backend.models.generated_sponsorship import GeneratedSponsorship  # noqa: F401
+from backend.models.sponsorship import Sponsorship  # noqa: F401
+from backend.models.sponsorship_flag import SponsorshipFlag  # noqa: F401
