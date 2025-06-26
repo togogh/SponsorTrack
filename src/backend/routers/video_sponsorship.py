@@ -3,7 +3,7 @@ from typing import Optional
 from backend.schemas.video_sponsorship import VideoSponsorshipRequest, VideoSponsorshipResponse
 from pydantic import HttpUrl, ValidationError
 from fastapi.exceptions import RequestValidationError
-from backend.services.get_video_sponsorship import GetVideoSponsorshipService
+from backend.services.get_video_sponsorship.get_video_sponsorship import GetVideoSponsorshipService
 from backend.core.session import session_dependency
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.logs.config import get_logger

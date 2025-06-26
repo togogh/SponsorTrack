@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.models.all import Sponsorship, SponsoredSegment
 from backend.repositories.all import SponsorshipRepository, GeneratedSponsorshipRepository
 from backend.schemas.all import KeyMetadata, SponsorshipCreate, GeneratedSponsorshipCreate
-from .generators.get_generator import get_generator
+from backend.services.generators.get_generator import get_generator
 from backend.core.settings import generator_settings
 
 

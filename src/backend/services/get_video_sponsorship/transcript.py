@@ -24,7 +24,7 @@ async def fetch_transcript(youtube_id, language, retries=1, backoff_factor=0.1):
         ytt_api = YouTubeTranscriptApi(proxy_config=proxy_config)
     else:
         ytt_api = YouTubeTranscriptApi()
-    if language is None:
+    if language is None or len(language) > 2:
         transcript_list = ytt_api.list(youtube_id)
         language = list(transcript_list)[0].language_code
     for r in range(retries):
