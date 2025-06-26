@@ -69,12 +69,6 @@ class GetVideoSponsorshipService:
         sponsorships = await self.sponsorship_repo.get_by_video_id(video_id, session)
         return sponsorships
 
-    async def get_or_create_sponsorships(
-        self, video: Video, session: AsyncSession
-    ) -> list[Sponsorship]:
-        sponsorships = await self.get_sponsorships(video.id, session)
-        return sponsorships
-
     async def get_sponsored_segments(
         self, session: AsyncSession, sponsorship_id: UUID4 = None, video_id: UUID4 = None
     ) -> list[SponsoredSegment]:
@@ -238,7 +232,6 @@ class GetVideoSponsorshipService:
                 generator=generator_settings.GENERATOR,
                 provider=generator_settings.PROVIDER,
                 model=generator_settings.MODEL,
-                # add prompt field
             )
             await self.generated_sponsorship_repo.add(generated_sponsorship_create, session)
             sponsorships.append(sponsorship)
