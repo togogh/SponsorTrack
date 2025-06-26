@@ -1,7 +1,6 @@
 from pydantic import HttpUrl
 from urllib.parse import urlparse, parse_qs
 from fastapi import HTTPException
-import requests
 from backend.core.settings import ws_settings
 import yt_dlp
 from youtube_transcript_api import YouTubeTranscriptApi
@@ -9,6 +8,7 @@ from youtube_transcript_api.proxies import WebshareProxyConfig
 from youtube_transcript_api.formatters import JSONFormatter
 import time
 import json
+import pandas as pd
 
 
 async def extract_id_from_url(url: HttpUrl) -> str:
@@ -32,20 +32,6 @@ async def extract_id_from_url(url: HttpUrl) -> str:
         return video_id
     except UnboundLocalError:
         raise HTTPException(status_code=400, detail="Input url doesn't contain a valid video id")
-
-
-async def ensure_video_exists_on_youtube(video_id: str) -> str:
-    # Check if video id belongs to an actual youtube video
-    url = (
-        f"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={video_id}&format=json"
-    )
-    try:
-        response = requests.get(url)
-        if response.status_code != 200:
-            raise HTTPException(status_code=404, detail="Video id doesn't exist on Youtube")
-    except Exception:
-        raise HTTPException(status_code=404, detail="Video id doesn't exist on Youtube")
-    return video_id
 
 
 async def download_metadata(youtube_id):
@@ -104,3 +90,16 @@ async def fetch_transcript(youtube_id, language, retries=1, backoff_factor=0.1):
             if r < retries:
                 print("Retrying...")
                 time.sleep(backoff_factor * (2 ** (r - 1)))
+
+
+async def map_transcript_to_segment_subtitles(transcript: str, segment):
+    df = pd.DataFrame(transcript)
+    start_row = df[df["start"] <= segment.start_time].iloc[-1]
+    max_start_time = df["start"].max()
+    if segment.end_time <= max_start_time:
+        end_row = df[df["start"] >= segment.end_time].iloc[0]
+    else:
+        end_row = df.iloc[-1]
+    df = df.iloc[start_row.name : end_row.name]
+    text = " ".join(df["text"].tolist())
+    return text
