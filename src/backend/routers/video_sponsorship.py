@@ -3,7 +3,7 @@ from typing import Optional
 from backend.schemas.video_sponsorship import VideoSponsorshipRequest, VideoSponsorshipResponse
 from pydantic import HttpUrl, ValidationError
 from fastapi.exceptions import RequestValidationError
-from backend.services.get_video_sponsorship.get_video_sponsorship import GetVideoSponsorshipService
+from backend.services.video_sponsorship.video_sponsorship import VideoSponsorshipService
 from backend.core.session import session_dependency
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.logs.config import get_logger
@@ -19,8 +19,8 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 
-def get_video_service() -> GetVideoSponsorshipService:
-    return GetVideoSponsorshipService(
+def get_video_sponsorship_service() -> VideoSponsorshipService:
+    return VideoSponsorshipService(
         VideoRepository,
         SponsoredSegmentRepository,
         VideoMetadataRepository,
@@ -43,11 +43,11 @@ def parse_video_sponsorship_request(
 @router.get("/videos/sponsorships/", response_model=VideoSponsorshipResponse)
 async def get_video_sponsorships(
     params: VideoSponsorshipRequest = Depends(parse_video_sponsorship_request),
-    service: GetVideoSponsorshipService = Depends(get_video_service),
+    service: VideoSponsorshipService = Depends(get_video_sponsorship_service),
     session: AsyncSession = Depends(session_dependency),
 ):
     try:
-        return await service.get_sponsorship_info(params, session)
+        return await service.get_video_sponsorships(params, session)
     except Exception as e:
         logger.error(e)
         raise e

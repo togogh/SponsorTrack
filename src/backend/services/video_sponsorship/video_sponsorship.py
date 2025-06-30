@@ -20,7 +20,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-class GetVideoSponsorshipService:
+class VideoSponsorshipService:
     def __init__(
         self,
         video_repo: VideoRepository,
@@ -59,7 +59,7 @@ class GetVideoSponsorshipService:
         response = VideoSponsorshipResponse(youtube_id=youtube_id, sponsorships=sponsorships_data)
         return response
 
-    async def get_sponsorship_info(self, params: VideoSponsorshipRequest, session: AsyncSession):
+    async def get_video_sponsorships(self, params: VideoSponsorshipRequest, session: AsyncSession):
         youtube_id = await get_youtube_id(params.id, params.url)
         video = await get_or_create_video(youtube_id, self.video_repo, session)
 
