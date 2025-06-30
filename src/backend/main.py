@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.routers.video_sponsorship import router as video_sponsorship_router
+from backend.routers.all import router
 from backend.models.all import Base  # noqa: F401
 from backend.logs.config import get_logger
 
@@ -8,4 +8,4 @@ get_logger("uvicorn.error")
 get_logger("uvicorn.access")
 get_logger("sqlalchemy.engine.Engine")
 
-app.include_router(video_sponsorship_router, tags=["video_sponsorships"])
+app.include_router(router)

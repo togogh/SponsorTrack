@@ -16,4 +16,3 @@ class Sponsorship(Base):
     )
     sponsored_segment = relationship("SponsoredSegment", back_populates="sponsorships")
     generated_sponsorships = relationship("GeneratedSponsorship", back_populates="sponsorship")
-    flags = relationship("SponsorshipFlag", back_populates="sponsorship")
