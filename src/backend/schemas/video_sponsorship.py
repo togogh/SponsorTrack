@@ -34,7 +34,7 @@ class VideoSponsorshipData(SponsorLinksValidatorMixin, BaseModel):
     end_time: float
     sponsor_name: str
     sponsor_description: str
-    sponsor_links: list[HttpUrl] | None = None
+    sponsor_links: list[str] | None = None
     sponsor_coupon_code: str | None = None
     sponsor_offer: str | None = None
 

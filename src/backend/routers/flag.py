@@ -20,15 +20,15 @@ def get_flag_sponsorship_service() -> FlagService:
     return FlagService(SponsorshipRepository, VideoRepository, FlagRepository)
 
 
-@router.post("/videos/{video_id}/flag", response_model=VideoFlagPostResponse)
+@router.post("/videos/{youtube_id}/flag", response_model=VideoFlagPostResponse)
 async def flag_video(
-    video_id: UUID4,
+    youtube_id: str,
     flag_details: VideoFlagPost,
     service: FlagService = Depends(get_flag_sponsorship_service),
     session: AsyncSession = Depends(session_dependency),
 ):
     try:
-        return await service.flag_video(video_id, flag_details, session)
+        return await service.flag_video(youtube_id, flag_details, session)
     except Exception as e:
         logger.error(e)
         raise e

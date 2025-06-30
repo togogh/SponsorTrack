@@ -72,6 +72,7 @@ class SponsorshipFlagCreate(ValueFlaggedValidatorMixin, FlagCreate):
 
 class VideoFlagCreate(FlagCreate):
     field_flagged: VideoFlaggedField
+    value_flagged: str | int | None
 
 
 class FlagUpdate(BaseModel):
@@ -94,5 +95,5 @@ class SponsorshipFlagPostResponse(ValueFlaggedValidatorMixin, BaseModel):
 class VideoFlagPostResponse(BaseModel):
     id: UUID4
     field_flagged: VideoFlaggedField
-    value_flagged: str | None
+    value_flagged: str | int | None
     status: FlagStatus

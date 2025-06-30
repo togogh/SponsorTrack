@@ -35,14 +35,14 @@ class FlagService:
         self, video: Video, flag_details: VideoFlagPost, session: AsyncSession
     ) -> VideoFlagCreate:
         if flag_details.field_flagged == "num_sponsored_segments":
-            sponsorships = self.sponsorship_repo.get_by_video_id(video.id, session)
+            sponsorships = await self.sponsorship_repo.get_by_video_id(video.id, session)
             num_sponsored_segments = len(sponsorships)
             current_value = num_sponsored_segments
         else:
             current_value = getattr(video, flag_details.field_flagged)
         return VideoFlagCreate(
             field_flagged=flag_details.field_flagged,
-            current_value=current_value,
+            value_flagged=current_value,
             entity_id=video.id,
         )
 
@@ -57,11 +57,11 @@ class FlagService:
         flag = await self.flag_repo.add("sponsorship", flag_add_data, session)
         return flag
 
-    async def flag_video(self, video_id: UUID4, flag_details: VideoFlagPost, session: AsyncSession):
-        video = await self.video_repo.get_by_id(video_id, session)
+    async def flag_video(self, youtube_id: str, flag_details: VideoFlagPost, session: AsyncSession):
+        video = await self.video_repo.get_by_youtube_id(youtube_id, session)
         if not video:
             raise HTTPException(status_code=404, detail="No video found with id")
 
-        flag_add_data = await self.get_video_flag_create_data(video, flag_details)
+        flag_add_data = await self.get_video_flag_create_data(video, flag_details, session)
         flag = await self.flag_repo.add("video", flag_add_data, session)
         return flag
