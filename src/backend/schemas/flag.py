@@ -1,4 +1,4 @@
-from pydantic import BaseModel, UUID4, model_validator
+from pydantic import BaseModel, UUID4, HttpUrl, model_validator, FieldValidationInfo
 from enum import Enum
 from backend.models.flag import FlagStatus
 
@@ -21,23 +21,33 @@ class VideoFlaggedField(str, Enum):
     num_sponsored_segments = "num_sponsored_segments"
 
 
-def validate_value_types(field_flagged: str):
+class ValueFlaggedValidatorMixin:
     @model_validator(mode="after")
-    def validator(cls, model, info):
-        try:
-            value = getattr(model, field_flagged)
-        except Exception:
-            value = info.context.get(field_flagged)
+    def validate_value_flagged(cls, model, info: FieldValidationInfo):
+        field = getattr(model, "field_flagged", None)
 
-        if field_flagged == "sponsor_links":
-            if not isinstance(value, (list, type(None))):
-                raise ValueError(f"{field_flagged} must be a list for sponsor_links")
+        if field is None:
+            field = info.context.get("field_flagged")
+
+        if field is None:
+            raise ValueError("field_flagged must be provided on the model or via context")
+
+        value = model.value_flagged
+
+        if field == "sponsor_links":
+            if value is not None:
+                if not isinstance(value, list):
+                    raise ValueError("value_flagged must be a list for sponsor_links")
+                try:
+                    value = [str(HttpUrl(link)) for link in value]
+                except Exception as e:
+                    raise ValueError(f"value_flagged must contain valid URLs: {e}")
+            model.value_flagged = value
         else:
-            if not isinstance(value, (str, type(None))):
-                raise ValueError(f"{field_flagged} must be a string")
-        return model
+            if value is not None and not isinstance(value, str):
+                raise ValueError(f"value_flagged must be a string for field_flagged '{field}'")
 
-    return validator
+        return model
 
 
 class SponsorshipFlagPost(BaseModel):
@@ -55,11 +65,9 @@ class FlagCreate(BaseModel):
     entity_id: UUID4
 
 
-class SponsorshipFlagCreate(FlagCreate):
+class SponsorshipFlagCreate(ValueFlaggedValidatorMixin, FlagCreate):
     field_flagged: SponsorshipFlaggedField
     value_flagged: str | list[str] | None
-
-    validate_value = validate_value_types("field_flagged")
 
 
 class VideoFlagCreate(FlagCreate):
@@ -71,20 +79,16 @@ class FlagUpdate(BaseModel):
     status: FlagStatus | None = None
 
 
-class SponsorshipFlagUpdate(FlagUpdate):
+class SponsorshipFlagUpdate(ValueFlaggedValidatorMixin, FlagUpdate):
     value_flagged: str | list[str] | None = None
     status: FlagStatus | None = None
 
-    validate_value = validate_value_types("field_flagged")
 
-
-class SponsorshipFlagPostResponse(BaseModel):
+class SponsorshipFlagPostResponse(ValueFlaggedValidatorMixin, BaseModel):
     id: UUID4
     field_flagged: SponsorshipFlaggedField
     value_flagged: str | list[str] | None
     status: FlagStatus
-
-    validate_value = validate_value_types("field_flagged")
 
 
 class VideoFlagPostResponse(BaseModel):
