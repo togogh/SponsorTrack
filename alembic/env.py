@@ -1,7 +1,6 @@
 from logging.config import fileConfig
 
 from backend.core.session import get_engine, create_ssh_tunnel
-from backend.core.settings import db_settings
 from backend.models.all import Base
 
 from alembic import context
@@ -65,7 +64,7 @@ async def run_migrations_online() -> None:
                     target_metadata=target_metadata,
                     compare_type=True,
                     include_schemas=True,
-                    version_table_schema=db_settings.POSTGRES_SCHEMA,
+                    version_table_schema="public",
                     compare_server_default=True,
                 )
             )

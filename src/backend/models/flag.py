@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, UUID, JSON, Enum
 from backend.models.base import Base
 import enum
+from backend.core.settings import db_settings
 
 
 class FlagStatus(enum.Enum):
@@ -17,10 +18,14 @@ class EntityType(enum.Enum):
 
 class Flag(Base):
     entity_id = Column(UUID(as_uuid=True), nullable=False, index=True)
-    entity_flagged = Column(Enum(EntityType, schema="dev"), nullable=False, index=True)
+    entity_flagged = Column(
+        Enum(EntityType, schema=db_settings.POSTGRES_SCHEMA), nullable=False, index=True
+    )
     field_flagged = Column(String, nullable=False, index=True)
     value_flagged = Column(JSON)
-    status = Column(Enum(FlagStatus, schema="dev"), default=FlagStatus.pending, index=True)
+    status = Column(
+        Enum(FlagStatus, schema=db_settings.POSTGRES_SCHEMA), default=FlagStatus.pending, index=True
+    )
 
     # __mapper_args__ = {
     #     "polymorphic_identity": "flag",
