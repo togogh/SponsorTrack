@@ -2,7 +2,6 @@ from pydantic import BaseModel, HttpUrl, field_validator, model_validator, UUID4
 from typing import Optional
 from backend.core.constants import constants
 from urllib.parse import urlparse
-from .sponsorship import SponsorLinksValidatorMixin
 
 
 class VideoSponsorshipRequest(BaseModel):
@@ -28,7 +27,7 @@ class VideoSponsorshipRequest(BaseModel):
         return self
 
 
-class VideoSponsorshipData(SponsorLinksValidatorMixin, BaseModel):
+class VideoSponsorshipData(BaseModel):
     id: UUID4
     start_time: float
     end_time: float
