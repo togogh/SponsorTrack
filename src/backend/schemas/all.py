@@ -10,10 +10,12 @@ from backend.schemas.flag import (
     SponsorshipFlagCreate,  # noqa: F401
     SponsorshipFlagPost,  # noqa: F401
     SponsorshipFlagPostResponse,  # noqa: F401
-    SponsorshipFlagUpdate,  # noqa: F401
     VideoFlagCreate,  # noqa: F401
     VideoFlagPost,  # noqa: F401
     VideoFlagPostResponse,  # noqa: F401
+    SponsoredSegmentFlagCreate,  # noqa: F401
+    SponsoredSegmentFlagPost,  # noqa: F401
+    SponsoredSegmentFlagPostResponse,  # noqa: F401
     FlagUpdate,  # noqa: F401
     FlagCreate,  # noqa: F401
 )

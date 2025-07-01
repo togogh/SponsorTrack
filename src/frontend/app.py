@@ -2,33 +2,10 @@ import gradio as gr
 import requests
 from requests.adapters import HTTPAdapter, Retry
 from urllib.parse import urlencode
-from enum import Enum
 
 s = requests.Session()
 retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
 s.mount("http://", HTTPAdapter(max_retries=retries))
-
-
-class SponsorshipFlaggedField(str, Enum):
-    sponsor_name = "sponsor_name"
-    sponsor_description = "sponsor_description"
-    sponsor_links = "sponsor_links"
-    sponsor_coupon_code = "sponsor_coupon_code"
-    sponsor_offer = "sponsor_offer"
-
-
-class VideoFlaggedField(str, Enum):
-    language = "language"
-    title = "title"
-    upload_date = "upload_date"
-    description = "description"
-    duration = "duration"
-    channel = "channel"
-    num_sponsored_segments = "num_sponsored_segments"
-
-
-sponsorship_flagged_fields = set(item.value for item in SponsorshipFlaggedField)
-video_flagged_fields = set(item.value for item in VideoFlaggedField)
 
 
 def submit(youtube_id, youtube_url):
@@ -54,12 +31,13 @@ def submit(youtube_id, youtube_url):
     return "", "", sponsorship_info
 
 
-def flag(field, id, input):
-    print(field, id)
-    if field in video_flagged_fields:
+def flag(field, id, entity, input):
+    if entity == "video":
         url = f"http://127.0.0.1:8000/videos/{id}/flag"
-    elif field in sponsorship_flagged_fields:
+    elif entity == "sponsorship":
         url = f"http://127.0.0.1:8000/videos/sponsorships/{id}/flag"
+    elif entity == "sponsored_segment":
+        url = f"http://127.0.0.1:8000/videos/sponsored-segments/{id}/flag"
     data = {"field_flagged": field}
     response = s.post(url, json=data)
     if response.status_code == 200:
@@ -114,7 +92,7 @@ Extract sponsorship information from Youtube videos
                         with gr.Column(scale=1):
                             num_sponsored_segments_btn = gr.Button("Flag: # of sponsored segments")
                             num_sponsored_segments_btn.click(
-                                lambda x: flag("num_sponsored_segments", youtube_id, x),
+                                lambda x: flag("num_sponsored_segments", youtube_id, "video", x),
                                 [found],
                                 [found],
                             )
@@ -125,7 +103,9 @@ Extract sponsorship information from Youtube videos
                         with gr.Accordion(label=f"{sponsorship['sponsor_name']}", open=True):
                             sponsor_name_btn = gr.Button("Flag: Sponsor name")
                             sponsor_name_btn.click(
-                                lambda: flag("sponsor_name", sponsorship_id, None), [], []
+                                lambda: flag("sponsor_name", sponsorship_id, "sponsorship", None),
+                                [],
+                                [],
                             )
                             with gr.Row():
                                 with gr.Column(scale=2):
@@ -145,7 +125,9 @@ Extract sponsorship information from Youtube videos
                                 with gr.Column(scale=1):
                                     start_time_btn = gr.Button("Flag: Start time")
                                     start_time_btn.click(
-                                        lambda x: flag("start_time", sponsorship_id, x),
+                                        lambda x: flag(
+                                            "start_time", sponsorship_id, "sponsored_segment", x
+                                        ),
                                         [video_preview],
                                         [video_preview],
                                     )
@@ -158,7 +140,9 @@ Extract sponsorship information from Youtube videos
                                 with gr.Column(scale=1):
                                     sponsor_description_btn = gr.Button("Flag: Description")
                                     sponsor_description_btn.click(
-                                        lambda x: flag("sponsor_description", sponsorship_id, x),
+                                        lambda x: flag(
+                                            "sponsor_description", sponsorship_id, "sponsorship", x
+                                        ),
                                         [description],
                                         [description],
                                     )
@@ -170,7 +154,9 @@ Extract sponsorship information from Youtube videos
                                 with gr.Column(scale=1):
                                     sponsor_offer_btn = gr.Button("Flag: Offer")
                                     sponsor_offer_btn.click(
-                                        lambda x: flag("sponsor_offer", sponsorship_id, x),
+                                        lambda x: flag(
+                                            "sponsor_offer", sponsorship_id, "sponsorship", x
+                                        ),
                                         [offer],
                                         [offer],
                                     )
@@ -183,7 +169,9 @@ Extract sponsorship information from Youtube videos
                                 with gr.Column(scale=1):
                                     sponsor_links_btn = gr.Button("Flag: Links")
                                     sponsor_links_btn.click(
-                                        lambda x: flag("sponsor_links", sponsorship_id, x),
+                                        lambda x: flag(
+                                            "sponsor_links", sponsorship_id, "sponsorship", x
+                                        ),
                                         [links],
                                         [links],
                                     )
@@ -196,7 +184,9 @@ Extract sponsorship information from Youtube videos
                                 with gr.Column(scale=1):
                                     sponsor_coupon_code_btn = gr.Button("Flag: Coupon code")
                                     sponsor_coupon_code_btn.click(
-                                        lambda x: flag("sponsor_coupon_code", sponsorship_id, x),
+                                        lambda x: flag(
+                                            "sponsor_coupon_code", sponsorship_id, "sponsorship", x
+                                        ),
                                         [coupon_code],
                                         [coupon_code],
                                     )

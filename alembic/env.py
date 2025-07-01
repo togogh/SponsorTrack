@@ -8,6 +8,7 @@ from alembic import context
 import asyncio
 from backend.logs.config import get_logger
 
+
 logger = get_logger(__name__)
 
 

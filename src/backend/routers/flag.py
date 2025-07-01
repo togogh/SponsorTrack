@@ -7,17 +7,26 @@ from backend.schemas.flag import (
     SponsorshipFlagPostResponse,
     VideoFlagPost,
     VideoFlagPostResponse,
+    SponsoredSegmentFlagPost,
+    SponsoredSegmentFlagPostResponse,
 )
 from backend.services.flag import FlagService
 from pydantic import UUID4
-from backend.repositories.all import SponsorshipRepository, FlagRepository, VideoRepository
+from backend.repositories.all import (
+    SponsorshipRepository,
+    FlagRepository,
+    VideoRepository,
+    SponsoredSegmentRepository,
+)
 
 router = APIRouter()
 logger = get_logger(__name__)
 
 
 def get_flag_sponsorship_service() -> FlagService:
-    return FlagService(SponsorshipRepository, VideoRepository, FlagRepository)
+    return FlagService(
+        SponsorshipRepository, VideoRepository, FlagRepository, SponsoredSegmentRepository
+    )
 
 
 @router.post("/videos/{youtube_id}/flag", response_model=VideoFlagPostResponse)
@@ -45,6 +54,23 @@ async def flag_sponsorship(
 ):
     try:
         return await service.flag_sponsorship(sponsorship_id, flag_details, session)
+    except Exception as e:
+        logger.error(e)
+        raise e
+
+
+@router.post(
+    "/videos/sponsored-segments/{sponsorship_id}/flag",
+    response_model=SponsoredSegmentFlagPostResponse,
+)
+async def flag_sponsored_segment(
+    sponsorship_id: UUID4,
+    flag_details: SponsoredSegmentFlagPost,
+    service: FlagService = Depends(get_flag_sponsorship_service),
+    session: AsyncSession = Depends(session_dependency),
+):
+    try:
+        return await service.flag_sponsored_segment(sponsorship_id, flag_details, session)
     except Exception as e:
         logger.error(e)
         raise e

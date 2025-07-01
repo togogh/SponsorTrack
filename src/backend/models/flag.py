@@ -12,6 +12,7 @@ class FlagStatus(enum.Enum):
 class EntityType(enum.Enum):
     video = "video"
     sponsorship = "sponsorship"
+    sponsored_segment = "sponsored_segment"
 
 
 class Flag(Base):
