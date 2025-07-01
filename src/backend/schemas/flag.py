@@ -1,4 +1,4 @@
-from pydantic import BaseModel, UUID4
+from pydantic import BaseModel, UUID4, model_validator
 from typing import Any
 from enum import Enum
 from backend.models.flag import FlagStatus
@@ -35,6 +35,19 @@ class SponsorshipFlagPost(BaseModel):
 
 class VideoFlagPost(BaseModel):
     field_flagged: VideoFlaggedField
+
+
+class VideoFlagPostParams(BaseModel):
+    video_id: UUID4 | None
+    youtube_id: str | None
+
+    @model_validator(mode="after")
+    def ensure_one_id(self) -> "VideoFlagPostParams":
+        if not self.video_id and not self.youtube_id:
+            raise ValueError("One of `video_id` or `youtube_id` must be provided.")
+        if self.video_id and self.youtube_id:
+            raise ValueError("Only one of `video_id` or `youtube_id` should be provided.")
+        return self
 
 
 class SponsoredSegmentFlagPost(BaseModel):

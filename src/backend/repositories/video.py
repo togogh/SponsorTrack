@@ -10,6 +10,11 @@ class VideoRepository:
         result = await session.execute(stmt)
         return result.scalar_one_or_none()
 
+    async def get_by_id(self, id: str, session: AsyncSession):
+        stmt = select(Video).where(Video.id == id)
+        result = await session.execute(stmt)
+        return result.scalar_one_or_none()
+
     async def add(self, video_data: VideoCreate, session: AsyncSession):
         video = Video(**video_data.model_dump())
         session.add(video)

@@ -11,6 +11,7 @@ from backend.schemas.flag import (
     VideoFlagPost,
     SponsoredSegmentFlagPost,
     SponsoredSegmentFlagCreate,
+    VideoFlagPostParams,
 )
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -75,8 +76,13 @@ class FlagService:
         flag = await self.flag_repo.add("sponsorship", flag_add_data, session)
         return flag
 
-    async def flag_video(self, youtube_id: str, flag_details: VideoFlagPost, session: AsyncSession):
-        video = await self.video_repo.get_by_youtube_id(youtube_id, session)
+    async def flag_video(
+        self, params: VideoFlagPostParams, flag_details: VideoFlagPost, session: AsyncSession
+    ):
+        if params.youtube_id:
+            video = await self.video_repo.get_by_youtube_id(params.youtube_id, session)
+        else:
+            video = await self.video_repo.get_by_id(params.video_id, session)
         if not video:
             raise HTTPException(status_code=404, detail="No video found with id")
 

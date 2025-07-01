@@ -33,11 +33,11 @@ def submit(youtube_id, youtube_url):
 
 def flag(field, id, entity, input):
     if entity == "video":
-        url = f"http://127.0.0.1:8000/videos/{id}/flag"
+        url = f"http://127.0.0.1:8000/videos/flag?youtube_id={id}"
     elif entity == "sponsorship":
-        url = f"http://127.0.0.1:8000/videos/sponsorships/{id}/flag"
+        url = f"http://127.0.0.1:8000/videos/sponsorships/flag?sponsorship_id={id}"
     elif entity == "sponsored_segment":
-        url = f"http://127.0.0.1:8000/videos/sponsored-segments/{id}/flag"
+        url = f"http://127.0.0.1:8000/videos/sponsored-segments/flag?sponsorship_id={id}"
     data = {"field_flagged": field}
     response = s.post(url, json=data)
     if response.status_code == 200:
