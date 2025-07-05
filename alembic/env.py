@@ -2,6 +2,7 @@ from logging.config import fileConfig
 
 from backend.core.session import get_engine, create_ssh_tunnel
 from backend.models.all import Base
+from backend.core.settings import db_settings
 
 from alembic import context
 import asyncio
@@ -30,6 +31,12 @@ target_metadata = Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
+
+def include_object(object, name, type_, reflected, compare_to):
+    if type_ == "table" and object.schema != db_settings.POSTGRES_SCHEMA:
+        return False
+    return True
 
 
 def run_migrations_offline() -> None:
@@ -66,6 +73,7 @@ async def run_migrations_online() -> None:
                     include_schemas=True,
                     version_table_schema="public",
                     compare_server_default=True,
+                    include_object=include_object,
                 )
             )
 
