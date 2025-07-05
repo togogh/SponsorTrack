@@ -53,5 +53,3 @@ db_settings = DBSettings()
 email_settings = EmailSettings()
 ws_settings = WSSettings()
 generator_settings = GeneratorSettings()
-
-print(ws_settings)
