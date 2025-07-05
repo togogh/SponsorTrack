@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from pydantic import FilePath
+from pydantic import FilePath, IPvAnyAddress
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from ipaddress import IPv4Address
 from backend.core.types import Generator
 from dotenv import load_dotenv, find_dotenv
 
@@ -25,7 +24,7 @@ class DBSettings(BaseSettingsFromEnv):
     POSTGRES_PORT: int
     POSTGRES_DB: str
     POSTGRES_SCHEMA: str
-    SERVER_IP_ADDRESS: IPv4Address
+    SERVER_IP_ADDRESS: IPvAnyAddress
     SERVER_PORT: int
     SSH_USERNAME: str
     SSH_PKEY_PATH: FilePath

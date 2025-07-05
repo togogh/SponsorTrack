@@ -9,7 +9,7 @@ from pydantic import PostgresDsn
 @asynccontextmanager
 async def create_ssh_tunnel():
     async with asyncssh.connect(
-        db_settings.SERVER_IP_ADDRESS,
+        str(db_settings.SERVER_IP_ADDRESS),
         username=db_settings.SSH_USERNAME,
         client_keys=[db_settings.SSH_PKEY_PATH],
     ) as conn:
