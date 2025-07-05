@@ -15,6 +15,7 @@ dependencies = [
     "huggingface-hub>=0.31.1",
     "pre-commit>=4.2.0",
     "pydantic>=2.11.4",
+    "pydantic-settings>=2.10.1",
     "pytest>=8.3.5",
     "youtube-transcript-api>=1.1.0",
     "yt-dlp>=2025.4.30",
