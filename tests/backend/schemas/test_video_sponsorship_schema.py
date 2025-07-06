@@ -44,8 +44,33 @@ async def test_validate_youtube_url(url, expected_output, expected_error):
             VideoSponsorshipRequest(url=url)
     else:
         if not url:
-            video = VideoSponsorshipRequest(id="0", url=url)
-            assert video.url == expected_output
+            request = VideoSponsorshipRequest(id="0", url=url)
+            assert request.url == expected_output
         else:
-            video = VideoSponsorshipRequest(url=url)
-            assert str(video.url) == expected_output
+            request = VideoSponsorshipRequest(url=url)
+            assert str(request.url) == expected_output
+
+
+@pytest.mark.parametrize(
+    "input, expected_error",
+    [
+        (
+            {"id": "dQw4w9WgXcQ", "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"},
+            ValidationError,
+        ),
+        ({"id": None, "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}, None),
+        ({"id": "dQw4w9WgXcQ", "url": None}, None),
+        ({"id": None, "url": None}, ValidationError),
+    ],
+)
+async def test_ensure_url_or_id(input, expected_error):
+    if expected_error is not None:
+        with pytest.raises(expected_error):
+            VideoSponsorshipRequest(**input)
+    else:
+        request = VideoSponsorshipRequest(**input)
+        for k, v in input.items():
+            if v is None:
+                assert getattr(request, k) == v
+            else:
+                assert str(getattr(request, k)) == v
