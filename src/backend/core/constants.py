@@ -4,6 +4,7 @@ class Constants:
         "www.youtube.com",
         "m.youtube.com",
         "youtu.be",
+        "music.youtube.com",
     ]
     SPONSORBLOCK_BASE_URL = "https://sponsor.ajay.app"
 

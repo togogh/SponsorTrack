@@ -5,8 +5,8 @@ from urllib.parse import urlparse
 
 
 class VideoSponsorshipRequest(BaseModel):
-    id: Optional[str]
-    url: Optional[HttpUrl]
+    id: Optional[str] = None
+    url: Optional[HttpUrl] = None
 
     @field_validator("url")
     @classmethod
