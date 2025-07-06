@@ -36,7 +36,6 @@ class TestVideoRepository:
         ],
     )
     async def test_add(self, input, expected_values, error):
-        assert hasattr(self, "session")
         if error is not None:
             with pytest.raises(error):
                 await self.repo.add(input, self.session)
