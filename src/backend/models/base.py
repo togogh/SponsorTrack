@@ -3,11 +3,10 @@ from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from sqlalchemy import Column, DateTime, MetaData
 from sqlalchemy.orm import as_declarative
-from backend.core.settings import db_settings
 from sqlalchemy.sql import func
 
 
-metadata = MetaData(schema=db_settings.POSTGRES_SCHEMA)
+metadata = MetaData(schema="env")
 
 
 @as_declarative(metadata=metadata)
@@ -22,4 +21,4 @@ class Base:
 
 
 def fk(ref: str) -> str:
-    return f"{db_settings.POSTGRES_SCHEMA}.{ref}"
+    return f"env.{ref}"

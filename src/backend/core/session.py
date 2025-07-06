@@ -25,7 +25,7 @@ async def create_ssh_tunnel():
             await listener.wait_closed()
 
 
-async def get_engine(port=None):
+async def get_engine(port=None, schema=None):
     if port is None:
         port = db_settings.POSTGRES_PORT
     DATABASE_URL: PostgresDsn = (
@@ -33,14 +33,18 @@ async def get_engine(port=None):
         f"{db_settings.POSTGRES_PASSWORD}@127.0.0.1:{port}/"
         f"{db_settings.POSTGRES_DB}"
     )
-    engine = create_async_engine(DATABASE_URL, echo=True)
+    if not schema:
+        schema = db_settings.POSTGRES_SCHEMA
+    engine = create_async_engine(
+        DATABASE_URL, echo=True, execution_options={"schema_translate_map": {"env": schema}}
+    )
     return engine
 
 
 @asynccontextmanager
-async def get_session():
+async def get_session(schema=None):
     async with create_ssh_tunnel() as local_port:
-        engine = await get_engine(local_port)
+        engine = await get_engine(local_port, schema)
         async_session = sessionmaker(
             bind=engine,
             class_=AsyncSession,
@@ -51,6 +55,6 @@ async def get_session():
         await engine.dispose()
 
 
-async def session_dependency():
-    async with get_session() as session:
+async def session_dependency(schema=None):
+    async with get_session(schema) as session:
         yield session
