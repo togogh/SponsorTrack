@@ -1,10 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.models.sponsorship import Sponsorship
+from backend.models.all import Sponsorship, SponsoredSegment, Video
 from backend.schemas.sponsorship import SponsorshipCreate, SponsorshipUpdate
 from sqlalchemy import select, update
 from pydantic import UUID4
-from backend.models.sponsored_segment import SponsoredSegment
-from backend.models.video import Video
 
 
 class SponsorshipRepository:

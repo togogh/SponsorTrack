@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
-from backend.models.video_metadata import VideoMetadata
-from backend.models.video import Video
+from backend.models.all import VideoMetadata, Video
 from backend.schemas.video_metadata import VideoMetadataCreate, VideoMetadataUpdate
 from pydantic import UUID4
 

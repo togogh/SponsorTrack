@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.models.generated_sponsorship import GeneratedSponsorship
+from backend.models.all import GeneratedSponsorship
 from backend.schemas.generated_sponsorship import (
     GeneratedSponsorshipCreate,
     GeneratedSponsorshipUpdate,

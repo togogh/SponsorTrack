@@ -1,7 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.models.video import Video
-from backend.models.sponsored_segment import SponsoredSegment
-from backend.models.sponsorship import Sponsorship
+from backend.models.all import Video, SponsoredSegment, Sponsorship
 from backend.schemas.sponsored_segment import SponsoredSegmentCreate, SponsoredSegmentUpdate
 from sqlalchemy import select, update
 from pydantic import UUID4
