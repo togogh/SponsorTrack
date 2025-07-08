@@ -9,7 +9,6 @@ class SponsoredSegment(Base):
     start_time = Column(Float, nullable=False)
     end_time = Column(Float, nullable=False)
     subtitles = Column(String)
-    duration = Column(Float, nullable=False)
     parent_video_id = Column(
         UUID(as_uuid=True), ForeignKey(fk("video.id")), nullable=False, index=True
     )

@@ -66,7 +66,6 @@ async def get_or_create_sponsored_segments(
                 sponsorblock_id=block["UUID"],
                 start_time=block["segment"][0],
                 end_time=block["segment"][1],
-                duration=block["segment"][1] - block["segment"][0],
                 parent_video_id=video.id,
             )
             sponsored_segment = await sponsored_segment_repo.add(sponsored_segment_create, session)
