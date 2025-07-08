@@ -26,7 +26,6 @@ class SponsoredSegmentFlaggedField(str, Enum):
     start_time = "start_time"
     end_time = "end_time"
     subtitles = "subtitles"
-    duration = "duration"
 
 
 class SponsorshipFlagPost(BaseModel):
