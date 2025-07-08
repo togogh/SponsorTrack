@@ -5,8 +5,8 @@ import pytest
 @pytest.mark.parametrize(
     "youtube_id, expected_error",
     [
-        pytest.param("7a_wOgXrHn8", None, id="valid_youtube_id"),
-        pytest.param("invalid_id", ValueError, id="invalid_youtube_id"),
+        pytest.param("7a_wOgXrHn8", None),
+        pytest.param("invalid_id", ValueError),
     ],
 )
 async def test_ensure_video_exists_on_youtube(youtube_id, expected_error):
