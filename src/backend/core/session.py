@@ -27,7 +27,7 @@ from pydantic import PostgresDsn
 
 @asynccontextmanager
 async def get_engine(schema=None):
-    port = db_settings.POSTGRES_PORT
+    port = db_settings.POSTGRES_LOCAL_PORT
     DATABASE_URL: PostgresDsn = (
         f"postgresql+asyncpg://{db_settings.POSTGRES_USER}:"
         f"{db_settings.POSTGRES_PASSWORD}@127.0.0.1:{port}/"

@@ -21,7 +21,8 @@ class DBSettings(BaseSettingsFromEnv):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_SERVER: str
-    POSTGRES_PORT: int
+    POSTGRES_REMOTE_PORT: int
+    POSTGRES_LOCAL_PORT: int
     POSTGRES_DB: str
     POSTGRES_SCHEMA: str
     SERVER_IP_ADDRESS: IPvAnyAddress
