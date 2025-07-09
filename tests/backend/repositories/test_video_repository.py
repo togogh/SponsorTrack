@@ -4,46 +4,34 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 
-@pytest.mark.usefixtures("test_session")
-@pytest.mark.asyncio(loop_scope="class")
-class TestVideoRepository:
-    @classmethod
-    def setup_class(cls):
-        cls.base_fields = ["id", "created_at", "updated_at"]
-        cls.video_fields = [
-            "youtube_id",
-            "language",
-            "title",
-            "upload_date",
-            "description",
-            "duration",
-            "channel",
-        ]
-        cls.repo = VideoRepository()
+@pytest.fixture
+def repo():
+    return VideoRepository()
 
-    @pytest.mark.parametrize(
-        "input, expected_values, error",
-        [
-            pytest.param(
-                VideoCreate(youtube_id="IInciWyU74U"),
-                {"youtube_id": "IInciWyU74U"},
-                None,
-                id="valid_insert",
-            ),
-            pytest.param(
-                VideoCreate(youtube_id="IInciWyU74U"), None, IntegrityError, id="duplicate_video"
-            ),
-        ],
-    )
-    async def test_add(self, input, expected_values, error):
-        if error is not None:
-            with pytest.raises(error):
-                await self.repo.add(input, self.session)
-        else:
-            video = await self.repo.add(input, self.session)
-            for field in self.base_fields + self.video_fields:
-                assert hasattr(video, field)
-            for field in self.base_fields:
-                assert getattr(video, field) is not None
-            for k, v in expected_values.items():
-                assert getattr(video, k) == v
+
+@pytest.fixture
+def video_fields():
+    return [
+        "youtube_id",
+        "language",
+        "title",
+        "upload_date",
+        "description",
+        "duration",
+        "channel",
+    ]
+
+
+async def test_add(test_session, repo, base_fields, video_fields):
+    youtube_id = "IInciWyU74U"
+    existing = await repo.get_by_youtube_id(youtube_id, test_session)
+    assert not existing
+    video_data = VideoCreate(youtube_id=youtube_id)
+    video = await repo.add(video_data, test_session)
+    for field in base_fields + video_fields:
+        assert hasattr(video, field)
+    for field in base_fields:
+        assert getattr(video, field) is not None
+    assert video.youtube_id == youtube_id
+    with pytest.raises(IntegrityError):
+        await repo.add(video_data, test_session)

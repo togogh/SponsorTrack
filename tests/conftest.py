@@ -1,40 +1,43 @@
 import pytest_asyncio
-from backend.core.session import get_session
-from backend.models.all import Base
+import pytest
+from backend.core.session import get_engine, get_session
 from sqlalchemy import text
 
 
+@pytest_asyncio.fixture(scope="session")
+async def test_engine():
+    async with get_engine(schema="test") as engine:
+        yield engine
+        await engine.dispose()
+
+
 @pytest_asyncio.fixture(scope="session", autouse=True)
-async def reset_test_schema():
-    async with get_session("dev") as session:
-        await session.execute(text("DROP SCHEMA IF EXISTS test CASCADE"))
-        await session.execute(text("CREATE SCHEMA test"))
-        await session.commit()
+async def reset_test_schema(test_engine):
+    async with get_session(engine=test_engine) as session:
+        result = await session.execute(
+            text("""
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_schema = 'test'
+        """)
+        )
+        tables = result.fetchall()
 
-    async with get_session("test") as session:
-        conn = await session.connection()
-        await conn.run_sync(lambda sync_conn: Base.metadata.create_all(bind=sync_conn))
-        await session.commit()
-
-    yield
-
-
-@pytest_asyncio.fixture(scope="class")
-async def test_session(request):
-    async with get_session("test") as session:
-        request.cls.session = session
-        yield
+        if tables:
+            table_names = [f"test.{t[0]}" for t in tables]
+            print(table_names)
+            await session.execute(
+                text(f"TRUNCATE TABLE {', '.join(table_names)} RESTART IDENTITY CASCADE")
+            )
+            await session.commit()
 
 
-# def pytest_collection_modifyitems(items):
-#     """Modifies test items in place to ensure test classes run in a given order."""
-#     CLASS_ORDER = ["TestVideo", "TestSponsoredSegment"]
-#     class_mapping = {item: item.cls.__name__ for item in items}
+@pytest_asyncio.fixture(scope="function")
+async def test_session(test_engine):
+    async with get_session(engine=test_engine) as session:
+        yield session
 
-#     sorted_items = items.copy()
-#     # Iteratively move tests of each class to the end of the test queue
-#     for class_ in CLASS_ORDER:
-#         sorted_items = [it for it in sorted_items if class_mapping[it] != class_] + [
-#             it for it in sorted_items if class_mapping[it] == class_
-#         ]
-#     items[:] = sorted_items
+
+@pytest.fixture
+def base_fields():
+    return ["id", "created_at", "updated_at"]
