@@ -38,7 +38,10 @@ async def get_engine(schema=None):
     engine = create_async_engine(
         DATABASE_URL, echo=True, execution_options={"schema_translate_map": {"env": schema}}
     )
-    yield engine
+    try:
+        yield engine
+    finally:
+        await engine.dispose()
 
 
 # @asynccontextmanager
@@ -51,15 +54,29 @@ async def get_engine(schema=None):
 @asynccontextmanager
 async def get_session(schema=None, engine=None):
     if not engine:
-        engine = await get_engine(schema)
-    async_session = sessionmaker(
-        bind=engine,
-        class_=AsyncSession,
-        expire_on_commit=False,
-    )
-    async with async_session() as session:
-        yield session
-    await engine.dispose()
+        with await get_engine(schema) as engine:
+            async_session = sessionmaker(
+                bind=engine,
+                class_=AsyncSession,
+                expire_on_commit=False,
+            )
+            async with async_session() as session:
+                try:
+                    yield session
+                finally:
+                    await session.close()
+    else:
+        async_session = sessionmaker(
+            bind=engine,
+            class_=AsyncSession,
+            expire_on_commit=False,
+        )
+        async with async_session() as session:
+            try:
+                yield session
+            finally:
+                await session.close()
+    # await engine.dispose()
 
 
 async def session_dependency(schema=None, engine=None):

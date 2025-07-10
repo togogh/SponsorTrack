@@ -8,7 +8,6 @@ from sqlalchemy import text
 async def test_engine():
     async with get_engine(schema="test") as engine:
         yield engine
-        await engine.dispose()
 
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
@@ -32,7 +31,7 @@ async def reset_test_schema(test_engine):
             await session.commit()
 
 
-@pytest_asyncio.fixture(scope="function")
+@pytest_asyncio.fixture(scope="session")
 async def test_session(test_engine):
     async with get_session(engine=test_engine) as session:
         yield session
