@@ -1,6 +1,6 @@
 from logging.config import fileConfig
 
-from backend.core.session import get_engine, create_ssh_tunnel
+from backend.core.session import get_engine
 from backend.models.all import Base
 from backend.core.settings import db_settings
 
@@ -61,9 +61,7 @@ async def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    async with create_ssh_tunnel() as local_port:
-        engine = await get_engine(local_port)
-
+    async with get_engine() as engine:
         async with engine.connect() as connection:
             await connection.run_sync(
                 lambda sync_conn: context.configure(
@@ -82,8 +80,6 @@ async def run_migrations_online() -> None:
 
             async with connection.begin():
                 await connection.run_sync(do_run_migrations)
-
-        await engine.dispose()
 
 
 try:
