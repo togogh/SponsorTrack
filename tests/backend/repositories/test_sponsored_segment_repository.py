@@ -66,8 +66,6 @@ async def test_add_overlapping(
         finally:
             await test_session.rollback()
 
-    print("this is the video", video)
-    print(video_id)
     third_segment_data = {
         "sponsorblock_id": "id2",
         "start_time": 12,
