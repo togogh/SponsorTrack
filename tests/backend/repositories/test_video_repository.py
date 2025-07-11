@@ -138,8 +138,10 @@ async def test_update(test_session, repo, base_fields, entity_fields):
     assert isinstance(updated_video, Video)
 
     for field in retained_fields:
+        assert getattr(added_video, field) == getattr(updated_video, field)
         assert getattr(added_video_copy, field) == getattr(updated_video, field)
     for field in changed_fields:
+        assert getattr(added_video, field) == getattr(updated_video, field)
         assert getattr(added_video_copy, field) != getattr(updated_video, field)
         if field == "upload_date":
             assert (
