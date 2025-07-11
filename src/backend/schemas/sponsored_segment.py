@@ -19,7 +19,6 @@ class SponsoredSegmentCreate(SponsoredSegmentTimesValidatorMixin, BaseModel):
 
 
 class SponsoredSegmentUpdate(SponsoredSegmentTimesValidatorMixin, BaseModel):
-    sponsorblock_id: str | None = None
     start_time: PositiveFloat | None = None
     end_time: PositiveFloat | None = None
     subtitles: str | None = None

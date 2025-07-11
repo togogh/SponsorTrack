@@ -1,8 +1,9 @@
 from backend.repositories.all import SponsoredSegmentRepository, VideoRepository
-from backend.schemas.all import SponsoredSegmentCreate, SponsoredSegmentUpdate, VideoCreate  # noqa: F401
-from backend.models.all import SponsoredSegment  # noqa: F401
+from backend.schemas.all import SponsoredSegmentCreate, SponsoredSegmentUpdate, VideoCreate
+from backend.models.all import SponsoredSegment
 import pytest
 from sqlalchemy.exc import IntegrityError
+import datetime
 
 
 @pytest.fixture
@@ -78,3 +79,61 @@ async def test_add_overlapping(
             await sponsored_segment_repo.add(sponsored_segment_create, test_session)
         finally:
             await test_session.rollback()
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_update(test_session, sponsored_segment_repo, video_repo, base_fields, entity_fields):
+    retained_fields = ["id", "created_at", "parent_video_id", "sponsorblock_id"]
+    all_fields = base_fields + entity_fields
+    changed_fields = [field for field in all_fields if field not in retained_fields]
+
+    id = "a6945747-6dab-429e-a2cf-4c3d2f0e0727"
+    await sponsored_segment_repo.update(
+        id, SponsoredSegmentUpdate(subtitles="blabla"), test_session
+    )
+    updated_sponsored_segment = await sponsored_segment_repo.get_by_id(id, test_session)
+    assert updated_sponsored_segment is None
+
+    video_data = {
+        "youtube_id": "e1XgXBsXIRs",
+    }
+    video_create = VideoCreate(**video_data)
+    video = await video_repo.add(video_create, test_session)
+    video_id = video.id
+
+    original_segment_data = {
+        "sponsorblock_id": "rand_id",
+        "start_time": 1,
+        "end_time": 5,
+        "parent_video_id": video_id,
+    }
+    segment_create = SponsoredSegmentCreate(**original_segment_data)
+    added_segment = await sponsored_segment_repo.add(segment_create, test_session)
+    added_segment_data = {k: v for k, v in added_segment.__dict__.items() if k in all_fields}
+    added_segment_copy = SponsoredSegment(**added_segment_data)
+
+    new_segment_data = {
+        "start_time": 10,
+        "end_time": 15,
+        "subtitles": "bla bla",
+    }
+    segment_update = SponsoredSegmentUpdate(**new_segment_data)
+    await sponsored_segment_repo.update(added_segment.id, segment_update, test_session)
+
+    updated_segment = await sponsored_segment_repo.get_by_id(added_segment.id, test_session)
+    await test_session.refresh(updated_segment)
+    assert isinstance(updated_segment, SponsoredSegment)
+
+    for field in retained_fields:
+        assert getattr(added_segment, field) == getattr(updated_segment, field)
+        assert getattr(added_segment_copy, field) == getattr(updated_segment, field)
+    for field in changed_fields:
+        assert getattr(added_segment, field) == getattr(updated_segment, field)
+        assert getattr(added_segment_copy, field) != getattr(updated_segment, field)
+        if field == "upload_date":
+            assert (
+                getattr(updated_segment, field)
+                == datetime.strptime(new_segment_data[field], "%Y-%m-%d").date()
+            )
+        elif field != "updated_at":
+            assert getattr(updated_segment, field) == new_segment_data[field]
