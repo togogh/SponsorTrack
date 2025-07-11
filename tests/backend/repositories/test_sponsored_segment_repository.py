@@ -1,5 +1,14 @@
-from backend.repositories.all import SponsoredSegmentRepository, VideoRepository
-from backend.schemas.all import SponsoredSegmentCreate, SponsoredSegmentUpdate, VideoCreate
+from backend.repositories.all import (
+    SponsoredSegmentRepository,
+    VideoRepository,
+    SponsorshipRepository,
+)
+from backend.schemas.all import (
+    SponsoredSegmentCreate,
+    SponsoredSegmentUpdate,
+    VideoCreate,
+    SponsorshipCreate,
+)
 from backend.models.all import SponsoredSegment
 import pytest
 from sqlalchemy.exc import IntegrityError
@@ -14,6 +23,11 @@ def video_repo():
 @pytest.fixture
 def sponsored_segment_repo():
     return SponsoredSegmentRepository()
+
+
+@pytest.fixture
+def sponsorship_repo():
+    return SponsorshipRepository()
 
 
 @pytest.fixture
@@ -79,6 +93,70 @@ async def test_add_overlapping(
             await sponsored_segment_repo.add(sponsored_segment_create, test_session)
         finally:
             await test_session.rollback()
+
+
+@pytest.mark.asyncio(loop_scope="session")
+async def test_get_by_id(test_session, sponsored_segment_repo, video_repo, sponsorship_repo):
+    rand_uuid = "2df9f22f-a2e1-4498-940e-41c105a05f41"
+
+    segment = await sponsored_segment_repo.get_by_id(rand_uuid, test_session)
+    assert segment is None
+
+    segment = await sponsored_segment_repo.get_by_sponsorship_id(rand_uuid, test_session)
+    assert segment is None
+
+    segments = await sponsored_segment_repo.get_by_video_id(rand_uuid, test_session)
+    assert segments == []
+
+    youtube_id = "sR7rMP4GXuE"
+    video_data = VideoCreate(youtube_id=youtube_id)
+    video = await video_repo.add(video_data, test_session)
+    video_id = video.id
+
+    segment_data = [
+        {
+            "sponsorblock_id": "sblock_1",
+            "start_time": 1,
+            "end_time": 5,
+            "parent_video_id": video_id,
+        },
+        {
+            "sponsorblock_id": "sblock_2",
+            "start_time": 13.1,
+            "end_time": 119.2,
+            "parent_video_id": video_id,
+        },
+    ]
+    segments = []
+    for data in segment_data:
+        segment_create = SponsoredSegmentCreate(**data)
+        segment = await sponsored_segment_repo.add(segment_create, test_session)
+        segments.append(segment)
+
+    sponsorship_data = {
+        "sponsor_name": "Sponsor",
+        "sponsor_description": "we awesome",
+        "sponsored_segment_id": segments[0].id,
+    }
+    sponsorship_create = SponsorshipCreate(**sponsorship_data)
+    sponsorship = await sponsorship_repo.add(sponsorship_create, test_session)
+
+    for segment in segments:
+        queried_segment = await sponsored_segment_repo.get_by_id(segment.id, test_session)
+        assert isinstance(queried_segment, SponsoredSegment)
+        assert segment == queried_segment
+
+    queried_segment = await sponsored_segment_repo.get_by_sponsorship_id(
+        sponsorship.id, test_session
+    )
+    assert isinstance(queried_segment, SponsoredSegment)
+    assert segments[0] == queried_segment
+
+    queried_segments = await sponsored_segment_repo.get_by_video_id(video.id, test_session)
+    assert isinstance(queried_segments, list) and all(
+        isinstance(item, SponsoredSegment) for item in queried_segments
+    )
+    assert queried_segments == segments
 
 
 @pytest.mark.asyncio(loop_scope="session")
