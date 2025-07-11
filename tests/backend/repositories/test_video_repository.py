@@ -12,7 +12,7 @@ def repo():
 
 
 @pytest.fixture
-def video_fields():
+def entity_fields():
     return [
         "youtube_id",
         "language",
@@ -25,7 +25,7 @@ def video_fields():
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_add_duplicate(test_session, repo, base_fields, video_fields):
+async def test_add_duplicate(test_session, repo, base_fields, entity_fields):
     youtube_id = "IInciWyU74U"
 
     existing = await repo.get_by_youtube_id(youtube_id, test_session)
@@ -36,7 +36,7 @@ async def test_add_duplicate(test_session, repo, base_fields, video_fields):
     }
     video_create = VideoCreate(**video_data)
     video = await repo.add(video_create, test_session)
-    for field in base_fields + video_fields:
+    for field in base_fields + entity_fields:
         assert hasattr(video, field)
     for field in base_fields:
         assert getattr(video, field) is not None
@@ -51,7 +51,7 @@ async def test_add_duplicate(test_session, repo, base_fields, video_fields):
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_add_full(test_session, repo, base_fields, video_fields):
+async def test_add_full(test_session, repo, base_fields, entity_fields):
     video_data = {
         "youtube_id": "VWUXDDM_TAQ",
         "language": "en",
@@ -63,7 +63,7 @@ async def test_add_full(test_session, repo, base_fields, video_fields):
     }
     video_create = VideoCreate(**video_data)
     video = await repo.add(video_create, test_session)
-    for field in base_fields + video_fields:
+    for field in base_fields + entity_fields:
         assert hasattr(video, field)
     for field in base_fields:
         assert getattr(video, field) is not None
@@ -98,9 +98,9 @@ async def test_get_by_id(test_session, repo):
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_update(test_session, repo, base_fields, video_fields):
+async def test_update(test_session, repo, base_fields, entity_fields):
     retained_fields = ["id", "youtube_id", "created_at"]
-    all_fields = base_fields + video_fields
+    all_fields = base_fields + entity_fields
     changed_fields = [field for field in all_fields if field not in retained_fields]
 
     id = "a6945747-6dab-429e-a2cf-4c3d2f0e0727"
