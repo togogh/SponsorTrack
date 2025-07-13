@@ -2,7 +2,7 @@ from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.models.all import Sponsorship, SponsoredSegment
 from backend.repositories.all import SponsorshipRepository, GeneratedSponsorshipRepository
-from backend.schemas.all import KeyMetadata, SponsorshipCreate, GeneratedSponsorshipCreate
+from backend.schemas.all import MetadataJson, SponsorshipCreate, GeneratedSponsorshipCreate
 from backend.services.generators.get_generator import get_generator
 from backend.core.settings import generator_settings
 
@@ -14,14 +14,14 @@ async def get_sponsorships(
     return sponsorships
 
 
-async def create_prompt(metadata: KeyMetadata, segment: SponsoredSegment):
+async def create_prompt(metadata: MetadataJson, segment: SponsoredSegment):
     prompt = f"""
         I have a sponsored segment cut from a Youtube video. Here's some information about this segment:
 
-        Youtube channel: {metadata.channel}
-        Video description: {metadata.description}
-        Upload date: {metadata.upload_date}
-        Video language: {metadata.language}
+        Youtube channel: {metadata["channel"]}
+        Video description: {metadata["description"]}
+        Upload date: {metadata["upload_date"]}
+        Video language: {metadata["language"]}
         Segment subtitles: {segment.subtitles}
 
         The subtitles can be auto-generated, so don't assume what's written there is the absolute truth, especially the spelling. Double check the information there using the other fields.

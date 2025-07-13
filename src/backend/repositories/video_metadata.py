@@ -6,6 +6,11 @@ from pydantic import UUID4
 
 
 class VideoMetadataRepository:
+    async def get_by_id(self, id: UUID4, session: AsyncSession):
+        stmt = select(VideoMetadata).where(VideoMetadata.id == id)
+        result = await session.execute(stmt)
+        return result.scalar_one_or_none()
+
     async def get_by_video_id(self, video_id: str, session: AsyncSession):
         stmt = select(VideoMetadata).join(Video).where(Video.id == video_id)
         result = await session.execute(stmt)

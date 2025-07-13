@@ -114,20 +114,19 @@ async def test_get_by_id(test_session, sponsored_segment_repo, video_repo, spons
     youtube_id = "sR7rMP4GXuE"
     video_data = VideoCreate(youtube_id=youtube_id)
     video = await video_repo.add(video_data, test_session)
-    video_id = video.id
 
     segment_data = [
         {
             "sponsorblock_id": "sblock_1",
             "start_time": 1,
             "end_time": 5,
-            "parent_video_id": video_id,
+            "parent_video_id": video.id,
         },
         {
             "sponsorblock_id": "sblock_2",
             "start_time": 13.1,
             "end_time": 119.2,
-            "parent_video_id": video_id,
+            "parent_video_id": video.id,
         },
     ]
     segments = []
@@ -186,13 +185,12 @@ async def test_update(test_session, sponsored_segment_repo, video_repo, base_fie
     }
     video_create = VideoCreate(**video_data)
     video = await video_repo.add(video_create, test_session)
-    video_id = video.id
 
     original_segment_data = {
         "sponsorblock_id": "rand_id",
         "start_time": 1,
         "end_time": 5,
-        "parent_video_id": video_id,
+        "parent_video_id": video.id,
     }
     segment_create = SponsoredSegmentCreate(**original_segment_data)
     added_segment = await sponsored_segment_repo.add(segment_create, test_session)
