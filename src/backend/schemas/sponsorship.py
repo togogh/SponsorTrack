@@ -13,7 +13,7 @@ class SponsorLinksValidatorMixin:
 
 class SponsorshipCreate(SponsorLinksValidatorMixin, BaseModel):
     sponsor_name: str
-    sponsor_description: str
+    sponsor_description: str | None = None
     sponsor_links: list[HttpUrl] | None = None
     sponsor_coupon_code: str | None = None
     sponsor_offer: str | None = None
