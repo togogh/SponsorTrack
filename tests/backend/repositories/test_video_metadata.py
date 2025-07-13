@@ -18,11 +18,7 @@ def metadata_repo():
 
 @pytest.fixture
 def entity_fields():
-    return [
-        "raw_json",
-        "raw_transcript",
-        "video_id",
-    ]
+    return list(VideoMetadataCreate.__pydantic_fields__.keys())
 
 
 @pytest.mark.asyncio(loop_scope="session")

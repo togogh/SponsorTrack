@@ -13,15 +13,7 @@ def repo():
 
 @pytest.fixture
 def entity_fields():
-    return [
-        "youtube_id",
-        "language",
-        "title",
-        "upload_date",
-        "description",
-        "duration",
-        "channel",
-    ]
+    return list(VideoCreate.__pydantic_fields__.keys())
 
 
 @pytest.mark.asyncio(loop_scope="session")

@@ -32,13 +32,7 @@ def sponsorship_repo():
 
 @pytest.fixture
 def entity_fields():
-    return [
-        "sponsorblock_id",
-        "start_time",
-        "end_time",
-        "parent_video_id",
-        "subtitles",
-    ]
+    return list(SponsoredSegmentCreate.__pydantic_fields__.keys())
 
 
 @pytest.mark.asyncio(loop_scope="session")
