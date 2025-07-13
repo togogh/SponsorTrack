@@ -17,7 +17,7 @@ def entity_fields():
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_add_duplicate(test_session, repo, base_fields, entity_fields):
+async def test_add(test_session, repo, base_fields, entity_fields):
     youtube_id = "IInciWyU74U"
 
     existing = await repo.get_by_youtube_id(youtube_id, test_session)
@@ -41,9 +41,6 @@ async def test_add_duplicate(test_session, repo, base_fields, entity_fields):
         finally:
             await test_session.rollback()
 
-
-@pytest.mark.asyncio(loop_scope="session")
-async def test_add_full(test_session, repo, base_fields, entity_fields):
     video_data = {
         "youtube_id": "VWUXDDM_TAQ",
         "language": "en",

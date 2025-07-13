@@ -36,9 +36,7 @@ def entity_fields():
 
 
 @pytest.mark.asyncio(loop_scope="session")
-async def test_add_overlapping(
-    test_session, sponsored_segment_repo, video_repo, base_fields, entity_fields
-):
+async def test_add(test_session, sponsored_segment_repo, video_repo, base_fields, entity_fields):
     youtube_id = "CvQ7e6yUtnw"
     video_data = {
         "youtube_id": youtube_id,
