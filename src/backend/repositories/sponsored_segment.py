@@ -11,6 +11,11 @@ class SponsoredSegmentRepository:
         result = await session.execute(stmt)
         return result.scalar_one_or_none()
 
+    async def get_by_sponsorblock_id(self, id: str, session: AsyncSession):
+        stmt = select(SponsoredSegment).where(SponsoredSegment.sponsorblock_id == id)
+        result = await session.execute(stmt)
+        return result.scalar_one_or_none()
+
     async def get_by_video_id(self, video_id: UUID4, session: AsyncSession):
         stmt = select(SponsoredSegment).join(Video).where(Video.id == video_id)
         result = await session.execute(stmt)

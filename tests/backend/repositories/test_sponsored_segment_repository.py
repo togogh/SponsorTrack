@@ -102,6 +102,9 @@ async def test_get_by_id(test_session, sponsored_segment_repo, video_repo, spons
     segment = await sponsored_segment_repo.get_by_id(rand_uuid, test_session)
     assert segment is None
 
+    segment = await sponsored_segment_repo.get_by_sponsorblock_id(rand_uuid, test_session)
+    assert segment is None
+
     segment = await sponsored_segment_repo.get_by_sponsorship_id(rand_uuid, test_session)
     assert segment is None
 
@@ -143,6 +146,12 @@ async def test_get_by_id(test_session, sponsored_segment_repo, video_repo, spons
 
     for segment in segments:
         queried_segment = await sponsored_segment_repo.get_by_id(segment.id, test_session)
+        assert isinstance(queried_segment, SponsoredSegment)
+        assert segment == queried_segment
+
+        queried_segment = await sponsored_segment_repo.get_by_sponsorblock_id(
+            segment.sponsorblock_id, test_session
+        )
         assert isinstance(queried_segment, SponsoredSegment)
         assert segment == queried_segment
 
