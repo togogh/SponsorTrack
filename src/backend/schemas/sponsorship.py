@@ -5,7 +5,7 @@ from typing import Optional
 class SponsorLinksValidatorMixin:
     @field_validator("sponsor_links", mode="after")
     @classmethod
-    def convert_sponsor_links_to_str(cls, v: Optional[list[str]]) -> Optional[list[str]]:
+    def validate_sponsor_links(cls, v: Optional[list[str]]) -> Optional[list[str]]:
         if v is None:
             return None
         ta_url = TypeAdapter(HttpUrl)

@@ -13,7 +13,7 @@ import pytest
         pytest.param("https://vimeo.com/123456", ValidationError),
     ],
 )
-async def test_convert_sponsor_links_to_str(sponsor_links, expected_error):
+async def test_validate_sponsor_links(sponsor_links, expected_error):
     if expected_error is not None:
         with pytest.raises(expected_error):
             SponsorshipUpdate(sponsor_links=sponsor_links)
