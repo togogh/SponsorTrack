@@ -35,7 +35,6 @@ from pydantic import ValidationError
                 "language": "en",
                 "title": "title",
                 "upload_date": "2024-22-14",
-                "description": "description",
                 "duration": 92.1,
                 "channel": "channel",
             },

@@ -12,7 +12,6 @@ from backend.schemas.all import (
 from backend.models.all import SponsoredSegment
 import pytest
 from sqlalchemy.exc import IntegrityError
-import datetime
 
 
 @pytest.fixture
@@ -207,10 +206,5 @@ async def test_update(test_session, sponsored_segment_repo, video_repo, base_fie
     for field in changed_fields:
         assert getattr(added_segment, field) == getattr(updated_segment, field)
         assert getattr(added_segment_copy, field) != getattr(updated_segment, field)
-        if field == "upload_date":
-            assert (
-                getattr(updated_segment, field)
-                == datetime.strptime(new_segment_data[field], "%Y-%m-%d").date()
-            )
-        elif field != "updated_at":
+        if field != "updated_at":
             assert getattr(updated_segment, field) == new_segment_data[field]

@@ -3,7 +3,6 @@ from backend.schemas.all import VideoMetadataCreate, VideoMetadataUpdate, VideoC
 from backend.models.all import VideoMetadata
 import pytest
 from sqlalchemy.exc import IntegrityError
-import datetime
 
 
 @pytest.fixture
@@ -166,10 +165,5 @@ async def test_update(test_session, video_repo, metadata_repo, base_fields, enti
     for field in changed_fields:
         assert getattr(added_metadata, field) == getattr(updated_metadata, field)
         assert getattr(added_metadata_copy, field) != getattr(updated_metadata, field)
-        if field == "upload_date":
-            assert (
-                getattr(updated_metadata, field)
-                == datetime.strptime(new_metadata_data[field], "%Y-%m-%d").date()
-            )
-        elif field != "updated_at":
+        if field != "updated_at":
             assert getattr(updated_metadata, field) == new_metadata_data[field]

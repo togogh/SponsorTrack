@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import NUMRANGE, ExcludeConstraint
 
 
 class SponsoredSegment(Base):
-    sponsorblock_id = Column(String, unique=True)
+    sponsorblock_id = Column(String, unique=True, nullable=True)
     start_time = Column(Float, nullable=False)
     end_time = Column(Float, nullable=False)
     subtitles = Column(String)

@@ -14,8 +14,16 @@ class SponsorshipRepository:
     async def get_by_segment_id(self, segment_id: UUID4, session: AsyncSession):
         stmt = select(Sponsorship).join(SponsoredSegment).where(SponsoredSegment.id == segment_id)
         result = await session.execute(stmt)
-        segments = result.scalars().all()
-        return segments
+        return result.scalar_one_or_none()
+
+    async def get_by_sponsorblock_id(self, sponsorblock_id: str, session: AsyncSession):
+        stmt = (
+            select(Sponsorship)
+            .join(SponsoredSegment)
+            .where(SponsoredSegment.sponsorblock_id == sponsorblock_id)
+        )
+        result = await session.execute(stmt)
+        return result.scalar_one_or_none()
 
     async def get_by_video_id(self, video_id: UUID4, session: AsyncSession):
         stmt = (

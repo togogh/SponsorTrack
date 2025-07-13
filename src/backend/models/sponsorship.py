@@ -12,7 +12,11 @@ class Sponsorship(Base):
     sponsor_coupon_code = Column(String)
     sponsor_offer = Column(String)
     sponsored_segment_id = Column(
-        UUID(as_uuid=True), ForeignKey(fk("sponsoredsegment.id")), nullable=False, index=True
+        UUID(as_uuid=True),
+        ForeignKey(fk("sponsoredsegment.id")),
+        nullable=False,
+        index=True,
+        unique=True,
     )
     sponsored_segment = relationship("SponsoredSegment", back_populates="sponsorships")
     generated_sponsorships = relationship("GeneratedSponsorship", back_populates="sponsorship")

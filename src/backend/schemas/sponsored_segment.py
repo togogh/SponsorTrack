@@ -11,7 +11,7 @@ class SponsoredSegmentTimesValidatorMixin:
 
 
 class SponsoredSegmentCreate(SponsoredSegmentTimesValidatorMixin, BaseModel):
-    sponsorblock_id: str
+    sponsorblock_id: str | None = None
     start_time: PositiveFloat
     end_time: PositiveFloat
     parent_video_id: UUID4

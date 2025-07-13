@@ -1,11 +1,11 @@
-from pydantic import BaseModel, UUID4, HttpUrl
+from pydantic import BaseModel, UUID4
 from .sponsorship import SponsorLinksValidatorMixin
 
 
 class GeneratedSponsorshipCreate(SponsorLinksValidatorMixin, BaseModel):
     sponsor_name: str
     sponsor_description: str
-    sponsor_links: list[HttpUrl] | None = None
+    sponsor_links: list[str] | None = None
     sponsor_coupon_code: str | None = None
     sponsor_offer: str | None = None
     generator: str
@@ -17,7 +17,7 @@ class GeneratedSponsorshipCreate(SponsorLinksValidatorMixin, BaseModel):
 class GeneratedSponsorshipUpdate(SponsorLinksValidatorMixin, BaseModel):
     sponsor_name: str | None = None
     sponsor_description: str | None = None
-    sponsor_links: list[HttpUrl] | None = None
+    sponsor_links: list[str] | None = None
     sponsor_coupon_code: str | None = None
     sponsor_offer: str | None = None
     generator: str | None = None
