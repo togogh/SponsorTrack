@@ -56,7 +56,7 @@ class SponsoredSegmentFlagPost(BaseModel):
 class FlagCreate(BaseModel):
     field_flagged: str
     value_flagged: Any
-    status: FlagStatus = "pending"
+    status: FlagStatus = FlagStatus.pending
     entity_id: UUID4
 
 
@@ -73,7 +73,6 @@ class SponsoredSegmentFlagCreate(FlagCreate):
 
 
 class FlagUpdate(BaseModel):
-    value_flagged: Any | None = None
     status: FlagStatus | None = None
 
 

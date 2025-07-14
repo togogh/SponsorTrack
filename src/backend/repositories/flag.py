@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.schemas.flag import FlagCreate, FlagUpdate
 from sqlalchemy import select, update
 from pydantic import UUID4
-from backend.models.all import Sponsorship, Video, Flag
+from backend.models.all import Sponsorship, Video, Flag, SponsoredSegment
 from backend.models.flag import EntityType
 
 
@@ -18,6 +18,17 @@ class FlagRepository:
             .where(Flag.entity_flagged == "sponsorship")
             .join(Sponsorship, Flag.entity_id == Sponsorship.id)
             .where(Sponsorship.id == sponsorship_id)
+        )
+        result = await session.execute(stmt)
+        segments = result.scalars().all()
+        return segments
+
+    async def get_by_segment_id(self, segment_id: UUID4, session: AsyncSession):
+        stmt = (
+            select(Flag)
+            .where(Flag.entity_flagged == "sponsored_segment")
+            .join(SponsoredSegment, Flag.entity_id == SponsoredSegment.id)
+            .where(SponsoredSegment.id == segment_id)
         )
         result = await session.execute(stmt)
         segments = result.scalars().all()
