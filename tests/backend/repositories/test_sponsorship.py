@@ -11,7 +11,6 @@ from backend.schemas.all import (
 )
 from backend.models.all import Sponsorship
 import pytest
-from sqlalchemy.exc import IntegrityError
 
 
 @pytest.fixture
@@ -68,11 +67,13 @@ async def test_add(
         "sponsored_segment_id": sponsored_segment.id,
     }
     sponsorship_create = SponsorshipCreate(**another_sponsor_data)
-    with pytest.raises(IntegrityError):
-        try:
-            await sponsorship_repo.add(sponsorship_create, test_session)
-        finally:
-            await test_session.rollback()
+    sponsorship = await sponsorship_repo.add(sponsorship_create, test_session)
+    for field in base_fields + entity_fields:
+        assert hasattr(sponsorship, field)
+    for field in base_fields:
+        assert getattr(sponsorship, field) is not None
+    for k, v in another_sponsor_data.items():
+        assert getattr(sponsorship, k) == v
 
 
 @pytest.mark.asyncio(loop_scope="session")
@@ -82,11 +83,11 @@ async def test_get_by_id(test_session, sponsored_segment_repo, video_repo, spons
     sponsorship = await sponsorship_repo.get_by_id(rand_uuid, test_session)
     assert sponsorship is None
 
-    sponsorship = await sponsorship_repo.get_by_sponsorblock_id(rand_uuid, test_session)
-    assert sponsorship is None
+    sponsorships = await sponsorship_repo.get_by_sponsorblock_id(rand_uuid, test_session)
+    assert sponsorships == []
 
-    sponsorship = await sponsorship_repo.get_by_segment_id(rand_uuid, test_session)
-    assert sponsorship is None
+    sponsorships = await sponsorship_repo.get_by_segment_id(rand_uuid, test_session)
+    assert sponsorships == []
 
     sponsorships = await sponsorship_repo.get_by_video_id(rand_uuid, test_session)
     assert sponsorships == []
@@ -126,6 +127,11 @@ async def test_get_by_id(test_session, sponsored_segment_repo, video_repo, spons
             "sponsor_description": "coolest coolest ever sponsor",
             "sponsored_segment_id": segments[1].id,
         },
+        {
+            "sponsor_name": "coolest ever sponsor",
+            "sponsor_description": "coolest coolest ever sponsor bro",
+            "sponsored_segment_id": segments[1].id,
+        },
     ]
     sponsorships = []
     for data in sponsorship_data:
@@ -138,17 +144,28 @@ async def test_get_by_id(test_session, sponsored_segment_repo, video_repo, spons
         assert isinstance(queried_sponsorship, Sponsorship)
         assert sponsorship == queried_sponsorship
 
-        queried_sponsorship = await sponsorship_repo.get_by_sponsorblock_id(
+    for i, segment in enumerate(segments):
+        queried_sponsorships = await sponsorship_repo.get_by_sponsorblock_id(
             segments[i].sponsorblock_id, test_session
         )
-        assert isinstance(queried_sponsorship, Sponsorship)
-        assert sponsorship == queried_sponsorship
-
-        queried_sponsorship = await sponsorship_repo.get_by_segment_id(
-            sponsorship.sponsored_segment_id, test_session
+        assert isinstance(queried_sponsorships, list) and all(
+            isinstance(item, Sponsorship) for item in queried_sponsorships
         )
-        assert isinstance(queried_sponsorship, Sponsorship)
-        assert sponsorship == queried_sponsorship
+        if i == 0:
+            assert queried_sponsorships == [sponsorships[0]]
+        else:
+            assert queried_sponsorships == sponsorships[1:]
+
+        queried_sponsorships = await sponsorship_repo.get_by_segment_id(
+            segments[i].id, test_session
+        )
+        assert isinstance(queried_sponsorships, list) and all(
+            isinstance(item, Sponsorship) for item in queried_sponsorships
+        )
+        if i == 0:
+            assert queried_sponsorships == [sponsorships[0]]
+        else:
+            assert queried_sponsorships == sponsorships[1:]
 
     queried_sponsorships = await sponsorship_repo.get_by_video_id(video.id, test_session)
     assert isinstance(queried_sponsorships, list) and all(
@@ -216,7 +233,5 @@ async def test_update(
     for field in changed_fields:
         assert getattr(added_sponsorship, field) == getattr(updated_sponsorship, field)
         assert getattr(added_sponsorship_copy, field) != getattr(updated_sponsorship, field)
-        print(type(getattr(added_sponsorship_copy, field)))
-        print(type(getattr(updated_sponsorship, field)))
         if field != "updated_at":
             assert getattr(updated_sponsorship, field) == new_sponsorship_data[field]

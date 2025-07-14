@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.models.all import GeneratedSponsorship
+from backend.models.all import GeneratedSponsorship, Sponsorship
 from backend.schemas.generated_sponsorship import (
     GeneratedSponsorshipCreate,
     GeneratedSponsorshipUpdate,
@@ -13,6 +13,14 @@ class GeneratedSponsorshipRepository:
         stmt = select(GeneratedSponsorship).where(GeneratedSponsorship.id == id)
         result = await session.execute(stmt)
         return result.scalar_one_or_none()
+
+    async def get_by_sponsorship_id(self, sponsorship_id: UUID4, session: AsyncSession):
+        stmt = (
+            select(GeneratedSponsorship).join(Sponsorship).where(Sponsorship.id == sponsorship_id)
+        )
+        result = await session.execute(stmt)
+        segments = result.scalars().all()
+        return segments
 
     async def add(self, data: GeneratedSponsorshipCreate, session: AsyncSession):
         sponsored_segment = GeneratedSponsorship(**data.model_dump())

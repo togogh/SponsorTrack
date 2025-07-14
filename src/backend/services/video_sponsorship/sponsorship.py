@@ -24,15 +24,19 @@ async def create_prompt(metadata: MetadataJson, segment: SponsoredSegment):
         Video language: {metadata["language"]}
         Segment subtitles: {segment.subtitles}
 
-        The subtitles can be auto-generated, so don't assume what's written there is the absolute truth, especially the spelling. Double check the information there using the other fields.
-
-        Given this information, could you give me information about the sponsor? I want you to return a json with the following information:
+        Given this information, could you give me information about the sponsor?
+        
+        I want you to return a json with the following information:
 
         sponsor_name: Sponsor's name
         sponsor_description: Sponsor's products and services
         sponsor_offer: The specific discount or promo provided by the sponsor, if any
         sponsor_links: List of hyperlinks related to the sponsor, such as affiliate links, homepages, or links to the offer, if any. Make sure these start with http or https
         sponsor_coupon_code: Coupon code, if any
+        
+        The subtitles can be auto-generated, so don't assume what's written there is the absolute truth, especially the spelling. Double check the information there using the other fields.
+
+        There may also be more than one sponsor in the segment, so please make sure the highest level of the json is a list.
 
         Please respond with the json enclosed in a ```json ``` markdown code block.
     """
@@ -50,27 +54,29 @@ async def create_sponsorships(
     generator = get_generator()
     for sponsored_segment in sponsored_segments:
         prompt = await create_prompt(metadata, sponsored_segment)
-        sponsorship = await generator.extract_sponsor_info(prompt)
-        sponsorship_create = SponsorshipCreate(
-            sponsor_name=sponsorship["sponsor_name"],
-            sponsor_description=sponsorship["sponsor_description"],
-            sponsor_links=sponsorship["sponsor_links"],
-            sponsor_coupon_code=sponsorship["sponsor_coupon_code"],
-            sponsor_offer=sponsorship["sponsor_offer"],
-            sponsored_segment_id=sponsored_segment.id,
-        )
-        sponsorship = await sponsorship_repo.add(sponsorship_create, session)
-        generated_sponsorship_create = GeneratedSponsorshipCreate(
-            sponsor_name=sponsorship.sponsor_name,
-            sponsor_description=sponsorship.sponsor_description,
-            sponsor_links=sponsorship.sponsor_links,
-            sponsor_coupon_code=sponsorship.sponsor_coupon_code,
-            sponsor_offer=sponsorship.sponsor_offer,
-            sponsorship_id=sponsorship.id,
-            generator=generator_settings.GENERATOR,
-            provider=generator_settings.PROVIDER,
-            model=generator_settings.MODEL,
-        )
-        await generated_sponsorship_repo.add(generated_sponsorship_create, session)
-        sponsorships.append(sponsorship)
+        sponsorships_generated = await generator.extract_sponsor_info(prompt)
+        for sponsorship in sponsorships_generated:
+            sponsorship_create = SponsorshipCreate(
+                sponsor_name=sponsorship["sponsor_name"],
+                sponsor_description=sponsorship["sponsor_description"],
+                sponsor_links=sponsorship["sponsor_links"],
+                sponsor_coupon_code=sponsorship["sponsor_coupon_code"],
+                sponsor_offer=sponsorship["sponsor_offer"],
+                sponsored_segment_id=sponsored_segment.id,
+            )
+            sponsorship = await sponsorship_repo.add(sponsorship_create, session)
+            generated_sponsorship_create = GeneratedSponsorshipCreate(
+                sponsor_name=sponsorship.sponsor_name,
+                sponsor_description=sponsorship.sponsor_description,
+                sponsor_links=sponsorship.sponsor_links,
+                sponsor_coupon_code=sponsorship.sponsor_coupon_code,
+                sponsor_offer=sponsorship.sponsor_offer,
+                sponsorship_id=sponsorship.id,
+                generator=generator_settings.GENERATOR,
+                provider=generator_settings.PROVIDER,
+                model=generator_settings.MODEL,
+                prompt=prompt,
+            )
+            await generated_sponsorship_repo.add(generated_sponsorship_create, session)
+            sponsorships.append(sponsorship)
     return sponsorships

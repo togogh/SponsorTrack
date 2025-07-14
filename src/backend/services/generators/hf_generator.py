@@ -36,7 +36,8 @@ class HuggingFaceGenerator(BaseGenerator):
         await self.queue_message("user", prompt)
         await self.generate_response()
         response = self.messages[-1]["content"]
-        match = re.search(r"json\s*(\{.*?\})\s*", response, re.DOTALL)
+        pattern = r"```json\s*\n(\[.*?\])\s*```"
+        match = re.search(pattern, response, re.DOTALL)
         if match:
             json_str = match.group(1)
             data = json.loads(json_str)

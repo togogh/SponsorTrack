@@ -16,7 +16,6 @@ class Sponsorship(Base):
         ForeignKey(fk("sponsoredsegment.id")),
         nullable=False,
         index=True,
-        unique=True,
     )
     sponsored_segment = relationship("SponsoredSegment", back_populates="sponsorships")
     generated_sponsorships = relationship("GeneratedSponsorship", back_populates="sponsorship")
