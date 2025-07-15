@@ -3,8 +3,10 @@ from backend.core.types import Generator
 from .hf_generator import HuggingFaceGenerator
 
 
-def get_generator():
-    match generator_settings.GENERATOR:
+def get_generator(generator: Generator = None):
+    if generator is None:
+        generator = generator_settings.GENERATOR
+    match generator:
         case Generator.HF:
             return HuggingFaceGenerator(generator_settings.PROVIDER, generator_settings.MODEL)
         case None:
