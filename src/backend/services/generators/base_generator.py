@@ -1,11 +1,11 @@
 class BaseGenerator:
-    def __init__(self, provider, model):
-        self.client = None
-        self.messages = []
-        self.provider = provider
-        self.model = model
+    def __init__(self, model: str, provider: str = "auto"):
+        self.messages: list[str] = []
+        self.provider: str = provider
+        self.model: str = model
 
-    async def connect_client(self):
+    @property
+    def client(self):
         pass
 
     async def queue_message(self):

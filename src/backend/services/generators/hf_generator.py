@@ -6,12 +6,13 @@ import json
 
 
 class HuggingFaceGenerator(BaseGenerator):
-    async def connect_client(self):
+    @property
+    def client(self) -> InferenceClient:
         client = InferenceClient(
             provider=self.provider,
             api_key=generator_settings.HF_TOKEN,
         )
-        self.client = client
+        return client
 
     async def queue_message(self, role, message):
         self.messages.append(
@@ -32,7 +33,6 @@ class HuggingFaceGenerator(BaseGenerator):
         await self.queue_message(role, content)
 
     async def extract_sponsor_info(self, prompt):
-        await self.connect_client()
         await self.queue_message("user", prompt)
         await self.generate_response()
         response = self.messages[-1]["content"]
