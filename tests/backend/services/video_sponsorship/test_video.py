@@ -106,8 +106,8 @@ async def test_create_video(youtube_id, error, repo, test_session):
 @pytest.mark.parametrize(
     "youtube_id, error",
     [
-        ("YDX1-5T_uQ4", None),
-        ("YDX1-5T_uQ4", None),
+        ("bkO3a50tvco", None),
+        ("bkO3a50tvco", None),
         ("A1b2C3d4E5F", ValidationError),
         ("", ValidationError),
         (None, ValidationError),
