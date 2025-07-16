@@ -38,6 +38,10 @@ async def get_sponsored_segments(
 
     if sponsorship_id:
         segments = await sponsored_segment_repo.get_by_sponsorship_id(sponsorship_id, session)
+        if segments is None:
+            segments = []
+        else:
+            segments = [segments]
     elif video_id:
         segments = await sponsored_segment_repo.get_by_video_id(video_id, session)
     else:
