@@ -1,5 +1,3 @@
-import requests
-from requests.adapters import HTTPAdapter, Retry
 from backend.core.constants import constants
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,14 +5,13 @@ from pydantic import UUID4
 from backend.schemas.all import SponsoredSegmentCreate
 from backend.models.all import Video, SponsoredSegment
 from backend.repositories.all import SponsoredSegmentRepository
+from backend.utils.http import get_requests_session
 
 
-async def download_sponsorblock(video_id: str) -> dict:
-    s = requests.Session()
-    retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
+async def download_sponsorblock(youtube_id: str) -> dict:
+    s = get_requests_session()
 
-    s.mount("https://", HTTPAdapter(max_retries=retries))
-    url = f"{constants.SPONSORBLOCK_BASE_URL}/api/skipSegments?videoID={video_id}"
+    url = f"{constants.SPONSORBLOCK_BASE_URL}/api/skipSegments?videoID={youtube_id}"
 
     response = s.get(url)
     if response.status_code == 200:

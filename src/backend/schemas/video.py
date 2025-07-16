@@ -1,5 +1,5 @@
 from pydantic import BaseModel, PastDate, field_validator
-import requests
+from backend.utils.http import get_requests_session
 
 
 class VideoCreate(BaseModel):
@@ -15,9 +15,10 @@ class VideoCreate(BaseModel):
     @classmethod
     def ensure_video_exists_on_youtube(cls, youtube_id: str) -> str:
         # Check if video id belongs to an actual youtube video
+        s = get_requests_session()
         url = f"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={youtube_id}&format=json"
         try:
-            response = requests.get(url)
+            response = s.get(url)
             if response.status_code != 200:
                 raise ValueError("Video id doesn't exist on Youtube")
         except Exception:
