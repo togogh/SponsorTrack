@@ -1,13 +1,14 @@
 from backend.services.video_sponsorship.sponsored_segments import (
     download_sponsorblock,
     get_sponsored_segments,
-    get_or_create_sponsored_segments,  # noqa: F401
+    get_or_create_sponsored_segments,
 )
 from backend.repositories.all import (
     VideoRepository,
     SponsoredSegmentRepository,
     SponsorshipRepository,
 )
+from backend.models.all import SponsoredSegment
 from backend.schemas.all import VideoCreate, SponsorshipCreate, SponsoredSegmentCreate
 import pytest
 from fastapi.exceptions import HTTPException
@@ -109,3 +110,33 @@ async def test_get_sponsored_segments(
             )
         finally:
             await test_session.rollback()
+
+
+@pytest.mark.parametrize(
+    "youtube_id, len_segments, error",
+    [
+        ("R3blSsMfMwU", 3, None),
+        ("fLlSVk2IS5E", 0, HTTPException),
+    ],
+)
+@pytest.mark.asyncio(loop_scope="session")
+async def test_get_or_create_sponsored_segments(
+    youtube_id, len_segments, error, test_session, sponsored_segment_repo, video_repo
+):
+    video = await video_repo.add(VideoCreate(youtube_id=youtube_id), test_session)
+    if error is not None:
+        with pytest.raises(error):
+            try:
+                segments = await get_or_create_sponsored_segments(
+                    video, test_session, sponsored_segment_repo
+                )
+            finally:
+                await test_session.rollback()
+    else:
+        segments = await get_or_create_sponsored_segments(
+            video, test_session, sponsored_segment_repo
+        )
+        assert isinstance(segments, list) and all(
+            isinstance(item, SponsoredSegment) for item in segments
+        )
+        assert len(segments) == len_segments
