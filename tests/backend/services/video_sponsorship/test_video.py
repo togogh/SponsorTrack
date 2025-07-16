@@ -1,11 +1,19 @@
 from backend.services.video_sponsorship.video import (
     extract_id_from_url,
     get_youtube_id,
-    create_video,  # noqa: F401
+    create_video,
     get_or_create_video,  # noqa: F401
 )
 import pytest
 from fastapi.exceptions import HTTPException
+from backend.repositories.all import VideoRepository
+from backend.models.all import Video
+from pydantic import ValidationError
+
+
+@pytest.fixture
+def repo():
+    return VideoRepository()
 
 
 @pytest.mark.parametrize(
@@ -68,3 +76,26 @@ async def test_get_youtube_id(id, url, output, error):
     else:
         extracted_id = await get_youtube_id(id, url)
         assert extracted_id == output
+
+
+@pytest.mark.parametrize(
+    "youtube_id, error",
+    [
+        ("YDX1-5T_uQ4", None),
+        ("A1b2C3d4E5F", ValidationError),
+        ("", ValidationError),
+        (None, ValidationError),
+    ],
+)
+@pytest.mark.asyncio(loop_scope="session")
+async def test_create_video(youtube_id, error, repo, test_session):
+    if error is not None:
+        with pytest.raises(error):
+            try:
+                await create_video(youtube_id, repo, test_session)
+            finally:
+                await test_session.rollback()
+    else:
+        video = await create_video(youtube_id, repo, test_session)
+        assert isinstance(video, Video)
+        assert video.youtube_id == youtube_id
