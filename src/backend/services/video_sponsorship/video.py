@@ -25,8 +25,11 @@ async def extract_id_from_url(url: HttpUrl) -> str:
         raise HTTPException(status_code=400, detail="Input url doesn't contain a valid video id")
 
     try:
-        return video_id
-    except UnboundLocalError:
+        if len(video_id) > 0:
+            return video_id
+        else:
+            raise Exception
+    except Exception:
         raise HTTPException(status_code=400, detail="Input url doesn't contain a valid video id")
 
 
