@@ -73,8 +73,8 @@ async def create_sponsorships(
                 sponsor_offer=sponsorship.sponsor_offer,
                 sponsorship_id=sponsorship.id,
                 generator=generator_settings.GENERATOR,
-                provider=generator_settings.PROVIDER,
-                model=generator_settings.MODEL,
+                provider=generator.provider,
+                model=generator.model,
                 prompt=prompt,
             )
             await generated_sponsorship_repo.add(generated_sponsorship_create, session)
