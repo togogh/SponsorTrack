@@ -8,6 +8,8 @@ def get_generator(generator: Generator = None):
         generator = generator_settings.GENERATOR
     match generator:
         case Generator.HF:
-            return HuggingFaceGenerator(generator_settings.PROVIDER, generator_settings.MODEL)
+            return HuggingFaceGenerator(
+                provider=generator_settings.PROVIDER, model=generator_settings.MODEL
+            )
         case None:
             return None

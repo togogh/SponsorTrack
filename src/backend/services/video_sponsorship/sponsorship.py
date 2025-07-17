@@ -43,7 +43,7 @@ async def create_prompt(metadata: MetadataJson, segment: SponsoredSegment):
 
 async def create_sponsorships(
     sponsored_segments: list[SponsoredSegment],
-    metadata: dict,
+    metadata: MetadataJson,
     sponsorship_repo: SponsorshipRepository,
     generated_sponsorship_repo: GeneratedSponsorshipRepository,
     session: AsyncSession,
