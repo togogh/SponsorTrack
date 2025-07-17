@@ -1,6 +1,6 @@
 from backend.services.video_sponsorship.sponsorship import (
     get_sponsorships,
-    create_prompt,  # noqa: F401
+    create_prompt,
     create_sponsorships,  # noqa: F401
 )
 from backend.repositories.all import (
@@ -8,7 +8,8 @@ from backend.repositories.all import (
     SponsoredSegmentRepository,
     SponsorshipRepository,
 )
-from backend.schemas.all import VideoCreate, SponsorshipCreate, SponsoredSegmentCreate
+from backend.schemas.all import VideoCreate, SponsorshipCreate, SponsoredSegmentCreate, MetadataJson
+from backend.models.all import Sponsorship, SponsoredSegment
 import pytest
 
 
@@ -82,6 +83,9 @@ async def test_get_sponsorships(test_session, sponsored_segment_repo, sponsorshi
 
     response_sponsorships = await get_sponsorships(video.id, sponsorship_repo, test_session)
     assert len(response_sponsorships) == 5
+    assert isinstance(response_sponsorships, list) and all(
+        isinstance(item, Sponsorship) for item in response_sponsorships
+    )
 
     response_sponsorships = [
         {
@@ -92,3 +96,32 @@ async def test_get_sponsorships(test_session, sponsored_segment_repo, sponsorshi
     ]
     for sponsorship in response_sponsorships:
         assert sponsorship in sponsorships_data
+
+
+async def test_create_prompt():
+    metadata = MetadataJson(
+        language="me",
+        title="A Video",
+        upload_date="2021-02-09",
+        description="A video indeed. Make sure to buy Me's products at me.com/more",
+        duration=902.4,
+        channel="Us",
+    )
+    segment = SponsoredSegment(
+        start_time=9.3,
+        end_time=10.2,
+        subtitles="This is sponsored by Me, who is the best person ever",
+        parent_video_id="21c00a5e-dffc-4197-ab85-5bbf23c644a1",
+    )
+    prompt = await create_prompt(metadata, segment)
+    assert isinstance(prompt, str)
+    assert len(prompt) > 0
+    values_given = [
+        metadata["channel"],
+        metadata["description"],
+        metadata["upload_date"],
+        metadata["language"],
+        segment.subtitles,
+    ]
+    for v in values_given:
+        assert v in prompt

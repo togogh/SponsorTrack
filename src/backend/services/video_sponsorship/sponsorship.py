@@ -23,8 +23,6 @@ async def create_prompt(metadata: MetadataJson, segment: SponsoredSegment):
         Upload date: {metadata["upload_date"]}
         Video language: {metadata["language"]}
         Segment subtitles: {segment.subtitles}
-
-        Given this information, could you give me information about the sponsor?
         
         I want you to return a json with the following information:
 
@@ -34,7 +32,7 @@ async def create_prompt(metadata: MetadataJson, segment: SponsoredSegment):
         sponsor_links: List of hyperlinks related to the sponsor, such as affiliate links, homepages, or links to the offer, if any. Make sure these start with http or https
         sponsor_coupon_code: Coupon code, if any
         
-        The subtitles can be auto-generated, so don't assume what's written there is the absolute truth, especially the spelling. Double check the information there using the other fields.
+        The subtitles are sometimes auto-generated, so don't assume that what's written there is the absolute truth. Double check the information there using the other fields.
 
         There may also be more than one sponsor in the segment, so please make sure the highest level of the json is a list.
 
