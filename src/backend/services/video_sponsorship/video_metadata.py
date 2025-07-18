@@ -5,9 +5,9 @@ from backend.models.all import Video, VideoMetadata
 from backend.repositories.all import VideoMetadataRepository, VideoRepository
 from backend.schemas.all import VideoMetadataCreate, MetadataJson, VideoUpdate
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Tuple, get_type_hints
+from typing import Tuple
 from datetime import datetime
-from pydantic import ValidationError, TypeAdapter
+from pydantic import ValidationError
 
 
 async def download_metadata(youtube_id):
@@ -64,23 +64,20 @@ async def get_or_extract_metadata(
     session: AsyncSession,
 ) -> Tuple[MetadataJson, VideoMetadata]:
     video_metadata = await get_or_create_video_metadata(video, video_metadata_repo, session)
-    key_fields = get_type_hints(MetadataJson)
-    ta_json = TypeAdapter(MetadataJson)
+    key_fields = MetadataJson.model_fields.keys()
     try:
-        key_metadata = ta_json.validate_python(
-            {field: getattr(video, field) for field in key_fields}
-        )
+        key_metadata = {field: getattr(video, field) for field in key_fields}
+        key_metadata = MetadataJson(**key_metadata)
     except ValidationError:
-        key_metadata = ta_json.validate_python(
-            {field: video_metadata.raw_json.get(field) for field in key_fields}
-        )
+        key_metadata = {field: video_metadata.raw_json.get(field) for field in key_fields}
+        key_metadata = MetadataJson(**key_metadata)
         video_update = VideoUpdate(
-            language=key_metadata["language"],
-            title=key_metadata["title"],
-            upload_date=datetime.strptime(key_metadata["upload_date"], "%Y%m%d"),
-            description=key_metadata["description"],
-            duration=key_metadata["duration"],
-            channel=key_metadata["channel"],
+            language=key_metadata.language,
+            title=key_metadata.title,
+            upload_date=datetime.strptime(key_metadata.upload_date, "%Y%m%d"),
+            description=key_metadata.description,
+            duration=key_metadata.duration,
+            channel=key_metadata.channel,
         )
         await video_repo.update(video.id, video_update, session)
     return key_metadata, video_metadata

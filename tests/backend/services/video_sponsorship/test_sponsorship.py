@@ -106,7 +106,7 @@ async def test_get_sponsorships(test_session, sponsored_segment_repo, sponsorshi
 
 async def test_create_prompt():
     metadata = MetadataJson(
-        language="me",
+        language="my",
         title="A Video",
         upload_date="2021-02-09",
         description="A video indeed. Make sure to buy Me's products at me.com/more",
@@ -123,10 +123,10 @@ async def test_create_prompt():
     assert isinstance(prompt, str)
     assert len(prompt) > 0
     values_given = [
-        metadata["channel"],
-        metadata["description"],
-        metadata["upload_date"],
-        metadata["language"],
+        metadata.channel,
+        metadata.description,
+        metadata.upload_date,
+        metadata.language,
         segment.subtitles,
     ]
     for v in values_given:

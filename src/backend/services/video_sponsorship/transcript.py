@@ -15,7 +15,7 @@ from backend.repositories.all import (
 )
 
 
-async def fetch_transcript(youtube_id, language, retries=1, backoff_factor=0.1):
+async def fetch_transcript_and_language(youtube_id, language, retries=1, backoff_factor=0.1):
     if ws_settings.WS_PROXY_UN and ws_settings.WS_PROXY_PW:
         proxy_config = WebshareProxyConfig(
             proxy_username=ws_settings.WS_PROXY_UN,
@@ -26,7 +26,7 @@ async def fetch_transcript(youtube_id, language, retries=1, backoff_factor=0.1):
         ytt_api = YouTubeTranscriptApi()
     for r in range(retries):
         try:
-            if language is None or len(language) > 2:
+            if language is None:
                 transcript_list = ytt_api.list(youtube_id)
                 language = list(transcript_list)[0].language_code
             transcript = ytt_api.fetch(video_id=youtube_id, languages=[language])
@@ -50,8 +50,10 @@ async def get_or_fill_transcript(
 ) -> dict:
     transcript = video_metadata.raw_transcript
     if transcript is None:
-        transcript, transcript_language = await fetch_transcript(video.youtube_id, video.language)
-        if video.language is None or len(video.language) > 2:
+        transcript, transcript_language = await fetch_transcript_and_language(
+            video.youtube_id, video.language
+        )
+        if video.language is None:
             video_update = VideoUpdate(
                 language=transcript_language,
             )

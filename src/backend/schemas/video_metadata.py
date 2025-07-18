@@ -1,5 +1,7 @@
-from pydantic import BaseModel, UUID4, ConfigDict
+from pydantic import BaseModel, UUID4, ConfigDict, field_validator
 from typing_extensions import TypedDict
+from typing import Optional
+from langcodes import parse_tag, tag_is_valid
 
 
 class TranscriptSegment(TypedDict):
@@ -8,7 +10,7 @@ class TranscriptSegment(TypedDict):
     duration: float
 
 
-class MetadataJson(TypedDict):
+class MetadataJson(BaseModel):
     __pydantic_config__ = ConfigDict(extra="allow")
     language: str | None
     title: str
@@ -16,6 +18,17 @@ class MetadataJson(TypedDict):
     description: str
     duration: float
     channel: str
+
+    @field_validator("language", mode="after")
+    def validate_language(v: Optional[str]) -> Optional[str]:
+        print("hello")
+        if v is None:
+            return None
+        if not tag_is_valid(v):
+            raise ValueError("Language code is not valid")
+        parsed = parse_tag(v)
+        parsed_language = [p[1] for p in parsed if p[0] == "language"][0]
+        return parsed_language
 
 
 class VideoMetadataCreate(BaseModel):

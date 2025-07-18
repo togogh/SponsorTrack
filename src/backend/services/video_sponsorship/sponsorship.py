@@ -18,10 +18,10 @@ async def create_prompt(metadata: MetadataJson, segment: SponsoredSegment):
     prompt = f"""
         I have a sponsored segment cut from a Youtube video. Here's some information about this segment:
 
-        Youtube channel: {metadata["channel"]}
-        Video description: {metadata["description"]}
-        Upload date: {metadata["upload_date"]}
-        Video language: {metadata["language"]}
+        Youtube channel: {metadata.channel}
+        Video description: {metadata.description}
+        Upload date: {metadata.upload_date}
+        Video language: {metadata.language}
         Segment subtitles: {segment.subtitles}
         
         I want you to return a json with the following information:
@@ -63,18 +63,21 @@ async def create_sponsorships(
                 sponsored_segment_id=sponsored_segment.id,
             )
             sponsorship = await sponsorship_repo.add(sponsorship_create, session)
-            generated_sponsorship_create = GeneratedSponsorshipCreate(
-                sponsor_name=sponsorship.sponsor_name,
-                sponsor_description=sponsorship.sponsor_description,
-                sponsor_links=sponsorship.sponsor_links,
-                sponsor_coupon_code=sponsorship.sponsor_coupon_code,
-                sponsor_offer=sponsorship.sponsor_offer,
-                sponsorship_id=sponsorship.id,
-                generator=generator_settings.GENERATOR,
-                provider=generator.provider,
-                model=generator.model,
-                prompt=prompt,
-            )
+            generated_data = {
+                "sponsor_name": sponsorship.sponsor_name,
+                "sponsor_description": sponsorship.sponsor_description,
+                "sponsor_links": sponsorship.sponsor_links,
+                "sponsor_coupon_code": sponsorship.sponsor_coupon_code,
+                "sponsor_offer": sponsorship.sponsor_offer,
+                "sponsorship_id": sponsorship.id,
+                "generator": generator_settings.GENERATOR,
+                "model": generator.model,
+                "prompt": prompt,
+            }
+            if hasattr(generator, "provider"):
+                generated_data["provider"] = generator.provider
+
+            generated_sponsorship_create = GeneratedSponsorshipCreate(**generated_data)
             await generated_sponsorship_repo.add(generated_sponsorship_create, session)
             sponsorships.append(sponsorship)
     return sponsorships
