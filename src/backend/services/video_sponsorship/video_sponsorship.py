@@ -42,9 +42,10 @@ class VideoSponsorshipService:
     ) -> VideoSponsorshipResponse:
         sponsorships_data = []
         for sponsorship in sponsorships:
-            sponsored_segment = await get_sponsored_segments(
+            sponsored_segments = await get_sponsored_segments(
                 session, self.sponsored_segment_repo, sponsorship_id=sponsorship.id
             )
+            sponsored_segment = sponsored_segments[0]
             video_sponsorship_data = VideoSponsorshipData(
                 id=sponsorship.id,
                 start_time=sponsored_segment.start_time,
