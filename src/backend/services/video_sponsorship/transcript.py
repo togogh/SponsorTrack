@@ -65,7 +65,11 @@ async def get_or_fill_transcript(
 
 async def map_transcript_to_segment_subtitles(transcript: str, segment):
     df = pd.DataFrame(transcript)
-    start_row = df[df["start"] <= segment.start_time].iloc[-1]
+    df = df.sort_values(by=["start"], ascending=True)
+    if segment.start_time < df.iloc[0]["start"]:
+        start_row = df.iloc[0]
+    else:
+        start_row = df[df["start"] <= segment.start_time].iloc[-1]
     max_start_time = df["start"].max()
     if segment.end_time <= max_start_time:
         end_row = df[df["start"] >= segment.end_time].iloc[0]

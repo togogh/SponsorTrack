@@ -1,4 +1,4 @@
-from pydantic import BaseModel, model_validator, PositiveFloat, UUID4
+from pydantic import BaseModel, model_validator, NonNegativeFloat, UUID4
 
 
 class SponsoredSegmentTimesValidatorMixin:
@@ -12,13 +12,13 @@ class SponsoredSegmentTimesValidatorMixin:
 
 class SponsoredSegmentCreate(SponsoredSegmentTimesValidatorMixin, BaseModel):
     sponsorblock_id: str | None = None
-    start_time: PositiveFloat
-    end_time: PositiveFloat
+    start_time: NonNegativeFloat
+    end_time: NonNegativeFloat
     parent_video_id: UUID4
     subtitles: str | None = None
 
 
 class SponsoredSegmentUpdate(SponsoredSegmentTimesValidatorMixin, BaseModel):
-    start_time: PositiveFloat | None = None
-    end_time: PositiveFloat | None = None
+    start_time: NonNegativeFloat | None = None
+    end_time: NonNegativeFloat | None = None
     subtitles: str | None = None

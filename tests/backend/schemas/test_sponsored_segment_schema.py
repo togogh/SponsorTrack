@@ -10,6 +10,7 @@ import pytest
         pytest.param(None, None, None),
         pytest.param(None, 5, None),
         pytest.param(1, None, None),
+        pytest.param(0, 10, None),
         pytest.param(19, 5, ValidationError),
     ],
 )
