@@ -12,7 +12,7 @@ class GeneratedSponsorship(Base):
     sponsor_coupon_code = Column(String)
     sponsor_offer = Column(String)
     generator = Column(String, nullable=False)
-    provider = Column(String, nullable=False)
+    provider = Column(String, nullable=True)
     model = Column(String, nullable=False)
     prompt = Column(String)
     sponsorship_id = Column(UUID(as_uuid=True), ForeignKey(fk("sponsorship.id")), index=True)

@@ -1,7 +1,6 @@
 class BaseGenerator:
-    def __init__(self, model: str, provider: str = "auto"):
+    def __init__(self, model: str):
         self.messages: list[str] = []
-        self.provider: str = provider
         self.model: str = model
 
     @property

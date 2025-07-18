@@ -1,10 +1,15 @@
 from backend.services.generators.hf_generator import HuggingFaceGenerator
 from huggingface_hub import InferenceClient
 from huggingface_hub.errors import RepositoryNotFoundError
+from backend.core.settings import generator_settings
+from backend.core.types import Generator
 import pytest
 
 
 async def test_hf_generator():
+    if generator_settings.GENERATOR != Generator.HF:
+        pytest.skip("HF Generator not selected, skipping...")
+
     generator = HuggingFaceGenerator("test", "test")
     assert isinstance(generator.client, InferenceClient)
 

@@ -1,5 +1,5 @@
 from .base_generator import BaseGenerator
-from huggingface_hub import InferenceClient
+from openai import OpenAI
 from backend.core.settings import generator_settings
 import re
 import json
@@ -8,16 +8,12 @@ from backend.logs.config import get_logger
 logger = get_logger(__name__)
 
 
-class HuggingFaceGenerator(BaseGenerator):
-    def __init__(self, model, provider: str = "auto"):
-        super().__init__(model)
-        self.provider: str = provider
-
+class OpenRouterGenerator(BaseGenerator):
     @property
-    def client(self) -> InferenceClient:
-        client = InferenceClient(
-            provider=self.provider,
-            api_key=generator_settings.HF_TOKEN,
+    def client(self) -> OpenAI:
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=generator_settings.OR_TOKEN,
         )
         return client
 

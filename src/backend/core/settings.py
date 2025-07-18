@@ -44,6 +44,7 @@ class WSSettings(BaseSettingsFromEnv):
 class GeneratorSettings(BaseSettingsFromEnv):
     GENERATOR: Generator
     HF_TOKEN: str
+    OR_TOKEN: str
     PROVIDER: str
     MODEL: str
 

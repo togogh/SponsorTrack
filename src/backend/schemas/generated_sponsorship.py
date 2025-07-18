@@ -9,7 +9,7 @@ class GeneratedSponsorshipCreate(SponsorLinksValidatorMixin, BaseModel):
     sponsor_coupon_code: str | None = None
     sponsor_offer: str | None = None
     generator: str
-    provider: str
+    provider: str | None = None
     model: str
     prompt: str | None = None
     sponsorship_id: UUID4
