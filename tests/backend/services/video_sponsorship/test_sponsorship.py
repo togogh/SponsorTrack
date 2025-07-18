@@ -219,6 +219,26 @@ async def test_create_prompt():
             ],
             ["WanderMate"],
         ),
+        (
+            "ZBk8oCmfpMg",
+            {
+                "language": "fr",
+                "title": "Ma routine du matin en français 🇫🇷",
+                "upload_date": "2025-03-11",
+                "description": "Je vous montre comment je commence ma journée tout en pratiquant le français. Pas de marques, juste ma vraie routine.",
+                "duration": 675.0,
+                "channel": "LinguaLuna",
+            },
+            [
+                {
+                    "sponsorblock_id": None,
+                    "start_time": 30.0,
+                    "end_time": 120.0,
+                    "subtitles": "Alors je commence ma journée avec un café…",
+                },
+            ],
+            [],
+        ),
     ],
 )
 @pytest.mark.asyncio(loop_scope="session")
