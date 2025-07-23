@@ -21,7 +21,6 @@ class MetadataJson(BaseModel):
 
     @field_validator("language", mode="after")
     def validate_language(v: Optional[str]) -> Optional[str]:
-        print("hello")
         if v is None:
             return None
         if not tag_is_valid(v):
