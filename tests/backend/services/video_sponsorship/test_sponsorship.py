@@ -143,7 +143,7 @@ async def test_create_prompt():
                 "title": "How to Learn Python in 10 Minutes",
                 "upload_date": "2024-05-01",
                 "description": "In this video, we'll cover the basics of Python programming for beginners. Great for getting started quickly!",
-                "duration": 612.5,  # in seconds (10 minutes and 12.5 seconds)
+                "duration": 612.5,
                 "channel": "CodeAcademy Official",
             },
             [
