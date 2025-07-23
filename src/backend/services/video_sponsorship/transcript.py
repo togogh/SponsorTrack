@@ -13,9 +13,12 @@ from backend.repositories.all import (
     VideoRepository,
     SponsoredSegmentRepository,
 )
+from backend.logs.config import get_logger
+
+logger = get_logger(__name__)
 
 
-async def fetch_transcript_and_language(youtube_id, language, retries=1, backoff_factor=0.1):
+async def fetch_transcript_and_language(youtube_id, language, retries=5, backoff_factor=0.1):
     if ws_settings.WS_PROXY_UN and ws_settings.WS_PROXY_PW:
         proxy_config = WebshareProxyConfig(
             proxy_username=ws_settings.WS_PROXY_UN,
@@ -25,6 +28,9 @@ async def fetch_transcript_and_language(youtube_id, language, retries=1, backoff
     else:
         ytt_api = YouTubeTranscriptApi()
     for r in range(retries):
+        logger.info(
+            f"Trying to download transcript for {youtube_id}, current language is {language}."
+        )
         try:
             if language is None:
                 transcript_list = ytt_api.list(youtube_id)
@@ -33,9 +39,10 @@ async def fetch_transcript_and_language(youtube_id, language, retries=1, backoff
             formatter = JSONFormatter()
             transcript = formatter.format_transcript(transcript, indent=4)
             transcript = json.loads(transcript)
+            logger.info("Successfully downloaded transcript.")
             return transcript, language
         except Exception as e:
-            print("Encountered error:", e)
+            logger.error("Encountered error:", e)
             if r < retries:
                 print("Retrying...")
                 time.sleep(backoff_factor * (2 ** (r - 1)))
