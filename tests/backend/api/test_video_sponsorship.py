@@ -1,19 +1,6 @@
-from httpx import AsyncClient, ASGITransport
-from backend.main import app
 import pytest
-from backend.routers.video_sponsorship import session_dependency
 from urllib.parse import urlencode
 from requests import codes
-
-
-@pytest.fixture(scope="session")
-async def client(test_session):
-    async def override_session_dependency():
-        yield test_session
-
-    app.dependency_overrides[session_dependency] = override_session_dependency
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
-        yield c
 
 
 @pytest.mark.parametrize(
