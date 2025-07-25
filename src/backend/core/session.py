@@ -52,6 +52,6 @@ async def get_session(schema=None, engine=None):
                 await session.close()
 
 
-async def session_dependency(schema=None, engine=None):
-    async with get_session(schema, engine) as session:
+async def session_dependency():
+    async with get_session() as session:
         yield session
