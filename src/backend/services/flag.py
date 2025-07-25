@@ -12,6 +12,7 @@ from backend.schemas.flag import (
     SponsoredSegmentFlagPost,
     SponsoredSegmentFlagCreate,
     VideoFlagPostParams,
+    SponsoredSegmentFlagPostParams,
 )
 from pydantic import UUID4
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -91,11 +92,20 @@ class FlagService:
         return flag
 
     async def flag_sponsored_segment(
-        self, sponsorship_id: UUID4, flag_details: SponsoredSegmentFlagPost, session: AsyncSession
+        self,
+        params: SponsoredSegmentFlagPostParams,
+        flag_details: SponsoredSegmentFlagPost,
+        session: AsyncSession,
     ):
-        sponsored_segment = await self.sponsored_segment_repo.get_by_sponsorship_id(
-            sponsorship_id, session
-        )
+        if params.sponsorship_id:
+            sponsored_segment = await self.sponsored_segment_repo.get_by_sponsorship_id(
+                params.sponsorship_id, session
+            )
+        else:
+            sponsored_segment = await self.sponsored_segment_repo.get_by_id(
+                params.sponsored_segment_id, session
+            )
+
         if not sponsored_segment:
             raise HTTPException(status_code=404, detail="No sponsored segment found with id")
 

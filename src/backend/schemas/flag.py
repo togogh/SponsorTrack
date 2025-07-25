@@ -53,6 +53,21 @@ class SponsoredSegmentFlagPost(BaseModel):
     field_flagged: SponsoredSegmentFlaggedField
 
 
+class SponsoredSegmentFlagPostParams(BaseModel):
+    sponsorship_id: UUID4 | None
+    sponsored_segment_id: UUID4 | None
+
+    @model_validator(mode="after")
+    def ensure_one_id(self) -> "SponsoredSegmentFlagPostParams":
+        if not self.sponsorship_id and not self.sponsored_segment_id:
+            raise ValueError("One of `sponsorship_id` or `sponsored_segment_id` must be provided.")
+        if self.sponsorship_id and self.sponsored_segment_id:
+            raise ValueError(
+                "Only one of `sponsorship_id` or `sponsored_segment_id` should be provided."
+            )
+        return self
+
+
 class FlagCreate(BaseModel):
     field_flagged: str
     value_flagged: Any

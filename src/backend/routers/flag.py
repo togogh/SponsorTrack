@@ -11,6 +11,7 @@ from backend.schemas.flag import (
     SponsoredSegmentFlagPost,
     SponsoredSegmentFlagPostResponse,
     VideoFlagPostParams,
+    SponsoredSegmentFlagPostParams,
 )
 from backend.services.flag import FlagService
 from pydantic import UUID4
@@ -39,6 +40,19 @@ def parse_video_flag_params(
 ) -> VideoFlagPostParams:
     try:
         return VideoFlagPostParams(youtube_id=youtube_id, video_id=video_id)
+    except ValidationError as e:
+        logger.error(e)
+        raise RequestValidationError(e.errors())
+
+
+def parse_sponsored_segment_flag_params(
+    sponsorship_id: Optional[str] = Query(None),
+    sponsored_segment_id: Optional[UUID4] = Query(None),
+) -> SponsoredSegmentFlagPostParams:
+    try:
+        return SponsoredSegmentFlagPostParams(
+            sponsorship_id=sponsorship_id, sponsored_segment_id=sponsored_segment_id
+        )
     except ValidationError as e:
         logger.error(e)
         raise RequestValidationError(e.errors())
@@ -77,13 +91,13 @@ async def flag_sponsorship(
     response_model=SponsoredSegmentFlagPostResponse,
 )
 async def flag_sponsored_segment(
-    sponsorship_id: UUID4,
     flag_details: SponsoredSegmentFlagPost,
+    params: VideoFlagPostParams = Depends(parse_sponsored_segment_flag_params),
     service: FlagService = Depends(get_flag_sponsorship_service),
     session: AsyncSession = Depends(session_dependency),
 ):
     try:
-        return await service.flag_sponsored_segment(sponsorship_id, flag_details, session)
+        return await service.flag_sponsored_segment(params, flag_details, session)
     except Exception as e:
         logger.error(e)
         raise e
