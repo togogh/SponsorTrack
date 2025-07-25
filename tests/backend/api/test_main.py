@@ -3,6 +3,7 @@ from backend.main import app
 import pytest
 from backend.routers.video_sponsorship import session_dependency
 from urllib.parse import urlencode
+from requests import codes
 
 
 @pytest.fixture(scope="session")
@@ -59,9 +60,9 @@ async def test_get_video_sponsorships(params, expected_youtube_id, expected_spon
     encoded_params = urlencode(params)
     response = await client.get(f"/videos/sponsorships/?{encoded_params}")
     if expected_sponsors is None:
-        assert response.ok is False
+        assert response.status_code != codes.ok
     else:
-        assert response.status_code == 200
+        assert response.status_code == codes.ok
         data = response.json()
         assert data["youtube_id"] == expected_youtube_id
         assert len(data["sponsorships"]) == len(expected_sponsors)
