@@ -40,6 +40,11 @@ from requests import codes
             "bPJSsAr2iu0",
             None,
         ),
+        (
+            {"id": "9sTsI4tpATk"},
+            "9sTsI4tpATk",
+            ["Factor", "Sakuraco", "Shopify", "Zocdoc"],
+        ),
     ],
 )
 @pytest.mark.asyncio(loop_scope="session")
