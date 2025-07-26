@@ -13,6 +13,7 @@ async def get_engine(schema=None):
         f"postgresql+asyncpg://{db_settings.POSTGRES_USER}:"
         f"{db_settings.POSTGRES_PASSWORD}@127.0.0.1:{port}/"
         f"{db_settings.POSTGRES_DB}"
+        "?sslmode=disable"
     )
     if not schema:
         schema = db_settings.POSTGRES_SCHEMA
