@@ -28,8 +28,6 @@ jobs:
           cp requirements.txt deploy/
           cp src/frontend/app.py deploy/app.py
           cp HF_README.md deploy/README.md
-          printf "import sys\nimport os\nsys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))\n\n" > inject.py
-          cat inject.py deploy/app.py > temp && mv temp deploy/app.py
           echo "sdk: gradio\napp_file: app.py" > deploy/huggingface.yaml
 
       - name: Push to `spaces-deploy` branch
