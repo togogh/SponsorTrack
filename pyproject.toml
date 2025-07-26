@@ -12,6 +12,7 @@ dependencies = [
     "fastapi[standard]>=0.115.12",
     "gevent>=25.5.1",
     "gradio>=5.29.0",
+    "gunicorn>=23.0.0",
     "huggingface-hub>=0.31.1",
     "langcodes>=3.5.0",
     "openai>=1.97.0",
