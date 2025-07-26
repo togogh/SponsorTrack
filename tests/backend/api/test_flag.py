@@ -105,4 +105,36 @@ async def test_flag_sponsored_segment(
     assert response.status_code != codes.ok
 
 
-# flag_sponsorship
+@pytest.mark.asyncio(loop_scope="session")
+async def test_flag_sponsorship(
+    video_repo, sponsored_segment_repo, sponsorship_repo, client, test_session
+):
+    random_uuid = "7662a41d-000f-4a7a-b907-bc6aa8ea3a6c"
+    field_flagged = "sponsor_description"
+    request_params = {"sponsorship_id": random_uuid}
+    request_body = {"field_flagged": field_flagged}
+    encoded_params = urlencode(request_params)
+    response = await client.post(f"/videos/sponsorships/flag?{encoded_params}", json=request_body)
+    assert response.status_code != codes.ok
+
+    youtube_id = "BYTxPFj44uo"
+    video = await video_repo.add(VideoCreate(youtube_id=youtube_id), test_session)
+    sponsored_segment = await sponsored_segment_repo.add(
+        SponsoredSegmentCreate(start_time=5.3, end_time=199, parent_video_id=video.id), test_session
+    )
+    sponsorship = await sponsorship_repo.add(
+        SponsorshipCreate(sponsor_name="A Sponsor", sponsored_segment_id=sponsored_segment.id),
+        test_session,
+    )
+
+    request_params = {"sponsorship_id": sponsorship.id}
+    encoded_params = urlencode(request_params)
+    response = await client.post(f"/videos/sponsorships/flag?{encoded_params}", json=request_body)
+    assert response.status_code == codes.ok
+    data = response.json()
+    assert data["field_flagged"] == field_flagged
+    assert data["status"] == "pending"
+
+    request_body = {"field_flagged": "invalid_field"}
+    response = await client.post(f"/videos/sponsorships/flag?{encoded_params}", json=request_body)
+    assert response.status_code != codes.ok
