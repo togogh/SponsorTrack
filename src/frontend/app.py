@@ -96,7 +96,7 @@ Extract sponsorship information from Youtube videos
 
                     for i, sponsorship in enumerate(arr):
                         sponsorship_id = sponsorship["id"]
-                        with gr.Accordion(label=f"{sponsorship['sponsor_name']}", open=True):
+                        with gr.Accordion(label=f"{sponsorship['sponsor_name']}", open=False):
                             sponsor_name_btn = gr.Button("Flag: Sponsor name")
                             sponsor_name_btn.click(
                                 lambda: flag("sponsor_name", sponsorship_id, "sponsorship", None),
