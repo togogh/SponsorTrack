@@ -35,6 +35,10 @@ async def test_flag_video(video_repo, client, test_session):
     assert data["field_flagged"] == field_flagged
     assert data["status"] == "pending"
 
+    request_body = {"field_flagged": "invalid_field"}
+    response = await client.post(f"/videos/flag?{encoded_params}", json=request_body)
+    assert response.status_code != codes.ok
+
 
 # flag_sponsorship
 # flag_sponsored_segment
