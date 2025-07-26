@@ -1,24 +1,54 @@
-import shutil
+import pytest_asyncio
 import pytest
+from backend.core.session import get_engine, get_session, session_dependency
+from sqlalchemy import text
+from httpx import AsyncClient, ASGITransport
+from backend.main import app
 
 
-@pytest.fixture(scope="session", autouse=True)
-def clear_test_data_dir():
-    try:
-        shutil.rmtree("tests/data")
-    except FileNotFoundError:
-        print("Directory not found")
+@pytest_asyncio.fixture(scope="session")
+async def test_engine():
+    async with get_engine(schema="test") as engine:
+        yield engine
 
 
-def pytest_collection_modifyitems(items):
-    """Modifies test items in place to ensure test classes run in a given order."""
-    CLASS_ORDER = ["TestVideo", "TestSponsoredSegment"]
-    class_mapping = {item: item.cls.__name__ for item in items}
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def reset_test_schema(test_engine):
+    async with get_session(engine=test_engine) as session:
+        result = await session.execute(
+            text("""
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_schema = 'test'
+        """)
+        )
+        tables = result.fetchall()
 
-    sorted_items = items.copy()
-    # Iteratively move tests of each class to the end of the test queue
-    for class_ in CLASS_ORDER:
-        sorted_items = [it for it in sorted_items if class_mapping[it] != class_] + [
-            it for it in sorted_items if class_mapping[it] == class_
-        ]
-    items[:] = sorted_items
+        if tables:
+            table_names = [f"test.{t[0]}" for t in tables]
+            print(table_names)
+            await session.execute(
+                text(f"TRUNCATE TABLE {', '.join(table_names)} RESTART IDENTITY CASCADE")
+            )
+            await session.commit()
+
+
+@pytest_asyncio.fixture(scope="session")
+async def test_session(test_engine):
+    async with get_session(engine=test_engine) as session:
+        yield session
+
+
+@pytest.fixture
+def base_fields():
+    return ["id", "created_at", "updated_at"]
+
+
+@pytest.fixture(scope="session")
+async def client(test_session):
+    async def override_session_dependency():
+        yield test_session
+
+    app.dependency_overrides[session_dependency] = override_session_dependency
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
+        yield c

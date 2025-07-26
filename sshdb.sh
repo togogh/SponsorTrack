@@ -1,0 +1,3 @@
+#!/bin/bash
+source .env
+ssh -i "$SSH_PKEY_PATH" -L $POSTGRES_LOCAL_PORT:localhost:$POSTGRES_REMOTE_PORT "$SSH_USERNAME@$SERVER_IP_ADDRESS"

@@ -26,3 +26,7 @@ tests/data/
 
 # Gradio
 .gradio
+
+# Logs
+*.log
+*.log.*
