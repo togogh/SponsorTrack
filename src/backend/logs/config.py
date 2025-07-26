@@ -4,7 +4,7 @@ import os
 
 
 def get_logger(name):
-    LOG_DIR = r"src\backend\logs"
+    LOG_DIR = r"src/backend/logs"
     LOG_FILE = "app.log"
 
     log_path = os.path.join(LOG_DIR, LOG_FILE)
