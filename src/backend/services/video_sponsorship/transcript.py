@@ -6,7 +6,12 @@ import json
 from backend.core.settings import ws_settings
 from backend.models.all import Video, VideoMetadata, SponsoredSegment
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.schemas.all import VideoUpdate, VideoMetadataUpdate, SponsoredSegmentUpdate
+from backend.schemas.all import (
+    VideoUpdate,
+    VideoMetadataUpdate,
+    SponsoredSegmentUpdate,
+    TranscriptSegment,
+)
 import pandas as pd
 from backend.repositories.all import (
     VideoMetadataRepository,
@@ -14,11 +19,14 @@ from backend.repositories.all import (
     SponsoredSegmentRepository,
 )
 from backend.logs.config import get_logger
+from typing import Tuple
 
 logger = get_logger(__name__)
 
 
-async def fetch_transcript_and_language(youtube_id, language, retries=5, backoff_factor=0.1):
+async def fetch_transcript_and_language(
+    youtube_id, language, retries=5, backoff_factor=0.1
+) -> Tuple[list[TranscriptSegment], str]:
     if ws_settings.WS_PROXY_UN and ws_settings.WS_PROXY_PW:
         proxy_config = WebshareProxyConfig(
             proxy_username=ws_settings.WS_PROXY_UN,
@@ -54,7 +62,7 @@ async def get_or_fill_transcript(
     video_repo: VideoRepository,
     video_metadata_repo: VideoMetadataRepository,
     session: AsyncSession,
-) -> dict:
+) -> list[TranscriptSegment]:
     transcript = video_metadata.raw_transcript
     if transcript is None:
         transcript, transcript_language = await fetch_transcript_and_language(
@@ -72,19 +80,22 @@ async def get_or_fill_transcript(
     return transcript
 
 
-async def map_transcript_to_segment_subtitles(transcript: str, segment):
+async def map_transcript_to_segment_subtitles(transcript: list[TranscriptSegment], segment) -> str:
     df = pd.DataFrame(transcript)
     df = df.sort_values(by=["start"], ascending=True)
+
     if segment.start_time < df.iloc[0]["start"]:
         start_row = df.iloc[0]
     else:
         start_row = df[df["start"] <= segment.start_time].iloc[-1]
+
     max_start_time = df["start"].max()
     if segment.end_time <= max_start_time:
         end_row = df[df["start"] >= segment.end_time].iloc[0]
+        df = df.iloc[start_row.name : end_row.name]
     else:
-        end_row = df.iloc[-1]
-    df = df.iloc[start_row.name : end_row.name]
+        df = df.iloc[start_row.name :]
+
     text = " ".join(df["text"].tolist())
     return text
 

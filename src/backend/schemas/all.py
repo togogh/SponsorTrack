@@ -1,6 +1,11 @@
 from backend.schemas.sponsored_segment import SponsoredSegmentCreate, SponsoredSegmentUpdate  # noqa: F401
 from backend.schemas.video import VideoCreate, VideoUpdate  # noqa: F401
-from backend.schemas.video_metadata import VideoMetadataCreate, VideoMetadataUpdate, MetadataJson  # noqa: F401
+from backend.schemas.video_metadata import (
+    VideoMetadataCreate,  # noqa: F401
+    VideoMetadataUpdate,  # noqa: F401
+    MetadataJson,  # noqa: F401
+    TranscriptSegment,  # noqa: F401
+)
 from backend.schemas.generated_sponsorship import (
     GeneratedSponsorshipCreate,  # noqa: F401
     GeneratedSponsorshipUpdate,  # noqa: F401
