@@ -24,7 +24,7 @@ def submit(youtube_id, youtube_url):
             raise ValueError("1 of id or url must be submitted.")
 
     encoded_params = urlencode(params)
-    url = f"http://127.0.0.1:8000/videos/sponsorships/?{encoded_params}"
+    url = f"https://sponsortracker.org/videos/sponsorships/?{encoded_params}"
 
     response = s.get(url)
     sponsorship_info = response.json()
@@ -33,11 +33,11 @@ def submit(youtube_id, youtube_url):
 
 def flag(field, id, entity, input):
     if entity == "video":
-        url = f"http://127.0.0.1:8000/videos/flag?youtube_id={id}"
+        url = f"https://sponsortracker.org/videos/flag?youtube_id={id}"
     elif entity == "sponsorship":
-        url = f"http://127.0.0.1:8000/videos/sponsorships/flag?sponsorship_id={id}"
+        url = f"https://sponsortracker.org/videos/sponsorships/flag?sponsorship_id={id}"
     elif entity == "sponsored_segment":
-        url = f"http://127.0.0.1:8000/videos/sponsored-segments/flag?sponsorship_id={id}"
+        url = f"https://sponsortracker.org/videos/sponsored-segments/flag?sponsorship_id={id}"
     data = {"field_flagged": field}
     response = s.post(url, json=data)
     if response.status_code == 200:
