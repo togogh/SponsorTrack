@@ -14,7 +14,6 @@ async def get_engine(schema=None):
         f"{db_settings.POSTGRES_PASSWORD}@{db_settings.POSTGRES_SERVER}:{port}/"
         f"{db_settings.POSTGRES_DB}"
     )
-    print(DATABASE_URL)
     if not schema:
         schema = db_settings.POSTGRES_SCHEMA
     engine = create_async_engine(
