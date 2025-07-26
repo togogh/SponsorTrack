@@ -45,6 +45,11 @@ from requests import codes
             "9sTsI4tpATk",
             ["Factor", "Sakuraco", "Shopify", "Zocdoc"],
         ),
+        (
+            {"id": "YjdGQZpG9lk"},
+            "YjdGQZpG9lk",
+            ["Surfshark VPN", "Surfshark VPN"],
+        ),
     ],
 )
 @pytest.mark.asyncio(loop_scope="session")

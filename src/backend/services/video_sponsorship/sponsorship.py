@@ -34,7 +34,7 @@ async def create_prompt(metadata: MetadataJson, segment: SponsoredSegment):
         
         The subtitles are sometimes auto-generated, so don't assume that what's written there is the absolute truth. Double check the information there using the other fields.
 
-        There may also be more than one sponsor in the segment, so please make sure the highest level of the json is a list. Use the subtitles to determine which sponsors belong to this segment.
+        There may also be more than one sponsor in the segment, so please make sure the highest level of the json is a list. Use the subtitles to determine which sponsors belong to this segment, by making sure the sponsor name is mentioned in the subtitles.
 
         Please respond with the json enclosed in a ```json ``` markdown code block.
     """
