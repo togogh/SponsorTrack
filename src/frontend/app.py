@@ -47,16 +47,14 @@ def flag(field, id, entity, input):
 
 with gr.Blocks() as demo:
     with gr.Row():
-        gr.Markdown("""
+        with gr.Column(scale=1):
+            gr.Markdown("""
 # SponsorTrack
                     
 Extract sponsorship information from Youtube videos
                     
 Want to use the API instead? [View API docs](https://api.sponsortrack.org)
-        """)
-
-    with gr.Row():
-        with gr.Column(scale=1):
+            """)
             id = gr.Textbox(label="Youtube ID", placeholder="XXXXXXXX")
             url = gr.Textbox(
                 label="Youtube URL", placeholder="https://www.youtube.com/watch?v=XXXXXXXX"
