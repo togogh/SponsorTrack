@@ -115,13 +115,11 @@ Want to use the API instead? [View API docs](https://api.sponsortrack.org)
                                     label="Video Preview",
                                     value=f"""
                                 <iframe
-                                    width="560"
-                                    height="315"
                                     src="https://www.youtube.com/embed/{youtube_id}?start={int(sponsorship["start_time"])}"
                                     frameborder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     referrerpolicy="strict-origin-when-cross-origin"
-                                    style="margin: 0 auto; display: block;"
+                                    style="margin: 0 auto; display: block; width: 100%; aspect-ratio: 16 / 9;"
                                     allowfullscreen>
                                 </iframe>""",
                                 )
