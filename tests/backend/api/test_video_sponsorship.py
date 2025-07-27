@@ -50,6 +50,11 @@ from requests import codes
             "YjdGQZpG9lk",
             ["Surfshark VPN", "Surfshark VPN"],
         ),
+        (
+            {"url": "https://www.youtube.com/watch?v=BYizgB2FcAQ"},
+            "BYizgB2FcAQ",
+            ["Ground News", "NordVPN"],
+        ),
     ],
 )
 @pytest.mark.asyncio(loop_scope="session")
@@ -64,4 +69,4 @@ async def test_get_video_sponsorships(params, expected_youtube_id, expected_spon
         assert data["youtube_id"] == expected_youtube_id
         assert len(data["sponsorships"]) == len(expected_sponsors)
         sponsors = [s["sponsor_name"] for s in data["sponsorships"]]
-        assert set(sponsors) == set(expected_sponsors)
+        assert sorted(sponsors) == sorted(expected_sponsors)
