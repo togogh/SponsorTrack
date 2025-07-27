@@ -45,8 +45,6 @@ def flag(field, id, entity, input):
     return input
 
 
-callback = gr.CSVLogger(dataset_file_name="flagged_sponsorships.csv")
-
 with gr.Blocks() as demo:
     with gr.Row():
         gr.Markdown("""
