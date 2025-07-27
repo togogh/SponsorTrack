@@ -16,7 +16,6 @@
 ## 📚 Table of Contents
 
 - [About The Project](#-about-the-project)
-- [Project Badges](#project-badges)
 - [Built With](#-built-with)
 - [Getting Started](#-getting-started)
 - [Roadmap](#-roadmap)
@@ -31,16 +30,6 @@
 ![SponsorTrack Screen Shot][product-screenshot]
 
 SponsorTrack is an open-source Python project that extracts and compiles Youtube sponsorship information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-## Project Badges
-
-[![License](https://img.shields.io/github/license/togogh/SponsorTrack?style=for-the-badge)](LICENSE)
-![Last Commit](https://img.shields.io/github/last-commit/togogh/SponsorTrack?style=for-the-badge)
-![Stars](https://img.shields.io/github/stars/togogh/SponsorTrack?style=for-the-badge)
-![Issues](https://img.shields.io/github/issues/togogh/SponsorTrack?style=for-the-badge)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
