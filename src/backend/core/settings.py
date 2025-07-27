@@ -21,13 +21,13 @@ class DBSettings(BaseSettingsFromEnv):
     POSTGRES_USER: str  # Postgres username
     POSTGRES_PASSWORD: str  # Postgres password
     POSTGRES_SERVER: str  # Postgres server/host
-    POSTGRES_REMOTE_PORT: int  # Postgres port in server/host
+    POSTGRES_REMOTE_PORT: int | None  # Postgres port in server/host
     POSTGRES_LOCAL_PORT: int  # Local postgres port
     POSTGRES_DB: str  # Postgres database name
     POSTGRES_SCHEMA: str  # Postgres schema name
-    SERVER_IP_ADDRESS: IPvAnyAddress  # IP address of server containing postgres db
-    SSH_USERNAME: str  # Username to use to ssh into the server
-    SSH_PKEY_PATH: FilePath  # Path containing ssh private key
+    SERVER_IP_ADDRESS: IPvAnyAddress | None  # IP address of server containing postgres db
+    SSH_USERNAME: str | None  # Username to use to ssh into the server
+    SSH_PKEY_PATH: FilePath | None  # Path containing ssh private key
 
 
 # class EmailSettings(BaseSettingsFromEnv):
