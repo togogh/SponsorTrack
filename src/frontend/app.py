@@ -49,7 +49,10 @@ with gr.Blocks() as demo:
     with gr.Row():
         gr.Markdown("""
 # SponsorTrack
+                    
 Extract sponsorship information from Youtube videos
+                    
+Want to use the API instead? [View API docs](https://api.sponsortrack.org)
         """)
 
     with gr.Row():
