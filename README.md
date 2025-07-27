@@ -1,64 +1,130 @@
 <a id="readme-top"></a>
 
+# 🛰️ SponsorTrack
+
+**Extract, analyze, and organize YouTube sponsorship data using FastAPI, Gradio, and SponsorBlock.**
+
+[![License](https://img.shields.io/github/license/togogh/SponsorTrack?style=for-the-badge)](LICENSE)
+![Last Commit](https://img.shields.io/github/last-commit/togogh/SponsorTrack?style=for-the-badge)
+![Stars](https://img.shields.io/github/stars/togogh/SponsorTrack?style=for-the-badge)
+![Issues](https://img.shields.io/github/issues/togogh/SponsorTrack?style=for-the-badge)
+
+[View Demo](https://huggingface.co/spaces/togogh/SponsorTrack) • [View API Docs](https://api.sponsortrack.org/docs)
+
+---
+
+## 📚 Table of Contents
+
+- [About The Project](#-about-the-project)
+- [Project Badges](#project-badges)
+- [Built With](#-built-with)
+- [Getting Started](#-getting-started)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
+
 <!-- ABOUT THE PROJECT -->
-## About The Project
+## 📖 About The Project
 
 ![SponsorTrack Screen Shot][product-screenshot]
-
-[View Demo](https://huggingface.co/spaces/togogh/SponsorTrack)
 
 SponsorTrack is an open-source Python project that extracts and compiles Youtube sponsorship information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-<!-- GETTING STARTED -->
-## Getting Started
+## Project Badges
 
-### Hosted
-Do this if you just want to get sponsorship information
+[![License](https://img.shields.io/github/license/togogh/SponsorTrack?style=for-the-badge)](LICENSE)
+![Last Commit](https://img.shields.io/github/last-commit/togogh/SponsorTrack?style=for-the-badge)
+![Stars](https://img.shields.io/github/stars/togogh/SponsorTrack?style=for-the-badge)
+![Issues](https://img.shields.io/github/issues/togogh/SponsorTrack?style=for-the-badge)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+## 🧰 Built With
+
+![Python](https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Gradio](https://img.shields.io/badge/Gradio-FF4B4B?style=for-the-badge&logo=gradio&logoColor=white)
+
+[![Uses youtube-transcript-api](https://img.shields.io/badge/Uses-youtube--transcript--api-blue?style=for-the-badge)](https://github.com/jdepoix/youtube-transcript-api)
+[![Uses SponsorBlock](https://img.shields.io/badge/Uses-SponsorBlock-purple?style=for-the-badge)](https://github.com/ajayyy/SponsorBlock)
+
+
+<!-- GETTING STARTED -->
+## 🥁 Getting Started
+
+<details>
+<summary><strong>🖥️ Hosted (For End Users)</strong></summary>
 
 1. Go to the [HF Space](https://huggingface.co/spaces/togogh/SponsorTrack) where the app is hosted.
-2. Plug in a Youtube URL, and hit submit. Sponsorship information (Who sponsored this video? What offers did they have? What links did they share?) will populate the page shortly.
+2. Plug in a Youtube URL/id, and hit submit. Sponsorship information like the sponsor's name, available coupon codes, and links, should populate the page shortly.
 
-### Local
-Do this if you want to edit the code
+</details>
+
+<details>
+<summary><strong>💻 Local Setup (For Developers)</strong></summary>
 
 #### Prerequisites
 
 - [python](https://www.python.org/downloads/)
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
-- [HuggingFace account](https://huggingface.co)
-- (Optional - to avoid IpBlock errors when querying Youtube) [WebShare Proxies](https://www.webshare.io/?referral_code=vxw83x5vljc7)
+- postgres db (if hosted, ssh details are needed in .env)
+- [Huggingface](https://huggingface.co/) and/or [OpenRouter](https://openrouter.ai/) account 
 
 #### Installation
 
-1. Create a [new HuggingFace token](https://huggingface.co/settings/tokens/new?ownUserPermissions=inference.serverless.write&tokenType=fineGrained) with "Make calls to Inference Providers" enabled.
+1. Clone the repo
 
-    (Optional) Sign up for the Rotating Residential proxies plan in Webshare (the Free tier or Static Residential plan won't work). Then change your connection method to Rotating Proxy Endpoint and take note of your proxy username and password.
+2. Create a .env file in the project root directory and set the env vars needed in [settings.py](src/backend/core/settings.py)
 
-2. Clone the repo
-3. Create a .env file in the project root directory and set the following variables:
-    - HF_TOKEN = HuggingFace token
-    - WS_PROXY_UN = Webshare proxy username
-    - WS_PROXY_PW = Webshare proxy password
-4. Start the app server
+3. (If using SSH) SSH into the server hosting your postgres db by running
     ```sh
-    uv run --env-file .env src\sponsortrack\frontend\app.py
+    ./sshdb.sh
     ```
-5. Open the localhost/public url where the server is running
-6. In the app, input the Youtube URL you want to get sponsorship info of
-7. After a little wait, the app will populate with this info
+
+4. Populate your schema with tables using (replace schema_name with the name of your schema, make sure it's the same one in your .env):
+    ```sh
+    python src/backend/utils/refresh_test_schema.py schema_name
+    ```
+
+5. Start the backend server
+    ```sh
+    uv run fastapi run src/backend/main.py
+    ```
+    The terminal should say that the server is running, and you should be able to open http://127.0.0.1:8000/docs (though you might need to replace the host) and see the API docs
+
+6. In a separate terminal, start the frontend server
+    ```sh
+    uv run src/frontend/app.py
+    ```
+    You should see a message like:
+    ```sh
+    * Running on local URL:  http://127.0.0.1:7860
+    ```
+    If you open the link, you should be able to see the UI
+
+7. In the app, input the Youtube URL/id you want to get sponsorship info of
+
+8. After a little wait, the app will populate with this info
+</details>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ROADMAP -->
-## Roadmap
+## 🛣 Roadmap
 
 - [x] Local Gradio app to get YT sponsorship info
 - [x] Hosted Gradio app - Currently in [HuggingFace Spaces](https://huggingface.co/spaces/togogh/SponsorTrack)
 - [x] Hosted database for storing sponsorship info - Currently hosted in Droplet
-- [ ] API service
+- [x] API service
+- [ ] Queuing / Batching
+- [ ] Review mechanism
 - [ ] Web app with charts and stats (similar to [Graphtreon](https://graphtreon.com/))
 - [ ] Sponsored segment predictor
 
@@ -66,7 +132,7 @@ Do this if you want to edit the code
 
 
 <!-- CONTRIBUTING -->
-## Contributing
+## 📥 Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
@@ -80,12 +146,12 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
     - You need at least 1 approval before you can merge to main
-    - Every merge runs pytest to make sure new changes don't break the project. Please run `uv run pytest` before creating a pull request so you don't run into issues with merging later.
+    - Every merge runs pytest to make sure new changes don't break the project. Please run `uv run pytest` before creating a pull request so you don't run into issues with merging later (note that a test schema is required for several of these tests).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- LICENSE -->
-## License
+## 📰 License
 
 Distributed under the GNU GPLv3 License. See `LICENSE.txt` for more information.
 
