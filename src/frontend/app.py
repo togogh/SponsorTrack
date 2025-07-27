@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 s = requests.Session()
 retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
-s.mount("http://", HTTPAdapter(max_retries=retries))
+s.mount("https://", HTTPAdapter(max_retries=retries))
 
 
 def submit(youtube_id, youtube_url):
@@ -44,8 +44,6 @@ def flag(field, id, entity, input):
         gr.Info(f"Flagged {field}.")
     return input
 
-
-callback = gr.CSVLogger(dataset_file_name="flagged_sponsorships.csv")
 
 with gr.Blocks() as demo:
     with gr.Row():
@@ -94,6 +92,12 @@ Extract sponsorship information from Youtube videos
                         [found],
                     )
 
+                    video_previews = []
+                    descriptions = []
+                    offers = []
+                    links = []
+                    coupon_codes = []
+
                     for i, sponsorship in enumerate(arr):
                         sponsorship_id = sponsorship["id"]
                         with gr.Accordion(label=f"{sponsorship['sponsor_name']}", open=False):
@@ -103,9 +107,10 @@ Extract sponsorship information from Youtube videos
                                 [],
                                 [],
                             )
-                            video_preview = gr.HTML(
-                                label="Video Preview",
-                                value=f"""
+                            video_previews.append(
+                                gr.HTML(
+                                    label="Video Preview",
+                                    value=f"""
                                 <iframe
                                     width="560"
                                     height="315"
@@ -116,55 +121,68 @@ Extract sponsorship information from Youtube videos
                                     style="margin: 0 auto; display: block;"
                                     allowfullscreen>
                                 </iframe>""",
+                                )
                             )
                             start_time_btn = gr.Button("Flag: Start time")
                             start_time_btn.click(
-                                lambda x: flag(
+                                lambda x, sponsorship_id=sponsorship_id: flag(
                                     "start_time", sponsorship_id, "sponsored_segment", x
                                 ),
-                                [video_preview],
-                                [video_preview],
+                                [video_previews[i]],
+                                [video_previews[i]],
                             )
-                            description = gr.TextArea(
-                                label="Description",
-                                value=sponsorship["sponsor_description"],
+                            descriptions.append(
+                                gr.TextArea(
+                                    label="Description",
+                                    value=sponsorship["sponsor_description"],
+                                )
                             )
                             sponsor_description_btn = gr.Button("Flag: Description")
                             sponsor_description_btn.click(
-                                lambda x: flag(
+                                lambda x, sponsorship_id=sponsorship_id: flag(
                                     "sponsor_description", sponsorship_id, "sponsorship", x
                                 ),
-                                [description],
-                                [description],
+                                [descriptions[i]],
+                                [descriptions[i]],
                             )
-                            offer = gr.TextArea(label="Offer", value=sponsorship["sponsor_offer"])
+                            offers.append(
+                                gr.TextArea(label="Offer", value=sponsorship["sponsor_offer"])
+                            )
                             sponsor_offer_btn = gr.Button("Flag: Offer")
                             sponsor_offer_btn.click(
-                                lambda x: flag("sponsor_offer", sponsorship_id, "sponsorship", x),
-                                [offer],
-                                [offer],
+                                lambda x, sponsorship_id=sponsorship_id: flag(
+                                    "sponsor_offer", sponsorship_id, "sponsorship", x
+                                ),
+                                [offers[i]],
+                                [offers[i]],
                             )
-                            links = gr.TextArea(
-                                label="Links",
-                                value=sponsorship["sponsor_links"],
+                            links.append(
+                                gr.TextArea(
+                                    label="Links",
+                                    value=sponsorship["sponsor_links"],
+                                )
                             )
                             sponsor_links_btn = gr.Button("Flag: Links")
                             sponsor_links_btn.click(
-                                lambda x: flag("sponsor_links", sponsorship_id, "sponsorship", x),
-                                [links],
-                                [links],
+                                lambda x, sponsorship_id=sponsorship_id: flag(
+                                    "sponsor_links", sponsorship_id, "sponsorship", x
+                                ),
+                                [links[i]],
+                                [links[i]],
                             )
-                            coupon_code = gr.TextArea(
-                                label="Coupon Code",
-                                value=sponsorship["sponsor_coupon_code"],
+                            coupon_codes.append(
+                                gr.TextArea(
+                                    label="Coupon Code",
+                                    value=sponsorship["sponsor_coupon_code"],
+                                )
                             )
                             sponsor_coupon_code_btn = gr.Button("Flag: Coupon code")
                             sponsor_coupon_code_btn.click(
-                                lambda x: flag(
+                                lambda x, sponsorship_id=sponsorship_id: flag(
                                     "sponsor_coupon_code", sponsorship_id, "sponsorship", x
                                 ),
-                                [coupon_code],
-                                [coupon_code],
+                                [coupon_codes[i]],
+                                [coupon_codes[i]],
                             )
                 except Exception:
                     pass
