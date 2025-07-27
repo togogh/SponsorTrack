@@ -18,39 +18,38 @@ class ProjectSettings:
 
 
 class DBSettings(BaseSettingsFromEnv):
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_SERVER: str
-    POSTGRES_REMOTE_PORT: int
-    POSTGRES_LOCAL_PORT: int
-    POSTGRES_DB: str
-    POSTGRES_SCHEMA: str
-    SERVER_IP_ADDRESS: IPvAnyAddress
-    SERVER_PORT: int
-    SSH_USERNAME: str
-    SSH_PKEY_PATH: FilePath
+    POSTGRES_USER: str  # Postgres username
+    POSTGRES_PASSWORD: str  # Postgres password
+    POSTGRES_SERVER: str  # Postgres server/host
+    POSTGRES_REMOTE_PORT: int  # Postgres port in server/host
+    POSTGRES_LOCAL_PORT: int  # Local postgres port
+    POSTGRES_DB: str  # Postgres database name
+    POSTGRES_SCHEMA: str  # Postgres schema name
+    SERVER_IP_ADDRESS: IPvAnyAddress  # IP address of server containing postgres db
+    SSH_USERNAME: str  # Username to use to ssh into the server
+    SSH_PKEY_PATH: FilePath  # Path containing ssh private key
 
 
-class EmailSettings(BaseSettingsFromEnv):
-    RESEND_API_KEY: str
-    EMAIL_DOMAIN: str
+# class EmailSettings(BaseSettingsFromEnv):
+#     RESEND_API_KEY: str
+#     EMAIL_DOMAIN: str
 
 
 class WSSettings(BaseSettingsFromEnv):
-    WS_PROXY_UN: str
-    WS_PROXY_PW: str
+    WS_PROXY_UN: str | None  # Webshare proxy username
+    WS_PROXY_PW: str | None  # Webshare proxy password
 
 
 class GeneratorSettings(BaseSettingsFromEnv):
-    GENERATOR: Generator
-    HF_TOKEN: str
-    OR_TOKEN: str
-    PROVIDER: str
-    MODEL: str
+    GENERATOR: Generator  # Generator type
+    HF_TOKEN: str | None  # Huggingface token (required if GENERATOR = 'HF')
+    OR_TOKEN: str | None  # OpenRouter token (required if GENERATOR = 'OR')
+    PROVIDER: str | None  # Model provider
+    MODEL: str  # Model name
 
 
 project_settings = ProjectSettings()
 db_settings = DBSettings()
-email_settings = EmailSettings()
+# email_settings = EmailSettings()
 ws_settings = WSSettings()
 generator_settings = GeneratorSettings()
