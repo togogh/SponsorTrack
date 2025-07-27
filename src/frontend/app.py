@@ -47,13 +47,14 @@ def flag(field, id, entity, input):
 
 with gr.Blocks() as demo:
     with gr.Row():
-        gr.Markdown("""
-# SponsorTrack
-Extract sponsorship information from Youtube videos
-        """)
-
-    with gr.Row():
         with gr.Column(scale=1):
+            gr.Markdown("""
+# SponsorTrack
+                    
+Extract sponsorship information from Youtube videos
+                    
+Want to use the API instead? [View API docs](https://api.sponsortrack.org)
+            """)
             id = gr.Textbox(label="Youtube ID", placeholder="XXXXXXXX")
             url = gr.Textbox(
                 label="Youtube URL", placeholder="https://www.youtube.com/watch?v=XXXXXXXX"
@@ -85,7 +86,7 @@ Extract sponsorship information from Youtube videos
                         value=f"Found {len(arr)} sponsored segment{'' if len(arr) == 1 else 's'} for https://www.youtube.com/watch?v={sponsorship_info['youtube_id']}",
                         label="Results",
                     )
-                    num_sponsored_segments_btn = gr.Button("Flag: # of sponsored segments")
+                    num_sponsored_segments_btn = gr.Button("Flag wrong # of sponsored segments")
                     num_sponsored_segments_btn.click(
                         lambda x: flag("num_sponsored_segments", youtube_id, "video", x),
                         [found],
@@ -101,7 +102,7 @@ Extract sponsorship information from Youtube videos
                     for i, sponsorship in enumerate(arr):
                         sponsorship_id = sponsorship["id"]
                         with gr.Accordion(label=f"{sponsorship['sponsor_name']}", open=False):
-                            sponsor_name_btn = gr.Button("Flag: Sponsor name")
+                            sponsor_name_btn = gr.Button("Flag wrong sponsor name")
                             sponsor_name_btn.click(
                                 lambda: flag("sponsor_name", sponsorship_id, "sponsorship", None),
                                 [],
@@ -112,18 +113,16 @@ Extract sponsorship information from Youtube videos
                                     label="Video Preview",
                                     value=f"""
                                 <iframe
-                                    width="560"
-                                    height="315"
                                     src="https://www.youtube.com/embed/{youtube_id}?start={int(sponsorship["start_time"])}"
                                     frameborder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     referrerpolicy="strict-origin-when-cross-origin"
-                                    style="margin: 0 auto; display: block;"
+                                    style="margin: 0 auto; display: block; width: 100%; aspect-ratio: 16 / 9;"
                                     allowfullscreen>
                                 </iframe>""",
                                 )
                             )
-                            start_time_btn = gr.Button("Flag: Start time")
+                            start_time_btn = gr.Button("Flag wrong start time")
                             start_time_btn.click(
                                 lambda x, sponsorship_id=sponsorship_id: flag(
                                     "start_time", sponsorship_id, "sponsored_segment", x
@@ -137,7 +136,7 @@ Extract sponsorship information from Youtube videos
                                     value=sponsorship["sponsor_description"],
                                 )
                             )
-                            sponsor_description_btn = gr.Button("Flag: Description")
+                            sponsor_description_btn = gr.Button("Flag wrong description")
                             sponsor_description_btn.click(
                                 lambda x, sponsorship_id=sponsorship_id: flag(
                                     "sponsor_description", sponsorship_id, "sponsorship", x
@@ -148,7 +147,7 @@ Extract sponsorship information from Youtube videos
                             offers.append(
                                 gr.TextArea(label="Offer", value=sponsorship["sponsor_offer"])
                             )
-                            sponsor_offer_btn = gr.Button("Flag: Offer")
+                            sponsor_offer_btn = gr.Button("Flag wrong offer")
                             sponsor_offer_btn.click(
                                 lambda x, sponsorship_id=sponsorship_id: flag(
                                     "sponsor_offer", sponsorship_id, "sponsorship", x
@@ -162,7 +161,7 @@ Extract sponsorship information from Youtube videos
                                     value=sponsorship["sponsor_links"],
                                 )
                             )
-                            sponsor_links_btn = gr.Button("Flag: Links")
+                            sponsor_links_btn = gr.Button("Flag wrong links")
                             sponsor_links_btn.click(
                                 lambda x, sponsorship_id=sponsorship_id: flag(
                                     "sponsor_links", sponsorship_id, "sponsorship", x
@@ -176,7 +175,7 @@ Extract sponsorship information from Youtube videos
                                     value=sponsorship["sponsor_coupon_code"],
                                 )
                             )
-                            sponsor_coupon_code_btn = gr.Button("Flag: Coupon code")
+                            sponsor_coupon_code_btn = gr.Button("Flag wrong coupon code")
                             sponsor_coupon_code_btn.click(
                                 lambda x, sponsorship_id=sponsorship_id: flag(
                                     "sponsor_coupon_code", sponsorship_id, "sponsorship", x
