@@ -44,6 +44,7 @@ SponsorTrack is an open-source Python project that extracts and compiles Youtube
 [![Uses youtube-transcript-api](https://img.shields.io/badge/Uses-youtube--transcript--api-blue?style=for-the-badge)](https://github.com/jdepoix/youtube-transcript-api)
 [![Uses SponsorBlock](https://img.shields.io/badge/Uses-SponsorBlock-purple?style=for-the-badge)](https://github.com/ajayyy/SponsorBlock)
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 ## 🥁 Getting Started
