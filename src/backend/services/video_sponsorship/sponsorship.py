@@ -5,6 +5,7 @@ from backend.repositories.all import SponsorshipRepository, GeneratedSponsorship
 from backend.schemas.all import MetadataJson, SponsorshipCreate, GeneratedSponsorshipCreate
 from backend.services.generators.get_generator import get_generator
 from backend.core.settings import generator_settings
+import json
 
 
 async def get_sponsorships(
@@ -15,14 +16,19 @@ async def get_sponsorships(
 
 
 async def create_prompt(metadata: MetadataJson, segment: SponsoredSegment):
+    metadata_json = {
+        "channel": metadata.channel,
+        "video_description": metadata.description,
+        "video_upload_date": metadata.upload_date,
+        "video_language": metadata.language,
+        "segment_subtitles": segment.subtitles,
+    }
     prompt = f"""
-        I have a sponsored segment cut from a Youtube video. Here's some information about this segment:
+        I have a sponsored segment cut from a Youtube video. Here's a json containing information about this segment:
 
-        Youtube channel: {metadata.channel}
-        Video description: {metadata.description}
-        Upload date: {metadata.upload_date}
-        Video language: {metadata.language}
-        Segment subtitles: {segment.subtitles}
+        ```json
+        {json.dumps(metadata_json)}
+        ```
         
         I want you to return a json with the following information:
 
@@ -31,10 +37,8 @@ async def create_prompt(metadata: MetadataJson, segment: SponsoredSegment):
         sponsor_offer: The specific discount or promo provided by the sponsor, if any
         sponsor_links: List of hyperlinks related to the sponsor, such as affiliate links, homepages, or links to the offer, if any. Make sure these start with http or https
         sponsor_coupon_code: Coupon code, if any
-        
-        The subtitles are sometimes auto-generated, so don't assume that what's written there is the absolute truth. Double check the information there using the other fields.
 
-        There may also be more than one sponsor in the segment, so please make sure the highest level of the json is a list. Use the subtitles to determine which sponsors belong to this segment, by making sure the sponsor name is mentioned in the subtitles.
+        There may be more than one sponsor in the segment, so please make sure the highest level of the json is a list. Use the subtitles to determine which sponsors belong to this segment, by making sure the sponsor name is mentioned in the subtitles.
 
         Please respond with the json enclosed in a ```json ``` markdown code block.
     """
