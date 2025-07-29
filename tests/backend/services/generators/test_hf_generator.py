@@ -37,7 +37,7 @@ async def test_hf_generator():
     assert len(response) > 0
     assert isinstance(response, str)
 
-    prompt = "Please respond with any json enclosed in a ```json ``` markdown code block, where the highest level is a list."
+    prompt = "Please respond with a list object enclosed in a ```json``` markdown code block."
     response = await generator.extract_sponsor_info(prompt)
     assert isinstance(response, list)
     assert len(response) > 0
