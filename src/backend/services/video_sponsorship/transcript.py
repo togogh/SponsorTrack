@@ -52,8 +52,8 @@ async def fetch_transcript_and_language(
         except Exception as e:
             logger.error("Encountered error:", e)
             if r < retries:
-                print("Retrying...")
-                time.sleep(backoff_factor * (2 ** (r - 1)))
+                logger.info(f"Retrying ({r + 1}/{retries})...")
+                time.sleep(backoff_factor * (2**r))
 
 
 async def get_or_fill_transcript(
