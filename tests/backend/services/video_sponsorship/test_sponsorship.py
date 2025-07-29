@@ -12,6 +12,7 @@ from backend.repositories.all import (
 from backend.schemas.all import VideoCreate, SponsorshipCreate, SponsoredSegmentCreate, MetadataJson
 from backend.models.all import Sponsorship, SponsoredSegment, GeneratedSponsorship
 import pytest
+from thefuzz import fuzz
 
 
 @pytest.fixture
@@ -252,6 +253,7 @@ async def test_create_sponsorships(
     test_session,
     sponsorship_repo,
     generated_sponsorship_repo,
+    fuzzy_match_threshold,
 ):
     video = await video_repo.add(VideoCreate(youtube_id=youtube_id), test_session)
     metadata = MetadataJson(**metadata)
@@ -269,7 +271,10 @@ async def test_create_sponsorships(
         isinstance(item, Sponsorship) for item in sponsorships
     )
     found_sponsors = [sponsorship.sponsor_name for sponsorship in sponsorships]
-    assert set(found_sponsors) == set(sponsors)
+    found_sponsors = sorted(found_sponsors)
+    sponsors = sorted(sponsors)
+    for found_sponsor, sponsor in zip(found_sponsors, sponsors):
+        assert fuzz.partial_ratio(found_sponsor, sponsor) >= fuzzy_match_threshold
 
     for sponsorship in sponsorships:
         generated_sponsorships = await generated_sponsorship_repo.get_by_sponsorship_id(

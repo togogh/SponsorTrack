@@ -101,7 +101,9 @@ async def test_get_sponsored_segments(
         test_session, sponsored_segment_repo, None, video.id
     )
     assert len(response_segments) == 2
-    assert response_segments == segments
+    response_segment_ids = [s.id for s in response_segments]
+    for segment in segments:
+        assert segment.id in response_segment_ids
 
     with pytest.raises(ValueError):
         try:

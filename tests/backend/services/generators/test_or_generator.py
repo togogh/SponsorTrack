@@ -7,7 +7,7 @@ import pytest
 
 async def test_or_generator():
     if generator_settings.GENERATOR != Generator.OR:
-        pytest.skip("HF Generator not selected, skipping...")
+        pytest.skip("OR Generator not selected, skipping...")
 
     generator = OpenRouterGenerator("test")
     assert isinstance(generator.client, OpenAI)
@@ -18,7 +18,7 @@ async def test_or_generator():
     with pytest.raises(BadRequestError):
         await generator.generate_response()
 
-    generator = OpenRouterGenerator(model="mistralai/mistral-small-24b-instruct-2501:free")
+    generator = OpenRouterGenerator(model="google/gemma-2-9b-it:free")
     assert isinstance(generator.client, OpenAI)
 
     await generator.queue_message("user", "random")
@@ -27,7 +27,7 @@ async def test_or_generator():
     assert len(response) > 0
     assert isinstance(response, str)
 
-    prompt = "Please respond with any json enclosed in a ```json ``` markdown code block, where the highest level is a list."
+    prompt = "Please respond with a list object enclosed in a ```json``` markdown code block."
     response = await generator.extract_sponsor_info(prompt)
     assert isinstance(response, list)
     assert len(response) > 0

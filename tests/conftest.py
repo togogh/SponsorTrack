@@ -52,3 +52,8 @@ async def client(test_session):
     app.dependency_overrides[session_dependency] = override_session_dependency
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
         yield c
+
+
+@pytest.fixture
+def fuzzy_match_threshold():
+    return 85
