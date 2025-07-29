@@ -17,7 +17,6 @@ from pydantic import TypeAdapter
     ],
 )
 async def test_fetch_transcript_and_language(youtube_id, input_language, output_language):
-    print("started test")
     transcript, transcript_language = await fetch_transcript_and_language(
         youtube_id=youtube_id, language=input_language
     )
