@@ -81,9 +81,9 @@ SponsorTrack is an open-source Python project that extracts and compiles Youtube
 
 4. Populate your schemas with tables using:
     ```sh
-    python src/backend/utils/refresh_test_schema.py schema_name
+    python src/backend/utils/refresh_schema.py schema_name
     ```
-    Replace `schema_name` with the name of the schema you want to populate (ex. `python src/backend/utils/refresh_test_schema.py dev`)
+    Replace `schema_name` with the name of the schema you want to populate (ex. `python src/backend/utils/refresh_schema.py dev`)
 
 5. Start the backend server
     ```sh
