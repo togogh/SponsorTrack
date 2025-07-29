@@ -39,6 +39,8 @@ async def create_prompt(metadata: MetadataJson, segment: SponsoredSegment):
         sponsor_coupon_code: Coupon code, if any
 
         There may be more than one sponsor in the segment, so please make sure the highest level of the json is a list. Use the subtitles to determine which sponsors belong to this segment, by making sure the sponsor name is mentioned in the subtitles.
+        
+        The subtitles might be auto-generated sometimes, so it might have typos. Double check the other fields to get the right spelling.
 
         Please respond with the json enclosed in a ```json ``` markdown code block.
     """
