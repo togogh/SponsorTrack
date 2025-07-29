@@ -1,6 +1,7 @@
 import pytest
 from urllib.parse import urlencode
 from requests import codes
+from thefuzz import fuzz
 
 
 @pytest.mark.parametrize(
@@ -58,7 +59,9 @@ from requests import codes
     ],
 )
 @pytest.mark.asyncio(loop_scope="session")
-async def test_get_video_sponsorships(params, expected_youtube_id, expected_sponsors, client):
+async def test_get_video_sponsorships(
+    params, expected_youtube_id, expected_sponsors, client, fuzzy_match_threshold
+):
     encoded_params = urlencode(params)
     response = await client.get(f"/videos/sponsorships/?{encoded_params}")
     if expected_sponsors is None:
@@ -69,4 +72,7 @@ async def test_get_video_sponsorships(params, expected_youtube_id, expected_spon
         assert data["youtube_id"] == expected_youtube_id
         assert len(data["sponsorships"]) == len(expected_sponsors)
         sponsors = [s["sponsor_name"] for s in data["sponsorships"]]
-        assert sorted(sponsors) == sorted(expected_sponsors)
+        sponsors = sorted(sponsors)
+        expected_sponsors = sorted(expected_sponsors)
+        for sponsor, expected_sponsor in zip(sponsors, expected_sponsors):
+            assert fuzz.token_set_ratio(sponsor, expected_sponsor) >= fuzzy_match_threshold

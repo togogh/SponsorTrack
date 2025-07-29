@@ -22,6 +22,7 @@ dependencies = [
     "pytest>=8.3.5",
     "pytest-asyncio>=1.0.0",
     "pytest-env>=1.1.5",
+    "thefuzz>=0.22.1",
     "youtube-transcript-api>=1.1.0",
     "yt-dlp>=2025.4.30",
 ]
