@@ -65,6 +65,7 @@ SponsorTrack is an open-source Python project that extracts and compiles Youtube
 - [python](https://www.python.org/downloads/)
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
 - postgres db (if hosted, ssh details are needed in .env)
+    - create 3 schemas: prod, dev, and test
 - [Huggingface](https://huggingface.co/) and/or [OpenRouter](https://openrouter.ai/) account 
 
 #### Installation
@@ -78,10 +79,11 @@ SponsorTrack is an open-source Python project that extracts and compiles Youtube
     ./sshdb.sh
     ```
 
-4. Populate your schema with tables using (replace schema_name with the name of your schema, make sure it's the same one in your .env):
+4. Populate your schemas with tables using:
     ```sh
     python src/backend/utils/refresh_test_schema.py schema_name
     ```
+    Replace `schema_name` with the name of the schema you want to populate (ex. `python src/backend/utils/refresh_test_schema.py dev`)
 
 5. Start the backend server
     ```sh
@@ -97,7 +99,7 @@ SponsorTrack is an open-source Python project that extracts and compiles Youtube
     ```sh
     * Running on local URL:  http://127.0.0.1:7860
     ```
-    If you open the link, you should be able to see the UI
+    If you open the link, you should be able to see the Gradio UI
 
 7. In the app, input the Youtube URL/id you want to get sponsorship info of
 
