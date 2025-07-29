@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pydantic import FilePath, IPvAnyAddress
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from backend.core.types import Generator
+from backend.core.types import Generator, DeployEnv
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv(), override=True)
@@ -17,6 +17,10 @@ class ProjectSettings:
     VERSION: str = "1.0.0"
 
 
+class DeploySettings(BaseSettingsFromEnv):
+    DEPLOY_ENV: DeployEnv
+
+
 class DBSettings(BaseSettingsFromEnv):
     POSTGRES_USER: str  # Postgres username
     POSTGRES_PASSWORD: str  # Postgres password
@@ -24,7 +28,9 @@ class DBSettings(BaseSettingsFromEnv):
     POSTGRES_REMOTE_PORT: int | None  # Postgres port in server/host
     POSTGRES_LOCAL_PORT: int  # Local postgres port
     POSTGRES_DB: str  # Postgres database name
-    POSTGRES_SCHEMA: str  # Postgres schema name
+    POSTGRES_DEV_SCHEMA: str  # Postgres schema name for dev environment
+    POSTGRES_PROD_SCHEMA: str  # Postgres schema name for prod environment
+    POSTGRES_TEST_SCHEMA: str  # Postgres schema name for test environment
     SERVER_IP_ADDRESS: IPvAnyAddress | None  # IP address of server containing postgres db
     SSH_USERNAME: str | None  # Username to use to ssh into the server
     SSH_PKEY_PATH: FilePath | None  # Path containing ssh private key
@@ -53,3 +59,4 @@ db_settings = DBSettings()
 # email_settings = EmailSettings()
 ws_settings = WSSettings()
 generator_settings = GeneratorSettings()
+deploy_settings = DeploySettings()

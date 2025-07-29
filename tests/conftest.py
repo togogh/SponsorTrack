@@ -1,6 +1,7 @@
 import pytest_asyncio
 import pytest
 from backend.core.session import get_engine, get_session, session_dependency
+from backend.core.settings import db_settings
 from sqlalchemy import text
 from httpx import AsyncClient, ASGITransport
 from backend.main import app
@@ -8,7 +9,7 @@ from backend.main import app
 
 @pytest_asyncio.fixture(scope="session")
 async def test_engine():
-    async with get_engine(schema="test") as engine:
+    async with get_engine(schema=db_settings.POSTGRES_TEST_SCHEMA) as engine:
         yield engine
 
 
@@ -16,17 +17,16 @@ async def test_engine():
 async def reset_test_schema(test_engine):
     async with get_session(engine=test_engine) as session:
         result = await session.execute(
-            text("""
+            text(f"""
             SELECT table_name 
             FROM information_schema.tables 
-            WHERE table_schema = 'test'
+            WHERE table_schema = '{db_settings.POSTGRES_TEST_SCHEMA}'
         """)
         )
         tables = result.fetchall()
 
         if tables:
-            table_names = [f"test.{t[0]}" for t in tables]
-            print(table_names)
+            table_names = [f"{db_settings.POSTGRES_TEST_SCHEMA}.{t[0]}" for t in tables]
             await session.execute(
                 text(f"TRUNCATE TABLE {', '.join(table_names)} RESTART IDENTITY CASCADE")
             )

@@ -2,7 +2,8 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from contextlib import asynccontextmanager
-from backend.core.settings import db_settings
+from backend.core.settings import db_settings, deploy_settings
+from backend.core.types import DeployEnv
 from pydantic import PostgresDsn
 
 
@@ -15,7 +16,12 @@ async def get_engine(schema=None):
         f"{db_settings.POSTGRES_DB}"
     )
     if not schema:
-        schema = db_settings.POSTGRES_SCHEMA
+        if deploy_settings.DEPLOY_ENV == DeployEnv.PROD:
+            schema = db_settings.POSTGRES_PROD_SCHEMA
+        elif deploy_settings.DEPLOY_ENV == DeployEnv.TEST:
+            schema = db_settings.POSTGRES_TEST_SCHEMA
+        else:
+            schema = db_settings.POSTGRES_DEV_SCHEMA
     engine = create_async_engine(
         DATABASE_URL, echo=True, execution_options={"schema_translate_map": {"env": schema}}
     )
