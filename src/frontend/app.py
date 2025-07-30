@@ -53,7 +53,7 @@ with gr.Blocks() as demo:
                     
 Extract sponsorship information from Youtube videos
                     
-Want to use the API instead? [View API docs](https://api.sponsortrack.org/docs)
+[View API docs](https://api.sponsortrack.org/docs) | [View source code](https://github.com/togogh/SponsorTrack)
             """)
             id = gr.Textbox(label="Youtube ID", placeholder="XXXXXXXX")
             url = gr.Textbox(
