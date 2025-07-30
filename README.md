@@ -2,8 +2,6 @@
 
 # 🛰️ SponsorTrack
 
-**Extract, analyze, and organize YouTube sponsorship data using FastAPI, Gradio, and SponsorBlock.**
-
 [![License](https://img.shields.io/github/license/togogh/SponsorTrack?style=for-the-badge)](LICENSE)
 ![Last Commit](https://img.shields.io/github/last-commit/togogh/SponsorTrack?style=for-the-badge)
 ![Stars](https://img.shields.io/github/stars/togogh/SponsorTrack?style=for-the-badge)
